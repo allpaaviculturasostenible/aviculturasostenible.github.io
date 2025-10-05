@@ -2,62 +2,199 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ALLPA | Avicultura Sostenible</title>
+  <meta name="description" content="ALLPA impulsa una avicultura circular y carbono negativo con innovación tecnológica, bioenergía y abastecimiento local." />
+
+  <!-- hreflang (básico para buscadores) -->
+  <link rel="alternate" href="https://aviculturasostenible.com/?lang=es" hreflang="es" />
+  <link rel="alternate" href="https://aviculturasostenible.com/?lang=en" hreflang="en" />
+  <link rel="alternate" href="https://aviculturasostenible.com/" hreflang="x-default" />
+
   <style>
-    body {
-      font-family: "Segoe UI", Arial, sans-serif;
-      margin: 0;
-      background-color: #fafafa;
-      color: #222;
-      line-height: 1.6;
+    :root{
+      --green1:#79b465; --green2:#4f8a45; --bg:#fafafa; --ink:#222;
     }
-    header {
-      background: linear-gradient(90deg, #79b465, #4f8a45);
-      color: white;
-      padding: 1.5rem;
-      text-align: center;
-    }
-    main {
-      max-width: 800px;
-      margin: 2rem auto;
-      padding: 0 1rem;
-    }
-    h1 { font-size: 1.8rem; margin-bottom: 0.5rem; }
-    h2 { color: #4f8a45; margin-top: 2rem; }
-    footer {
-      background-color: #eee;
-      text-align: center;
-      padding: 1rem;
-      margin-top: 3rem;
-      font-size: 0.9rem;
-    }
+    *{box-sizing:border-box}
+    body{margin:0; font-family: "Segoe UI", Arial, sans-serif; color:var(--ink); background:var(--bg); line-height:1.6}
+    header{background:linear-gradient(90deg,var(--green1),var(--green2)); color:#fff; padding:1.75rem 1rem}
+    .wrap{max-width:980px; margin:0 auto}
+    nav{display:flex; gap:.5rem; justify-content:flex-end; align-items:center}
+    .lang-btn{background:rgba(255,255,255,.15); border:1px solid rgba(255,255,255,.3); color:#fff; padding:.4rem .7rem; border-radius:.5rem; cursor:pointer}
+    .lang-btn.active{background:#fff; color:#2c6e2f; font-weight:600}
+    h1{margin:.2rem 0 .2rem 0; font-size:1.9rem}
+    h2{color:#2c6e2f; margin-top:2rem}
+    main{padding:2rem 1rem}
+    ul{padding-left:1.2rem}
+    .grid{display:grid; grid-template-columns:1fr; gap:1rem}
+    @media (min-width:860px){ .grid{grid-template-columns:1fr 1fr} }
+    .card{background:#fff; border:1px solid #eee; border-radius:12px; padding:1rem; box-shadow:0 2px 8px rgba(0,0,0,.04)}
+    footer{background:#eee; text-align:center; padding:1rem; font-size:.9rem}
+    a{color:#2c6e2f; text-decoration:none}
   </style>
 </head>
 <body>
-  <header>
-    <h1>ALLPA | Avicultura Sostenible</h1>
-    <p>Producción circular, energía limpia y carbono negativo</p>
-  </header>
+<header>
+  <div class="wrap">
+    <nav>
+      <button class="lang-btn" data-setlang="es">ES</button>
+      <button class="lang-btn" data-setlang="en">EN</button>
+    </nav>
+    <h1 data-i18n="title">ALLPA | Avicultura Sostenible</h1>
+    <p data-i18n="subtitle">Producción circular, energía limpia y carbono negativo</p>
+  </div>
+</header>
 
-  <main>
-    <h2>Bienvenidos</h2>
-    <p>
-      ALLPA impulsa una nueva forma de producir proteína animal a través de un modelo circular que integra bioenergía, 
-      innovación tecnológica y sostenibilidad ambiental. Transformamos residuos en valor: energía, fertilizantes y alimento.
+<main class="wrap">
+  <section>
+    <h2 data-i18n="welcome">Bienvenidos</h2>
+    <p data-i18n="welcome_body">
+      ALLPA impulsa una nueva forma de producir proteína animal a través de un modelo circular que integra bioenergía, innovación tecnológica
+      y sostenibilidad ambiental. Transformamos residuos en valor: energía, fertilizantes y alimento.
     </p>
+  </section>
 
-    <h2>Nuestro modelo</h2>
-    <ul>
-      <li>Pollos Ross 500 alimentados naturalmente, sin antibióticos.</li>
-      <li>Producción de concentrado con granos locales y proteínas recicladas.</li>
-      <li>Uso de biogás y energía solar para calefacción y procesamiento.</li>
-      <li>Meta: lograr una operación carbono negativa y autosuficiente.</li>
-    </ul>
-  </main>
+  <section class="grid">
+    <div class="card">
+      <h2 data-i18n="model_title">Nuestro modelo</h2>
+      <ul>
+        <li data-i18n="model_li1">Pollos Ross 500 alimentados naturalmente, sin antibióticos.</li>
+        <li data-i18n="model_li2">Concentrado propio con granos locales y proteínas recicladas.</li>
+        <li data-i18n="model_li3">Energía limpia: biogás + fotovoltaica + almacenamiento térmico en zeolita.</li>
+        <li data-i18n="model_li4">Meta: operación carbono negativa y autosuficiente.</li>
+      </ul>
+    </div>
 
-  <footer>
-    © 2025 ALLPA Agricultura 4.0 SAS — aviculturasostenible.com
-  </footer>
+    <div class="card">
+      <h2 data-i18n="value_title">Propuesta de valor</h2>
+      <ul>
+        <li data-i18n="value_li1">Economía circular: residuos → biogás, biofertilizantes y alimento.</li>
+        <li data-i18n="value_li2">Tecnología propia: equipos automatizados y monitoreo remoto.</li>
+        <li data-i18n="value_li3">Abastecimiento local que reduce huella de transporte.</li>
+        <li data-i18n="value_li4">Modelo replicable para productores rurales.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2 data-i18n="contact_title">Contacto</h2>
+    <p>
+      <strong>ALLPA Agricultura 4.0 SAS</strong><br/>
+      <a href="mailto:contacto@aviculturasostenible.com" data-i18n="contact_email">contacto@aviculturasostenible.com</a>
+    </p>
+  </section>
+</main>
+
+<footer>
+  <span data-i18n="footer">© 2025 ALLPA Agricultura 4.0 SAS — aviculturasostenible.com</span>
+</footer>
+
+<script>
+/* --- Traducciones centralizadas --- */
+const translations = {
+  es: {
+    title: "ALLPA | Avicultura Sostenible",
+    subtitle: "Producción circular, energía limpia y carbono negativo",
+    welcome: "Bienvenidos",
+    welcome_body:
+      "ALLPA impulsa una nueva forma de producir proteína animal a través de un modelo circular que integra bioenergía, innovación tecnológica y sostenibilidad ambiental. Transformamos residuos en valor: energía, fertilizantes y alimento.",
+    model_title: "Nuestro modelo",
+    model_li1: "Pollos Ross 500 alimentados naturalmente, sin antibióticos.",
+    model_li2: "Concentrado propio con granos locales y proteínas recicladas.",
+    model_li3: "Energía limpia: biogás + fotovoltaica + almacenamiento térmico en zeolita.",
+    model_li4: "Meta: operación carbono negativa y autosuficiente.",
+    value_title: "Propuesta de valor",
+    value_li1: "Economía circular: residuos → biogás, biofertilizantes y alimento.",
+    value_li2: "Tecnología propia: equipos automatizados y monitoreo remoto.",
+    value_li3: "Abastecimiento local que reduce huella de transporte.",
+    value_li4: "Modelo replicable para productores rurales.",
+    contact_title: "Contacto",
+    contact_email: "contacto@aviculturasostenible.com",
+    footer: "© 2025 ALLPA Agricultura 4.0 SAS — aviculturasostenible.com"
+  },
+  en: {
+    title: "ALLPA | Sustainable Poultry",
+    subtitle: "Circular production, clean energy, and carbon-negative operations",
+    welcome: "Welcome",
+    welcome_body:
+      "ALLPA advances a new way to produce animal protein through a circular model that integrates bioenergy, technological innovation, and environmental sustainability. We turn waste into value: energy, fertilizers, and feed.",
+    model_title: "Our model",
+    model_li1: "Ross 500 chickens naturally fed, without antibiotics.",
+    model_li2: "In-house feed using local grains and recycled proteins.",
+    model_li3: "Clean energy: biogas + photovoltaics + zeolite thermal storage.",
+    model_li4: "Goal: carbon-negative, self-sufficient operation.",
+    value_title: "Value proposition",
+    value_li1: "Circular economy: waste → biogas, bio-fertilizers, and feed.",
+    value_li2: "Proprietary tech: automated equipment and remote monitoring.",
+    value_li3: "Local sourcing that lowers transport footprint.",
+    value_li4: "A replicable model for rural producers.",
+    contact_title: "Contact",
+    contact_email: "contact@aviculturasostenible.com",
+    footer: "© 2025 ALLPA Agricultura 4.0 SAS — aviculturasostenible.com"
+  }
+};
+
+/* --- Utilidades de idioma --- */
+function parseQueryLang() {
+  const m = (location.search.match(/[?&]lang=(en|es)\b/i) || [])[1];
+  return m ? m.toLowerCase() : null;
+}
+function detectBrowserLang() {
+  const prefs = (navigator.languages || [navigator.language || '']).map(x => x.toLowerCase());
+  if (prefs.some(l => l.startsWith('es'))) return 'es';
+  if (prefs.some(l => l.startsWith('en'))) return 'en';
+  return 'es'; // default
+}
+function setLangAttr(lang) {
+  document.documentElement.setAttribute('lang', lang);
+}
+function applyTranslations(lang) {
+  const dict = translations[lang] || translations.es;
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const key = el.getAttribute("data-i18n");
+    if (dict[key] !== undefined) el.textContent = dict[key];
+  });
+  // activar botón
+  document.querySelectorAll(".lang-btn").forEach(b=>b.classList.toggle('active', b.dataset.setlang===lang));
+  setLangAttr(lang);
+  // actualizar title & meta description
+  document.title = dict.title;
+  const metaDesc = document.querySelector('meta[name="description"]');
+  if (metaDesc){
+    metaDesc.setAttribute('content',
+      lang==='es'
+        ? "ALLPA impulsa una avicultura circular y carbono negativo con innovación tecnológica, bioenergía y abastecimiento local."
+        : "ALLPA drives circular, carbon-negative poultry with technological innovation, bioenergy, and local sourcing."
+    );
+  }
+  // actualizar enlaces hreflang para canónico actual
+  const base = location.origin + location.pathname;
+  const es = `${base}?lang=es`;
+  const en = `${base}?lang=en`;
+  document.querySelector('link[hreflang="es"]')?.setAttribute('href', es);
+  document.querySelector('link[hreflang="en"]')?.setAttribute('href', en);
+}
+
+/* --- Init: orden de prioridad ---
+   1) ?lang=  2) localStorage  3) navegador
+--- */
+(function initI18n(){
+  const fromQuery = parseQueryLang();
+  const stored = localStorage.getItem('allpa:lang');
+  const detected = detectBrowserLang();
+  const lang = (fromQuery || stored || detected);
+  applyTranslations(lang);
+  // handlers UI
+  document.querySelectorAll(".lang-btn").forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const sel = btn.dataset.setlang;
+      localStorage.setItem('allpa:lang', sel);
+      // mantener la URL limpia (sin recargar)
+      applyTranslations(sel);
+      history.replaceState({}, "", location.pathname + `?lang=${sel}`);
+    });
+  });
+})();
+</script>
 </body>
 </html>
