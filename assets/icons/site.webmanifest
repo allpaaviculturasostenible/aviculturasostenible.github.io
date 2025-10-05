@@ -1,0 +1,9 @@
+{
+  "name": "ALLPA Avicultura Sostenible",
+  "short_name": "ALLPA",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fafafa",
+  "theme_color": "#4f8a45",
+  "icons": []
+}
