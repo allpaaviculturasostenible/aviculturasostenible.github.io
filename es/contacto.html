@@ -4,30 +4,122 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Contacto | ALLPA</title>
-  <meta name="description" content="Contacto de ALLPA Agricultura 4.0 SAS en Pasto, Nariño, Colombia." />
-  <link rel="alternate" href="https://aviculturasostenible.com/en/" hreflang="en" />
-  <link rel="alternate" href="https://aviculturasostenible.com/es/" hreflang="es" />
+  <meta name="description" content="Escríbenos para conocer más sobre nuestros productos: pollo sostenible, concentrado, fertilizantes y tecnología." />
+  <link rel="alternate" href="https://aviculturasostenible.com/en/contact.html" hreflang="en" />
+  <link rel="alternate" href="https://aviculturasostenible.com/es/contacto.html" hreflang="es" />
   <link rel="alternate" href="https://aviculturasostenible.com/" hreflang="x-default" />
   <link rel="icon" href="/assets/icons/favicon.ico" />
   <link rel="manifest" href="/assets/icons/site.webmanifest" />
   <link rel="stylesheet" href="/assets/css/styles.css" />
+  <style>
+    form{background:#fff;border:1px solid #eee;border-radius:12px;padding:1rem;
+         box-shadow:0 1px 8px rgba(0,0,0,.04)}
+    label{display:block;font-weight:600;margin-top:.75rem}
+    input, select, textarea{
+      width:100%; padding:.65rem .7rem; margin-top:.35rem;
+      border:1px solid #ccc; border-radius:8px; font:inherit;
+    }
+    textarea{min-height:120px; resize:vertical}
+    .row{display:grid;grid-template-columns:1fr; gap:1rem}
+    .actions{margin-top:1rem}
+    .btn{background:#4f8a45; color:#fff; border:0; padding:.7rem 1rem; border-radius:8px; cursor:pointer}
+    .note{font-size:.9rem;color:#555}
+    @media(min-width:720px){ .row{grid-template-columns:1fr 1fr} }
+    .ok{color:#1e7e34; font-weight:600}
+    .err{color:#b00020; font-weight:600}
+  </style>
 </head>
 <body>
   <div id="__header"></div>
-  <main class="wrap">
-    
-<section class="card">
-  <h2>Contacto</h2>
-  <p><strong>ALLPA Agricultura 4.0 SAS</strong><br>
-  Pasto, Nariño — Colombia<br>
-  <a href="mailto:contacto@aviculturasostenible.com">contacto@aviculturasostenible.com</a></p>
-</section>
 
+  <main class="wrap">
+    <section class="card">
+      <h2>Contacto</h2>
+      <p>Déjanos tus datos y selecciona el producto de interés. Te contactaremos muy pronto.</p>
+
+      <form id="contactForm" novalidate>
+        <!-- producto de interés -->
+        <label for="product">Producto de interés</label>
+        <select id="product" name="product" required>
+          <option value="" selected disabled>Selecciona una opción</option>
+          <option>Pollo sostenible (Ross 500)</option>
+          <option>Concentrado balanceado</option>
+          <option>Fertilizantes orgánicos</option>
+          <option>Tecnología y automatización</option>
+          <option>Capacitación/asesoría</option>
+        </select>
+
+        <div class="row">
+          <div>
+            <label for="name">Nombre completo</label>
+            <input id="name" name="name" type="text" autocomplete="name" required />
+          </div>
+          <div>
+            <label for="email">Correo electrónico</label>
+            <input id="email" name="email" type="email" autocomplete="email" required />
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label for="phone">Teléfono / WhatsApp</label>
+            <input id="phone" name="phone" type="tel" placeholder="+57 ..." autocomplete="tel" />
+          </div>
+          <div>
+            <label for="location">Ciudad / Región</label>
+            <input id="location" name="location" type="text" />
+          </div>
+        </div>
+
+        <label for="message">Mensaje</label>
+        <textarea id="message" name="message" placeholder="Cuéntanos brevemente tu necesidad"></textarea>
+
+        <!-- honeypot anti-spam -->
+        <input type="text" name="_gotcha" style="display:none" tabindex="-1" autocomplete="off"/>
+
+        <!-- metadatos -->
+        <input type="hidden" name="_subject" value="Nuevo contacto desde aviculturasostenible.com (ES)">
+        <input type="hidden" name="page_url" value="/es/contacto.html">
+
+        <div class="actions">
+          <button class="btn" type="submit">Enviar</button>
+          <p class="note">También puedes escribirnos por WhatsApp: <a href="https://wa.me/573152112644" target="_blank" rel="noopener">+57 315 2112644</a></p>
+          <p id="formMsg" class="note"></p>
+        </div>
+      </form>
+    </section>
   </main>
+
   <div id="__footer"></div>
+
   <script>
-    async function inject(id, url){const el=document.getElementById(id);const r=await fetch(url);el.innerHTML=await r.text();}
-    (async()=>{await inject("__header","/partials/header.html");await inject("__footer","/partials/footer.html");})();
+    async function inject(id, url){ const el=document.getElementById(id); const r=await fetch(url); el.innerHTML=await r.text(); }
+    (async ()=>{ await inject("__header","/partials/header.html"); await inject("__footer","/partials/footer.html"); })();
+
+    // Envío a Formspree con fetch (permanece en la página)
+    const FORMSPREE_ENDPOINT = "https://formspree.io/f/xzzjvjaq"; // ← pega tu endpoint aquí
+    const form = document.getElementById('contactForm');
+    const msg = document.getElementById('formMsg');
+
+    form.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      msg.textContent = "Enviando...";
+      try{
+        const formData = new FormData(form);
+        const res = await fetch(FORMSPREE_ENDPOINT, { method: "POST", body: formData, headers: { "Accept": "application/json" }});
+        if(res.ok){
+          msg.textContent = "¡Gracias! Recibimos tu mensaje. Te contactaremos pronto.";
+          msg.className = "note ok";
+          form.reset();
+        }else{
+          msg.textContent = "Hubo un problema al enviar. Por favor intenta de nuevo o escríbenos por WhatsApp.";
+          msg.className = "note err";
+        }
+      }catch(err){
+        msg.textContent = "Error de conexión. Inténtalo nuevamente.";
+        msg.className = "note err";
+      }
+    });
   </script>
   <script src="/assets/js/app.js"></script>
   <script src="/assets/js/i18n.js"></script>
