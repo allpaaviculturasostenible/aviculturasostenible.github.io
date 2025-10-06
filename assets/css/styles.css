@@ -19,3 +19,42 @@ nav a.active{font-weight:700;text-decoration:underline}
 footer{background:#eee;text-align:center;padding:1rem;margin-top:3rem;font-size:.95rem}
 @media (min-width:900px){.grid{grid-template-columns:1fr 1fr}}
 img{max-width:100%;height:auto}
+
+/* FAB WhatsApp */
+.whatsapp-fab{
+  position: fixed;
+  inset-inline-end: 18px;        /* equivale a right en LTR */
+  bottom: 18px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #25D366;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  text-decoration: none;
+  box-shadow: 0 8px 24px rgba(0,0,0,.22);
+  z-index: 9999;
+  transition: transform .15s ease, filter .15s ease;
+}
+.whatsapp-fab:focus-visible{ outline: 3px solid #0b5; outline-offset: 3px; }
+.whatsapp-fab:hover{ filter: brightness(1.05); transform: translateY(-1px); }
+
+/* Deja “colchón” abajo para que el FAB no tape contenido */
+body.has-fab { padding-bottom: 84px; }
+
+/* Respeto a safe areas (iOS) */
+@supports (bottom: env(safe-area-inset-bottom)) {
+  .whatsapp-fab { bottom: calc(18px + env(safe-area-inset-bottom)); }
+}
+
+/* Ajustes móviles: súbelo un poco para que no choque con el footer */
+@media (max-width: 480px){
+  .whatsapp-fab{
+    inset-inline-end: 14px;
+    bottom: 80px; /* más alto en móvil */
+    width: 54px; height: 54px;
+  }
+  body.has-fab { padding-bottom: 110px; }
+}
