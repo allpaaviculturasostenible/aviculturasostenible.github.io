@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ALLPA | Avicultura Sostenible</title>
+  <meta name="description" content="Redirección automática a la versión en Español o Inglés según tu navegador.">
+  <script>
+    // Detecta el idioma y redirige automáticamente
+    (function() {
+      const langs = (navigator.languages || [navigator.language || navigator.userLanguage])
+        .map(l => l.toLowerCase());
+      let target = '/es/';
+      if (langs.some(l => l.startsWith('en'))) target = '/en/';
+      window.location.replace(target);
+    })();
+  </script>
+  <style>
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #fafafa;
+      color: #2c6e2f;
+      text-align: center;
+    }
+    a { color: #4f8a45; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>ALLPA | Avicultura Sostenible</h1>
+    <p>Redirigiendo automáticamente según el idioma de tu navegador...</p>
+    <p>
+      <a href="/es/">Ir a versión en Español</a> |
+      <a href="/en/">Go to English version</a>
+    </p>
+  </main>
+</body>
+</html>
