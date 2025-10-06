@@ -58,3 +58,32 @@ body.has-fab { padding-bottom: 84px; }
   }
   body.has-fab { padding-bottom: 110px; }
 }
+
+/* ===== Footer con iconos ===== */
+.footer-grid{display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between;align-items:center}
+.footer-social a{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:10px;background:#fff;border:1px solid #e9e9e9;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.footer-social a:hover{transform:translateY(-1px)}
+.footer-social svg{display:block}
+
+/* ===== Menú móvil (drawer) ===== */
+.hamburger{display:none;background:transparent;border:0;cursor:pointer;padding:.5rem;margin-left:-.5rem}
+.hamburger span{display:block;width:24px;height:2px;background:#fff;margin:5px 0;transition:transform .2s ease, opacity .2s ease}
+
+.drawer{position:fixed;inset:0 0 0 auto;width:280px;max-width:85vw;background:#fff;transform:translateX(100%);transition:transform .25s ease;z-index:10010;box-shadow:-8px 0 24px rgba(0,0,0,.18);padding:1rem}
+.drawer-nav{display:flex;flex-direction:column;gap:.5rem}
+.drawer-nav a{color:#2c6e2f;text-decoration:none;padding:.5rem;border-radius:.5rem}
+.drawer-nav a:hover{background:#f0f6f0}
+.drawer-lang a{margin-right:.5rem}
+.drawer-close{position:absolute;top:6px;right:10px;background:transparent;border:0;font-size:32px;line-height:1;color:#666;cursor:pointer}
+.drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);opacity:0;visibility:hidden;transition:opacity .2s ease;z-index:10005}
+
+.drawer.open{transform:translateX(0)}
+.drawer-overlay.show{opacity:1;visibility:visible}
+body.drawer-lock{overflow:hidden}
+
+@media (max-width: 900px){
+  .topnav{display:none}        /* escondemos menú horizontal */
+  .hamburger{display:inline-block}
+  .brand{margin-left:.25rem}
+  .lang{display:none}          /* el selector de idioma vive en el drawer */
+}

@@ -1,7 +1,13 @@
 <header>
   <div class="wrap topbar">
+    <button class="hamburger" aria-label="Abrir menú" aria-controls="drawer" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+
     <div class="brand">ALLPA</div>
-    <nav aria-label="principal">
+
+    <!-- menú horizontal (desktop) -->
+    <nav class="topnav" aria-label="principal">
       <ul>
         <li><a data-match="/es/" href="/es/">Inicio</a></li>
         <li><a data-match="/es/modelo-circular.html" href="/es/modelo-circular.html">Modelo</a></li>
@@ -10,13 +16,33 @@
         <li><a data-match="/es/contacto.html" href="/es/contacto.html">Contacto</a></li>
       </ul>
     </nav>
-    <div class="lang" aria-label="selector de idioma">
+
+    <div class="lang">
       <a href="#" data-lang="es" class="active">ES</a>
       <a href="#" data-lang="en">EN</a>
     </div>
   </div>
+
   <div class="wrap hero">
     <h1>Avicultura Sostenible</h1>
     <p>Producción circular, energía limpia y carbono negativo.</p>
   </div>
+
+  <!-- Drawer lateral -->
+  <div id="drawer" class="drawer" aria-hidden="true">
+    <nav class="drawer-nav" aria-label="menú móvil">
+      <a href="/es/">Inicio</a>
+      <a href="/es/modelo-circular.html">Modelo</a>
+      <a href="/es/productos.html">Productos</a>
+      <a href="/es/energia.html">Energía</a>
+      <a href="/es/contacto.html">Contacto</a>
+      <hr>
+      <div class="drawer-lang">
+        <a href="#" data-lang="es" class="active">ES</a>
+        <a href="#" data-lang="en">EN</a>
+      </div>
+    </nav>
+    <button class="drawer-close" aria-label="Cerrar menú">×</button>
+  </div>
+  <div class="drawer-overlay" tabindex="-1" aria-hidden="true"></div>
 </header>
