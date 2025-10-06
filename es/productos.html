@@ -26,8 +26,16 @@
   </main>
   <div id="__footer"></div>
   <script>
-    async function inject(id, url){const el=document.getElementById(id);const r=await fetch(url);el.innerHTML=await r.text();}
-    (async()=>{await inject("__header","/partials/header.html");await inject("__footer","/partials/footer.html");})();
+    async function inject(id, url) {
+        const el = document.getElementById(id);
+        const r = await fetch(url, { cache: "no-store" });
+        el.innerHTML = await r.text();
+      }
+      (async () => {
+        await inject("__header", "/partials/header.html"); // o header_en.html en EN
+        await inject("__footer", "/partials/footer.html");
+        document.dispatchEvent(new Event("allpa:partials-ready"));
+      })();
   </script>
   <script src="/assets/js/app.js"></script>
   <script src="/assets/js/i18n.js"></script>
