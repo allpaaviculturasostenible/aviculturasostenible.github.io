@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Calculadora de Inversión en Concentrado | ALLPA</title>
+  <!-- Tailwind via CDN para estilos rápidos y responsive -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Tipografía consistente con el estilo del sitio -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    /* Estilo base de fuente y ajustes menores de controles */
+    body{font-family:'Poppins',sans-serif}
+    /* Acento del slider para mantener identidad visual */
+    input[type=range]{accent-color:#4f8a45}
+    /* Botón sutil para links compartibles (sin usar @apply porque TailwindCDN no lo procesa) */
+    .btn{display:inline-flex;align-items:center;justify-content:center;border-radius:.5rem;padding:.5rem 1rem;font-weight:600;transition:all .2s ease-in-out}
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+  <!-- ===================== HERO / ENCABEZADO ===================== -->
+  <section class="text-center py-10 bg-white shadow-sm">
+    <h1 class="text-3xl font-semibold text-[#2c6e2f] mb-2">Calcula tu inversión en concentrado para pollos</h1>
+    <p class="text-gray-600">Una herramienta gratuita de ALLPA Agricultura 4.0 para nuevos productores.</p>
+  </section>
+
+  <!-- ===================== CALCULADORA (ENTRADAS) ===================== -->
+  <section class="max-w-4xl mx-auto bg-white p-6 mt-8 rounded-2xl shadow-md">
+    <h2 class="text-2xl font-semibold text-[#4f8a45] mb-4 text-center">Calculadora Avícola</h2>
+
+    <!-- Grid principal de entradas: cantidad, duración en DÍAS, raza, bulto y botón -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <!-- Cantidad de pollos -->
+      <div>
+        <label for="pollos" class="block mb-2 font-medium">Cantidad de pollos</label>
+        <!-- Validamos mínimo 1 para evitar divisiones o cálculos inválidos -->
+        <input type="number" id="pollos" class="w-full border rounded-lg p-2" placeholder="Ej: 200" min="1" />
+      </div>
+
+      <!-- Duración del ciclo (slider 28-56 días) -->
+      <div class="md:col-span-2">
+        <label class="block mb-2 font-medium">Duración del ciclo (días)</label>
+        <div class="flex items-center gap-3">
+          <!-- Límites visuales del slider -->
+          <span class="text-sm text-gray-600">28</span>
+          <!-- Slider con paso 1 día para mayor control -->
+          <input type="range" id="dias" min="28" max="56" step="1" value="56" class="flex-1" />
+          <span class="text-sm text-gray-600">56</span>
+          <!-- Visualizador del valor seleccionado para feedback inmediato (muestra días y semanas aproximadas) -->
+          <span id="diasVal" class="ml-2 inline-flex items-center justify-center px-2 h-8 rounded-md bg-green-50 text-[#2c6e2f] font-semibold">56 d · 8 sem</span>
+        </div>
+        <!-- Pista de fases por DÍAS: se actualizará dinámicamente según la duración -->
+        <p class="text-xs text-gray-500 mt-1" id="faseHint">Fases (por días): Preinicio 1–14 → Inicio 15–28 → Engorde 29–56.</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
+      <!-- Selección de raza: afecta consumo base por ave (ajustado a 56 días y luego escalado) -->
+      <div>
+        <label for="raza" class="block mb-2 font-medium">Raza</label>
+        <select id="raza" class="w-full border rounded-lg p-2">
+          <option value="ross">Ross 500</option>
+          <option value="cobb">Cobb 500</option>
+        </select>
+      </div>
+      <!-- Peso de bulto: muy usado en Colombia (40/50kg); cambia cálculo de # de bultos -->
+      <div>
+        <label for="bulto" class="block mb-2 font-medium">Peso del bulto (kg)</label>
+        <select id="bulto" class="w-full border rounded-lg p-2">
+          <option value="40">40 kg</option>
+          <option value="50">50 kg</option>
+        </select>
+      </div>
+      <!-- Botón calcular -->
+      <div class="md:col-span-2 flex items-end gap-3">
+        <button id="btnCalcular" class="w-full bg-[#4f8a45] text-white p-3 rounded-lg hover:bg-[#2c6e2f] transition">Calcular</button>
+        <!-- Botón para crear link compartible con parámetros -->
+        <button id="btnCompartir" class="hidden w-full bg-white border p-3 rounded-lg hover:bg-green-50 transition">Copiar enlace</button>
+      </div>
+    </div>
+
+    <!-- ===================== MORTALIDAD (OPCIONAL) ===================== -->
+    <details id="mortalityBox" class="mt-6 rounded-xl border p-4 bg-gray-50">
+      <summary class="cursor-pointer font-semibold text-[#2c6e2f]">Mortalidad (opcional) – Número de aves por semana</summary>
+      <p class="text-sm text-gray-600 mt-2">Ajusta el cálculo según la cantidad de aves que permanecen cada semana. Si no haces cambios, asumimos que todas las semanas se mantiene la misma cantidad.</p>
+      <!-- Tabla dinámica: se generan filas según nº de semanas del ciclo -->
+      <div class="mt-3 overflow-x-auto">
+        <table class="min-w-full text-sm">
+          <thead>
+            <tr class="text-left text-gray-500">
+              <th class="py-2 pr-3">Semana</th>
+              <th class="py-2 pr-3">Días de la semana en el ciclo</th>
+              <th class="py-2">Aves</th>
+            </tr>
+          </thead>
+          <tbody id="mortalityRows"></tbody>
+        </table>
+      </div>
+    </details>
+
+    <!-- ===================== INFOGRAFÍA / RESULTADOS POR FASE ===================== -->
+    <!-- Oculta por defecto hasta que se ejecuta el cálculo -->
+    <div id="infografia" class="mt-8 hidden">
+      <h3 class="text-xl font-semibold text-[#2c6e2f] mb-2 text-center">Distribución por fases de alimento</h3>
+      <p class="text-center text-sm text-gray-600 mb-4">
+        Ajusta los <span class="font-semibold">precios por bulto</span> para refinar el cálculo. Los precios están en pesos colombianos (COP).
+      </p>
+
+      <!-- Tres tarjetas, una por fase: Preinicio, Inicio, Engorde -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- ========== PREINICIO ========== -->
+        <div class="rounded-2xl border shadow-sm p-4">
+          <div class="flex items-center justify-between mb-2">
+            <h4 class="font-semibold text-[#2c6e2f]">Preinicio</h4>
+            <!-- Etiqueta de días orientativa (se actualizará según duración) -->
+            <span id="preDias" class="text-xs bg-green-100 text-[#2c6e2f] px-2 py-1 rounded">Días 1–14</span>
+          </div>
+          <!-- Control de precio por bulto (slider + campo numérico sincronizados) -->
+          <label class="text-sm text-gray-600">Precio (COP/bulto)</label>
+          <div class="flex items-center gap-2 mb-3">
+            <input id="precioPre" type="range" min="80000" max="180000" step="1000" value="120000" class="w-full" />
+            <input id="precioPreNum" type="number" class="w-28 border rounded p-1" value="120000" />
+          </div>
+          <!-- Lecturas por fase: consumo en kg, bultos estimados y subtotal en COP -->
+          <dl class="text-sm space-y-1">
+            <div class="flex justify-between"><dt>Consumo (kg)</dt><dd id="kgPre" class="font-medium">0</dd></div>
+            <div class="flex justify-between"><dt>Bultos</dt><dd id="bagsPre" class="font-medium">0</dd></div>
+            <div class="flex justify-between"><dt>Subtotal</dt><dd id="subtotalPre" class="font-semibold text-[#2c6e2f]">0</dd></div>
+          </dl>
+        </div>
+
+        <!-- ========== INICIO ========== -->
+        <div class="rounded-2xl border shadow-sm p-4">
+          <div class="flex items-center justify-between mb-2">
+            <h4 class="font-semibold text-[#2c6e2f]">Inicio</h4>
+            <span id="iniDias" class="text-xs bg-green-100 text-[#2c6e2f] px-2 py-1 rounded">Días 15–28</span>
+          </div>
+          <label class="text-sm text-gray-600">Precio (COP/bulto)</label>
+          <div class="flex items-center gap-2 mb-3">
+            <input id="precioIni" type="range" min="80000" max="180000" step="1000" value="110000" class="w-full" />
+            <input id="precioIniNum" type="number" class="w-28 border rounded p-1" value="110000" />
+          </div>
+          <dl class="text-sm space-y-1">
+            <div class="flex justify-between"><dt>Consumo (kg)</dt><dd id="kgIni" class="font-medium">0</dd></div>
+            <div class="flex justify-between"><dt>Bultos</dt><dd id="bagsIni" class="font-medium">0</dd></div>
+            <div class="flex justify-between"><dt>Subtotal</dt><dd id="subtotalIni" class="font-semibold text-[#2c6e2f]">0</dd></div>
+          </dl>
+        </div>
+
+        <!-- ========== ENGORDE ========== -->
+        <div class="rounded-2xl border shadow-sm p-4">
+          <div class="flex items-center justify-between mb-2">
+            <h4 class="font-semibold text-[#2c6e2f]">Engorde</h4>
+            <span id="engDias" class="text-xs bg-green-100 text-[#2c6e2f] px-2 py-1 rounded">Días 29–56</span>
+          </div>
+          <label class="text-sm text-gray-600">Precio (COP/bulto)</label>
+          <div class="flex items-center gap-2 mb-3">
+            <input id="precioEng" type="range" min="80000" max="180000" step="1000" value="100000" class="w-full" />
+            <input id="precioEngNum" type="number" class="w-28 border rounded p-1" value="100000" />
+          </div>
+          <dl class="text-sm space-y-1">
+            <div class="flex justify-between"><dt>Consumo (kg)</dt><dd id="kgEng" class="font-medium">0</dd></div>
+            <div class="flex justify-between"><dt>Bultos</dt><dd id="bagsEng" class="font-medium">0</dd></div>
+            <div class="flex justify-between"><dt>Subtotal</dt><dd id="subtotalEng" class="font-semibold text-[#2c6e2f]">0</dd></div>
+          </dl>
+        </div>
+      </div>
+
+      <!-- Totales abajo tipo cinta informativa para lectura rápida -->
+      <div class="mt-6 bg-green-50 rounded-xl p-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-center">
+          <div>
+            <p class="text-sm text-gray-600">Consumo total (kg)</p>
+            <p id="kgTotal" class="text-lg font-semibold">0</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-600">Bultos totales</p>
+            <p id="bagsTotal" class="text-lg font-semibold">0</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-600">Inversión estimada (COP)</p>
+            <p id="inversionTotal" class="text-xl font-extrabold text-[#2c6e2f]">0</p>
+          </div>
+        </div>
+        <p class="text-xs text-gray-500 mt-2 text-center">Notas: valores estimados. La distribución pondera mayor consumo en días tardíos. Ajusta precios y mortalidad según tu realidad.</p>
+
+        <!-- Link compartible -->
+        <div id="shareWrap" class="mt-4 hidden">
+          <label class="block text-sm text-gray-600 mb-1">Comparte/guarda tu configuración</label>
+          <div class="flex gap-2">
+            <input id="shareLink" class="flex-1 border rounded-lg p-2 text-xs" readonly>
+            <button id="btnCopy" class="px-3 rounded-lg bg-[#2c6e2f] text-white text-sm">Copiar</button>
+          </div>
+          <p class="text-xs text-gray-500 mt-1">El enlace incluye tus entradas (aves, días, raza, bulto, precios y mortalidad) para que retomes donde quedaste.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== CTA / SUSCRIPCIÓN ===================== -->
+  <section id="suscripcion" class="max-w-md mx-auto bg-white p-6 mt-8 rounded-2xl shadow-md text-center hidden">
+    <h3 class="text-xl font-semibold mb-2 text-[#4f8a45]">¿Te pareció útil esta calculadora?</h3>
+    <p class="text-gray-600 mb-4">Suscríbete a nuestro boletín y recibe guías prácticas y herramientas gratuitas para mejorar tu producción avícola.</p>
+
+    <!-- Campo email (backend opcional: Formspree/Mailchimp) -->
+    <input type="email" placeholder="Tu correo electrónico" class="w-full border p-2 rounded-lg mb-4" />
+    <button class="w-full bg-[#2c6e2f] text-white p-3 rounded-lg hover:bg-[#4f8a45] transition">Suscribirme ahora</button>
+
+    <!-- Derivación a comunidad en redes -->
+    <p class="text-gray-500 text-sm mt-4">Únete a nuestra comunidad y aprende más sobre avicultura circular:</p>
+    <div class="flex justify-center gap-4 mt-3">
+      <a href="https://wa.me/573152112644" target="_blank" title="WhatsApp"><img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/whatsapp.svg" class="w-6 h-6" alt="WhatsApp" /></a>
+      <a href="https://www.facebook.com/profile.php?id=100073967926249" target="_blank" title="Facebook"><img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/facebook.svg" class="w-6 h-6" alt="Facebook" /></a>
+      <a href="https://www.instagram.com/allpa_agricultura_4.0_sas/" target="_blank" title="Instagram"><img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/instagram.svg" class="w-6 h-6" alt="Instagram" /></a>
+    </div>
+  </section>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="text-center text-gray-500 text-sm mt-10 mb-4">© 2025 ALLPA Agricultura 4.0 SAS — aviculturasostenible.com</footer>
+
+  <!-- ===================== LÓGICA / CÁLCULOS ===================== -->
+  <script>
+    // --------- PARÁMETROS DEL MODELO ---------
+    // Consumo total esperado por ave para 56 días (8 semanas) de ciclo (kg/ave)
+    // Nota: escalamos linealmente por nº de días del ciclo seleccionado.
+    const consumoBase = { ross: 4.5, cobb: 4.3 };
+
+    // Pesos relativos por fase (días tardíos consumen más). Usamos ponderadores 1:2:3
+    const pesosFase = { pre: 1, ini: 2, eng: 3 };
+
+    // --------- REFERENCIAS A CONTROLES (ENTRADAS) ---------
+    const pollosEl = document.getElementById('pollos');
+    const diasEl = document.getElementById('dias');
+    const diasValEl = document.getElementById('diasVal');
+    const razaEl = document.getElementById('raza');
+    const bultoEl = document.getElementById('bulto');
+
+    // Precios por bulto (cada fase tiene su propio precio editable)
+    const precioPre = document.getElementById('precioPre');
+    const precioPreNum = document.getElementById('precioPreNum');
+    const precioIni = document.getElementById('precioIni');
+    const precioIniNum = document.getElementById('precioIniNum');
+    const precioEng = document.getElementById('precioEng');
+    const precioEngNum = document.getElementById('precioEngNum');
+
+    // Mortalidad por semana (inputs generados dinámicamente)
+    const mortalityRows = document.getElementById('mortalityRows');
+
+    // --------- REFERENCIAS A SALIDAS (RESULTADOS) ---------
+    // Por fase
+    const kgPreEl = document.getElementById('kgPre');
+    const kgIniEl = document.getElementById('kgIni');
+    const kgEngEl = document.getElementById('kgEng');
+    const bagsPreEl = document.getElementById('bagsPre');
+    const bagsIniEl = document.getElementById('bagsIni');
+    const bagsEngEl = document.getElementById('bagsEng');
+    const subtotalPreEl = document.getElementById('subtotalPre');
+    const subtotalIniEl = document.getElementById('subtotalIni');
+    const subtotalEngEl = document.getElementById('subtotalEng');
+
+    // Totales
+    const kgTotalEl = document.getElementById('kgTotal');
+    const bagsTotalEl = document.getElementById('bagsTotal');
+    const inversionTotalEl = document.getElementById('inversionTotal');
+
+    // UI extra: etiquetas de días por fase y compartir
+    const preDiasTag = document.getElementById('preDias');
+    const iniDiasTag = document.getElementById('iniDias');
+    const engDiasTag = document.getElementById('engDias');
+    const faseHint = document.getElementById('faseHint');
+
+    const btnCalcular = document.getElementById('btnCalcular');
+    const btnCompartir = document.getElementById('btnCompartir');
+    const shareWrap = document.getElementById('shareWrap');
+    const shareLink = document.getElementById('shareLink');
+    const btnCopy = document.getElementById('btnCopy');
+
+    const infografia = document.getElementById('infografia');
+    const suscripcion = document.getElementById('suscripcion');
+
+    // --------- UTILIDADES DE FORMATO ---------
+    const fmtCOP = (n)=> n.toLocaleString('es-CO', {style:'currency', currency:'COP'});
+
+    // --------- SINCRONIZACIÓN SLIDER + INPUT NUMÉRICO (PRECIOS) ---------
+    // UX: el usuario puede afinar con slider o escribir el valor exacto.
+    function syncRangeAndNumber(rangeEl, numberEl){
+      rangeEl.addEventListener('input', ()=>{ numberEl.value = rangeEl.value; recalcIfVisible(); });
+      numberEl.addEventListener('input', ()=>{ rangeEl.value = numberEl.value; recalcIfVisible(); });
+    }
+    syncRangeAndNumber(precioPre, precioPreNum);
+    syncRangeAndNumber(precioIni, precioIniNum);
+    syncRangeAndNumber(precioEng, precioEngNum);
+
+    // --------- FASES POR DÍAS (1–14, 15–28, 29–D) ---------
+    // Dado el número total de días del ciclo, calcula cuántos días caen en cada fase.
+    function fasesPorDias(totalDias){
+      const pre = Math.min(14, totalDias);
+      const ini = Math.min(14, Math.max(0, totalDias - pre));
+      const eng = Math.max(0, totalDias - pre - ini);
+      return {pre, ini, eng};
+    }
+
+    // Etiquetas "Días a–b" para cada fase (para mostrar sobre cada tarjeta)
+    function etiquetasDias(totalDias){
+      const pre = {a:1, b: Math.min(14, totalDias)};
+      const ini = pre.b < totalDias ? {a: pre.b+1, b: Math.min(pre.b+14, totalDias)} : {a:0,b:0};
+      const eng = ini.b < totalDias ? {a: ini.b+1, b: totalDias} : {a:0,b:0};
+      return {pre, ini, eng};
+    }
+
+    // --------- SEMANAS DEL CICLO Y FILAS DE MORTALIDAD ---------
+    function semanasDelCiclo(totalDias){
+      // número de semanas redondeado hacia arriba
+      return Math.ceil(totalDias/7);
+    }
+
+    // Devuelve los días que corresponden a una semana específica dentro del ciclo
+    // weekIdx: 0-based (0=semana1), retorna {a, b, dias}
+    function rangoDiasSemana(weekIdx, totalDias){
+      const a = weekIdx*7 + 1;
+      const b = Math.min(totalDias, (weekIdx+1)*7);
+      const dias = Math.max(0, b - a + 1);
+      return {a,b,dias};
+    }
+
+    // Construye / actualiza la tabla de mortalidad según nº de semanas del ciclo
+    function renderMortalityRows(){
+      const totalDias = Number(diasEl.value);
+      const nSem = semanasDelCiclo(totalDias);
+      const currentRows = mortalityRows.querySelectorAll('tr');
+      // Si ya existen con el mismo tamaño, solo asegura que el placeholder se mantenga
+      if(currentRows.length === nSem) {
+        return;
+      }
+      mortalityRows.innerHTML = '';
+      const avesDefault = Number(pollosEl.value || 0) || 0;
+      for(let i=0;i<nSem;i++){
+        const r = rangoDiasSemana(i,totalDias);
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="py-2 pr-3">Semana ${i+1}</td>
+          <td class="py-2 pr-3 text-gray-500">Días ${r.a}–${r.b} (${r.dias} d)</td>
+          <td class="py-2">
+            <input type="number" class="mort-input w-32 border rounded p-1" min="0" value="${avesDefault}" data-week="${i}">
+          </td>
+        `;
+        mortalityRows.appendChild(tr);
+      }
+    }
+
+    // Obtiene arreglo con aves por semana desde los inputs (longitud = nº de semanas)
+    function getAvesPorSemana(){
+      const inputs = mortalityRows.querySelectorAll('input.mort-input');
+      return Array.from(inputs).map(i=> Number(i.value||0));
+    }
+
+    // Rellena la tabla de mortalidad con la cantidad de pollos si:
+    // - todas las celdas están vacías/0, o
+    // - todas las celdas tienen el mismo número diferente a la cantidad de pollos (p.ej. 1)
+    // No pisa configuraciones mixtas que el usuario ya haya ajustado.
+    function fillMortalityWithPollos(){
+      const val = Number(pollosEl.value || 0);
+      if(!val) return;
+      const inputs = mortalityRows.querySelectorAll('input.mort-input');
+      if(!inputs.length) return;
+      const nums = Array.from(inputs).map(i=> Number(i.value || 0));
+      const allZeroOrEmpty = nums.every(n => !n || n === 0);
+      const allSame = nums.every(n => n === nums[0]);
+      const allSameButDifferent = allSame && nums[0] !== val;
+      if(allZeroOrEmpty || allSameButDifferent){
+        inputs.forEach(inp => inp.value = val);
+      }
+    }
+
+    // --------- DÍAS POR FASE DENTRO DE CADA SEMANA (PARA PONDERAR MORTALIDAD) ---------
+    // Calcula, para una semana dada, cuántos de sus días caen en cada fase.
+    function diasSemanaPorFase(weekIdx, totalDias){
+      const r = rangoDiasSemana(weekIdx,totalDias);
+      const F = etiquetasDias(totalDias);
+      function overlap(a1,b1,a2,b2){ return Math.max(0, Math.min(b1,b2) - Math.max(a1,a2) + 1); }
+      const preDias = F.pre.a>0 ? overlap(r.a,r.b, F.pre.a, F.pre.b) : 0;
+      const iniDias = F.ini.a>0 ? overlap(r.a,r.b, F.ini.a, F.ini.b) : 0;
+      const engDias = F.eng.a>0 ? overlap(r.a,r.b, F.eng.a, F.eng.b) : 0;
+      return {preDias, iniDias, engDias};
+    }
+
+    // --------- ACTUALIZACIONES DE UI AL MOVER DÍAS ---------
+    diasEl.addEventListener('input', ()=>{
+      const d = Number(diasEl.value);
+      diasValEl.textContent = `${d} d · ${Math.round(d/7)} sem`;
+      // Actualiza etiquetas de días por fase
+      const E = etiquetasDias(d);
+      preDiasTag.textContent = E.pre.a>0? `Días ${E.pre.a}–${E.pre.b}` : '—';
+      iniDiasTag.textContent = E.ini.a>0? `Días ${E.ini.a}–${E.ini.b}` : '—';
+      engDiasTag.textContent = E.eng.a>0? `Días ${E.eng.a}–${E.eng.b}` : '—';
+      faseHint.textContent = `Fases (por días): ${E.pre.a>0?`Preinicio ${E.pre.a}–${E.pre.b}`:'—'} → ${E.ini.a>0?`Inicio ${E.ini.a}–${E.ini.b}`:'—'} → ${E.eng.a>0?`Engorde ${E.eng.a}–${E.eng.b}`:'—'}.`;
+      // Re-render de la tabla de mortalidad (nº de semanas puede cambiar)
+      renderMortalityRows();
+      recalcIfVisible();
+    });
+
+    // --------- DISPARADOR DE CÁLCULO ---------
+    btnCalcular.addEventListener('click', calcular);
+
+    // Recalcular si el usuario ajusta mortalidad tras calcular
+    mortalityRows.addEventListener('input', ()=>{ recalcIfVisible(); });
+
+    // --------- CÁLCULO PRINCIPAL (con mortalidad y días) ---------
+    function calcular(){
+      const avesIniciales = Number(pollosEl.value || 0);
+      const totalDias = Number(diasEl.value || 56);
+      const raza = razaEl.value;
+      const bultoKg = Number(bultoEl.value || 40); // Tamaño de bulto seleccionado (40/50 kg)
+
+      if(!avesIniciales || avesIniciales < 1){
+        alert('Por favor ingresa la cantidad de pollos.');
+        return;
+      }
+
+      // 1) Consumo por ave para el nº total de días elegido (escala lineal desde 56d)
+      const consumoAve = consumoBase[raza] * (totalDias / 56);
+
+      // 2) Días por fase
+      const {pre:preDiasCnt, ini:iniDiasCnt, eng:engDiasCnt} = fasesPorDias(totalDias);
+
+      // 3) Distribución ponderada por fase (ponderadores 1:2:3 aplicados a días por fase)
+      const wPre = preDiasCnt * pesosFase.pre;
+      const wIni = iniDiasCnt * pesosFase.ini;
+      const wEng = engDiasCnt * pesosFase.eng;
+      const wSum = wPre + wIni + wEng || 1;
+
+      const frPre = wPre / wSum;
+      const frIni = wIni / wSum;
+      const frEng = wEng / wSum;
+
+      // 4) Consumo base total del lote (si no consideráramos mortalidad)
+      const consumoTotalBase = avesIniciales * consumoAve; // kg
+
+      // 5) Mortalidad (aves por semana) → ajusta consumo por fase
+      renderMortalityRows(); // asegúrate de que existan filas correctas
+      // Primer cálculo: si la tabla está vacía o con un mismo valor distinto a 'pollos',
+      // la rellenamos con la cantidad de pollos actual.
+      fillMortalityWithPollos();
+      const avesSemana = getAvesPorSemana();
+
+      // 5a) Cálculo de aves promedio por fase con ponderación por días solapados en cada semana
+      function avesPromedioFase(fase){
+        const E = etiquetasDias(totalDias); // rangos por fase
+        const R = { pre: E.pre, ini: E.ini, eng: E.eng };
+        if(R[fase].a === 0) return 0;
+        let avesDiasAcum = 0; // suma(aves_sem * días_en_fase_durante_semana)
+        let diasFase = (R[fase].b - R[fase].a + 1);
+        const nSem = semanasDelCiclo(totalDias);
+        for(let w=0; w<nSem; w++){
+          const overlap = diasSemanaPorFase(w,totalDias);
+          const diasSol = fase==='pre'? overlap.preDias : (fase==='ini'? overlap.iniDias : overlap.engDias);
+          if(diasSol>0){
+            avesDiasAcum += (avesSemana[w] ?? avesIniciales) * diasSol;
+          }
+        }
+        return avesDiasAcum / Math.max(1,diasFase);
+      }
+
+      const avesPromPre = avesPromedioFase('pre');
+      const avesPromIni = avesPromedioFase('ini');
+      const avesPromEng = avesPromedioFase('eng');
+
+      // 5b) Consumo por fase antes de precio/bultos (aplica fracciones y corrige por aves promedio frente a iniciales)
+      const consPre = consumoTotalBase * frPre * (avesPromPre/avesIniciales || 0);
+      const consIni = consumoTotalBase * frIni * (avesPromIni/avesIniciales || 0);
+      const consEng = consumoTotalBase * frEng * (avesPromEng/avesIniciales || 0);
+
+      // 6) Conversión a bultos por fase (ceil para cubrir demanda)
+      const bagsPre = Math.ceil(consPre / bultoKg);
+      const bagsIni = Math.ceil(consIni / bultoKg);
+      const bagsEng = Math.ceil(consEng / bultoKg);
+
+      // 7) Subtotales por fase según precio por bulto
+      const pPreBulto = Number(precioPreNum.value || 0);
+      const pIniBulto = Number(precioIniNum.value || 0);
+      const pEngBulto = Number(precioEngNum.value || 0);
+
+      const subPre = bagsPre * pPreBulto;
+      const subIni = bagsIni * pIniBulto;
+      const subEng = bagsEng * pEngBulto;
+
+      // 8) Totales
+      const kgTot = Math.round(consPre + consIni + consEng);
+      const bagsTot = bagsPre + bagsIni + bagsEng;
+      const invTot = subPre + subIni + subEng;
+
+      // --------- PINTAR RESULTADOS EN UI ---------
+      // Por fase (kg, bultos, subtotal)
+      kgPreEl.textContent   = Math.round(consPre).toLocaleString('es-CO');
+      kgIniEl.textContent   = Math.round(consIni).toLocaleString('es-CO');
+      kgEngEl.textContent   = Math.round(consEng).toLocaleString('es-CO');
+
+      bagsPreEl.textContent = bagsPre.toLocaleString('es-CO');
+      bagsIniEl.textContent = bagsIni.toLocaleString('es-CO');
+      bagsEngEl.textContent = bagsEng.toLocaleString('es-CO');
+
+      subtotalPreEl.textContent = fmtCOP(subPre);
+      subtotalIniEl.textContent = fmtCOP(subIni);
+      subtotalEngEl.textContent = fmtCOP(subEng);
+
+      // Totales
+      kgTotalEl.textContent      = kgTot.toLocaleString('es-CO');
+      bagsTotalEl.textContent    = bagsTot.toLocaleString('es-CO');
+      inversionTotalEl.textContent = fmtCOP(invTot);
+
+      // Mostrar bloques de resultados y suscripción
+      infografia.classList.remove('hidden');
+      suscripcion.classList.remove('hidden');
+
+      // Habilitar compartir + generar link
+      btnCompartir.classList.remove('hidden');
+      shareWrap.classList.remove('hidden');
+      shareLink.value = buildShareURL();
+    }
+
+    // Recalcular en vivo si el usuario modifica sliders/inputs de precio o días/mortalidad luego de haber calculado
+    function recalcIfVisible(){
+      if(!infografia.classList.contains('hidden')) calcular();
+    }
+
+    // --------- SHAREABLE LINK (URL con parámetros) ---------
+    function buildShareURL(){
+      const base = location.origin + location.pathname;
+      const params = new URLSearchParams();
+      params.set('pollos', pollosEl.value||'');
+      params.set('dias', diasEl.value||'');
+      params.set('raza', razaEl.value||'');
+      params.set('bulto', bultoEl.value||'');
+      params.set('preB', precioPreNum.value||'');
+      params.set('iniB', precioIniNum.value||'');
+      params.set('engB', precioEngNum.value||'');
+      // mortalidad: arreglo separado por comas
+      const mort = getAvesPorSemana();
+      if(mort.length){ params.set('mort', mort.join(',')); }
+      return `${base}?${params.toString()}`;
+    }
+
+    // Copiar al portapapeles el enlace
+    btnCopy.addEventListener('click', async ()=>{
+      try{
+        await navigator.clipboard.writeText(shareLink.value);
+        btnCopy.textContent = '¡Copiado!';
+        setTimeout(()=> btnCopy.textContent = 'Copiar', 1400);
+      }catch(e){
+        alert('No se pudo copiar. Selecciona y copia manualmente.');
+      }
+    });
+
+    // Botón "Copiar enlace" regenera por si cambiaste algo
+    btnCompartir.addEventListener('click', ()=>{
+      shareLink.value = buildShareURL();
+      shareWrap.scrollIntoView({behavior:'smooth', block:'center'});
+    });
+
+    // --------- CARGA DESDE URL (restaura variables) ---------
+    function restoreFromURL(){
+      const q = new URLSearchParams(location.search);
+      const val = (k, def='')=> q.get(k) ?? def;
+      if(q.has('pollos')) pollosEl.value = val('pollos');
+      if(q.has('dias')) diasEl.value = val('dias');
+      if(q.has('raza')) razaEl.value = val('raza');
+      if(q.has('bulto')) bultoEl.value = val('bulto');
+      if(q.has('preB')){ precioPre.value = precioPreNum.value = val('preB'); }
+      if(q.has('iniB')){ precioIni.value = precioIniNum.value = val('iniB'); }
+      if(q.has('engB')){ precioEng.value = precioEngNum.value = val('engB'); }
+
+      // Mortalidad desde query: mort=100,100,98,97,...
+      const totalDias = Number(diasEl.value);
+      renderMortalityRows();
+      if(q.has('mort')){
+        const arr = val('mort').split(',').map(n=> Number(n||0));
+        const inputs = mortalityRows.querySelectorAll('input.mort-input');
+        inputs.forEach((inp,idx)=>{ if(arr[idx]!=null) inp.value = arr[idx]; });
+      }
+
+      // Refresca labels de días y muestra resultado si hay datos suficientes
+      const d = Number(diasEl.value);
+      diasValEl.textContent = `${d} d · ${Math.round(d/7)} sem`;
+      const E = etiquetasDias(d);
+      preDiasTag.textContent = E.pre.a>0? `Días ${E.pre.a}–${E.pre.b}` : '—';
+      iniDiasTag.textContent = E.ini.a>0? `Días ${E.ini.a}–${E.ini.b}` : '—';
+      engDiasTag.textContent = E.eng.a>0? `Días ${E.eng.a}–${E.eng.b}` : '—';
+      faseHint.textContent = `Fases (por días): ${E.pre.a>0?`Preinicio ${E.pre.a}–${E.pre.b}`:'—'} → ${E.ini.a>0?`Inicio ${E.ini.a}–${E.ini.b}`:'—'} → ${E.eng.a>0?`Engorde ${E.eng.a}–${E.eng.b}`:'—'}.`;
+
+      // Si hay pollos y días definidos, ejecuta cálculo al cargar (para restaurar vista)
+      if(pollosEl.value && diasEl.value){ calcular(); }
+    }
+
+    // --------- ACTUALIZAR MORTALIDAD AL CAMBIAR Nº DE POLLOS ---------
+    // Cuando el usuario escribe la cantidad de pollos, rellenamos la tabla de mortalidad:
+    // - Si la tabla está vacía (0) o tiene un mismo valor distinto al de "pollos" (p. ej., 1),
+    //   la rellenamos completa con el nuevo valor.
+    // - Si ya hay mezcla de valores, solo completamos celdas en 0 para no pisar ediciones.
+    pollosEl.addEventListener('input', ()=>{
+      renderMortalityRows();
+      const val = Number(pollosEl.value || 0);
+      const inputs = mortalityRows.querySelectorAll('input.mort-input');
+      const nums = Array.from(inputs).map(i=> Number(i.value || 0));
+      const allZeroOrEmpty = nums.every(n => !n || n === 0);
+      const allSame = nums.every(n => n === nums[0]);
+      const allSameButDifferent = allSame && nums[0] !== val;
+      if(allZeroOrEmpty || allSameButDifferent){
+        inputs.forEach(inp => inp.value = val);
+      } else {
+        inputs.forEach(inp => { if(Number(inp.value||0) === 0) inp.value = val; });
+      }
+      recalcIfVisible();
+    });
+
+    // --------- INIT ---------
+    renderMortalityRows();
+    restoreFromURL();
+
+    // --------- TESTS RÁPIDOS EN CONSOLA (no interfieren con UI) ---------
+    (function runQuickTests(){
+      try{
+        console.assert(JSON.stringify(fasesPorDias(56)) === JSON.stringify({pre:14,ini:14,eng:28}), 'fasesPorDias(56)');
+        console.assert(semanasDelCiclo(56) === 8, 'semanasDelCiclo(56)');
+        const e = etiquetasDias(28); // 28 días -> pre 1-14, ini 15-28, eng 0
+        console.assert(e.pre.a===1 && e.pre.b===14 && e.ini.a===15 && e.ini.b===28 && e.eng.a===0, 'etiquetasDias(28)');
+      }catch(err){ console.warn('Self-tests failed:', err); }
+    })();
+  </script>
+</body>
+</html>
