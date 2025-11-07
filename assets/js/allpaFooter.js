@@ -8,7 +8,7 @@
   // ---- CONFIG DEFAULTS ------------------------------------------------------
   const DEFAULTS = {
     lang: 'auto',               // 'auto' | 'es' | 'en'
-    tiktokUser: 'El pollo Ingeniero', // tu @ sin @ (solo el uniqueId)
+    tiktokUser: 'stiven9708', // tu @ sin @ (solo el uniqueId)
     tiktokWeb:  'https://www.tiktok.com/@stiven9708',
     nequiNumber: '3152112644',
     nequiName:   'ALLPA Agricultura 4.0',
