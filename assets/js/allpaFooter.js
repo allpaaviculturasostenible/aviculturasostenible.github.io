@@ -15,7 +15,7 @@
     primaryColor: '#2c6e2f',    // verde Allpa
     secondaryColor: '#e6f3e6',  // verde claro
     delayMs: 2000,              // espera antes de mostrar barra
-    ttlHours: 24,               // no mostrar de nuevo tras cerrar
+    ttlHours: 0,               // no mostrar de nuevo tras cerrar
     autoShow: true,             // mostrar automáticamente
     zIndex: 60_000,             // sobre todo
     i18n: {
