@@ -51,3 +51,5 @@ function initAllpaUI(){
 document.addEventListener('DOMContentLoaded', initAllpaUI);
 // Inicialización correcta tras inyectar partials
 document.addEventListener('allpa:partials-ready', initAllpaUI);
+
+
