@@ -1,0 +1,290 @@
+<!doctype html>
+
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Allpa · Dimensionador de comederos (manuales)</title>
+  <!-- Tailwind por CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <meta name="description" content="Calcula cuántos comederos manuales necesitas (25 aves/comedor) según la cantidad de pollos y la edad. Recomendaciones simples para empezar bien." />
+</head>
+<body class="bg-neutral-50 text-neutral-900">
+  <!-- Header solo en verdes -->
+  <div class="w-full text-white bg-gradient-to-r from-emerald-800 via-emerald-700 to-emerald-500">
+    <header class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+      <h1 class="text-xl sm:text-2xl font-bold tracking-tight">Allpa · Comederos manuales</h1>
+      <button id="btnShare" class="rounded-xl bg-white/10 hover:bg-white/20 px-3 py-1.5 text-sm">Compartir</button>
+    </header>
+  </div>  <main class="max-w-5xl mx-auto px-4 py-6 grid gap-6" style="padding-bottom:80px">
+    <!-- Datos del lote -->
+    <section class="rounded-2xl border bg-white p-4 md:p-6 grid gap-4">
+      <div class="flex items-center justify-between flex-wrap gap-3">
+        <h2 class="text-lg font-semibold">Datos del lote</h2>
+        <div id="savedWrap" class="hidden flex items-center gap-2">
+          <label class="text-sm" for="savedSelect">Cargar registro:</label>
+          <select id="savedSelect" class="rounded-xl border px-3 py-2 text-sm"></select>
+        </div>
+      </div><div class="grid sm:grid-cols-4 gap-4 items-center">
+    <div class="sm:col-span-1">
+      <label class="text-sm font-medium">Cantidad de aves</label>
+      <input id="count" type="number" min="1" value="100" class="mt-1 w-full rounded-xl border px-3 py-2" />
+    </div>
+    <div class="sm:col-span-2">
+      <label class="text-sm font-medium flex items-center justify-between">
+        <span>Edad (días)</span>
+        <span class="text-xs text-neutral-600">Día seleccionado: <b id="ageLabel">1</b>/56</span>
+      </label>
+      <input id="age" type="range" min="1" max="56" value="1" class="mt-2 w-full" />
+    </div>
+    <div class="sm:col-span-1">
+      <label class="text-sm font-medium">Aves por comedero</label>
+      <input id="birdsPerFeederTarget" type="number" value="25" min="10" max="40" class="mt-1 w-full rounded-xl border px-3 py-2 bg-neutral-100" readonly />
+      <p class="text-[11px] text-neutral-500 mt-1">Valor comercial estándar para comederos manuales.</p>
+    </div>
+  </div>
+  <p class="text-sm text-neutral-600">Objetivo: diseño simple para comenzar sin frustrarse. Luego podrás profundizar en versiones avanzadas.</p>
+</section>
+
+<!-- Resultados -->
+<section class="rounded-2xl border bg-white p-4 md:p-6 grid gap-6">
+  <h2 class="text-lg font-semibold">Resultados</h2>
+  <div class="grid md:grid-cols-3 gap-4">
+    <div class="rounded-xl border p-4 bg-neutral-50">
+      <p class="text-xs uppercase tracking-wide text-neutral-600">Comederos requeridos</p>
+      <p id="statFeeders" class="text-2xl font-semibold">0</p>
+    </div>
+    <div class="rounded-xl border p-4 bg-neutral-50">
+      <p class="text-xs uppercase tracking-wide text-neutral-600">Aves por comedero (reales)</p>
+      <p id="statBirdsPerFeeder" class="text-2xl font-semibold">0</p>
+    </div>
+    <div class="rounded-xl border p-4 bg-neutral-50">
+      <p class="text-xs uppercase tracking-wide text-neutral-600">Estado</p>
+      <p id="statStatus" class="text-base font-semibold">–</p>
+    </div>
+  </div>
+
+  <div class="rounded-xl border p-4 grid gap-2">
+    <p class="font-medium">Parámetros de instalación (sugeridos)</p>
+    <ul id="adviceList" class="text-sm list-disc ml-5 text-neutral-700 space-y-1"></ul>
+  </div>
+
+  <div id="alertBox" class="hidden rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm"></div>
+
+  <div class="grid md:grid-cols-2 gap-4 items-start">
+    <div>
+      <label class="text-sm font-medium">Observaciones de hoy</label>
+      <textarea id="note" rows="4" class="mt-1 w-full rounded-xl border px-3 py-2" placeholder="Ej.: añadir 1 comedero en zona sur, aves se aglomeran."></textarea>
+    </div>
+    <div class="rounded-xl border p-4 grid gap-3">
+      <button id="btnSave" class="w-full rounded-xl bg-emerald-600 text-white py-2 font-medium hover:bg-emerald-700 transition">💾 Guardar registro de hoy</button>
+      <p class="text-xs text-neutral-600">Último guardado: <span id="lastSave">—</span></p>
+      <div id="yesterdayWrap" class="hidden text-sm bg-neutral-50 rounded-lg border p-3">
+        <p class="font-medium mb-1">Ayer (<span id="yesterdayDate"></span>)</p>
+        <ul class="text-xs list-disc ml-4 space-y-1">
+          <li>Aves: <span id="yCount"></span></li>
+          <li>Edad: <span id="yAge"></span> días</li>
+          <li>Comederos: <span id="yFeeders"></span></li>
+          <li>Aves/comedor: <span id="yBirdsPerFeeder"></span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Buenas prácticas (colapsable) -->
+<section class="rounded-2xl border bg-white p-4 md:p-6">
+  <details>
+    <summary class="cursor-pointer select-none text-lg font-semibold">Buenas prácticas rápidas</summary>
+    <ul class="mt-3 text-sm space-y-2 list-disc ml-5 text-neutral-700">
+      <li>Ajusta la altura: borde del comedero al nivel del <b>dorso</b> del ave (más bajo en la primera semana).</li>
+      <li>No sobrellenes: 1/3–1/2 del comedero. Rellena en horas frescas.</li>
+      <li>Distribuye de forma <b>uniforme</b>; evita acumulaciones en esquinas.</li>
+      <li>Limpieza diaria de restos húmedos o apelmazados.</li>
+      <li>Si ves competencia o aves desplazadas, <b>añade 1 comedero</b> o redistribuye.</li>
+    </ul>
+  </details>
+</section>
+
+<!-- CTA sencillo -->
+<section class="rounded-2xl border bg-white p-4 md:p-6 text-center">
+  <h3 class="text-lg font-semibold mb-2">¿Te ayudó este dimensionador?</h3>
+  <p class="text-sm text-neutral-700 mb-4">Súmate para aprender más: tips diarios y masterclass para emprender en avicultura.</p>
+  <div class="flex items-center justify-center gap-2 flex-wrap">
+    <a href="#" class="rounded-xl px-4 py-2 bg-black text-white text-sm font-medium">Síguenos en TikTok</a>
+    <a href="#" class="rounded-xl px-4 py-2 border text-sm font-medium">Suscríbete al boletín</a>
+  </div>
+</section>
+
+  </main>  <!-- JS puro -->  <script>
+  (function(){
+    // ====== Utilidades ======
+    const $ = (sel)=>document.querySelector(sel);
+    const nowIso = ()=>new Date().toISOString();
+    const todayKey = ()=>new Date().toISOString().slice(0,10);
+
+    // ====== Elementos ======
+    const countEl = $('#count');
+    const ageEl = $('#age');
+    const ageLabel = $('#ageLabel');
+    const noteEl = $('#note');
+
+    const statFeeders = $('#statFeeders');
+    const statBirdsPerFeeder = $('#statBirdsPerFeeder');
+    const statStatus = $('#statStatus');
+    const adviceList = $('#adviceList');
+    const alertBox = $('#alertBox');
+
+    const savedWrap = $('#savedWrap');
+    const savedSelect = $('#savedSelect');
+    const lastSave = $('#lastSave');
+    const yWrap = $('#yesterdayWrap');
+    const yDate = $('#yesterdayDate');
+    const yCount = $('#yCount');
+    const yAge = $('#yAge');
+    const yFeeders = $('#yFeeders');
+    const yBirdsPerFeeder = $('#yBirdsPerFeeder');
+
+    const btnSave = $('#btnSave');
+    const btnShare = $('#btnShare');
+
+    // ====== Store ======
+    const LS_KEY = 'allpa_comederos_manual_v1';
+    function loadStore(){ try{return JSON.parse(localStorage.getItem(LS_KEY))||{records:{},lastSave:null}}catch{return {records:{},lastSave:null}} }
+    function saveStore(data){ localStorage.setItem(LS_KEY, JSON.stringify(data)); }
+
+    // ====== Reglas simples ======
+    const TARGET_BIRDS_PER_FEEDER = 25; // valor comercial estándar
+    function feedersNeeded(count){ return Math.max(1, Math.ceil(count / TARGET_BIRDS_PER_FEEDER)); }
+    function birdsPerFeederReal(count, feeders){ return Math.ceil(count / Math.max(1, feeders)); }
+
+    function heightAdvice(age){
+      if(age<=7) return 'Altura baja (3–5 cm). Colocar sobre papel o cama.';
+      if(age<=21) return 'Altura media (7–10 cm). Borde a mitad del dorso.';
+      if(age<=35) return 'Altura alta (11–14 cm). Borde al dorso.';
+      return 'Altura alta (15–18 cm). Reajustar cada 2–3 días.';
+    }
+    function spacingAdvice(){ return 'Separación entre comederos: 1.5–2.0 m, distribución uniforme.'; }
+
+    // ====== Cálculo principal ======
+    function recalc(){
+      const count = parseInt(countEl.value||'0');
+      const age = parseInt(ageEl.value||'1');
+
+      const feeders = feedersNeeded(count);
+      const bpf = birdsPerFeederReal(count, feeders);
+
+      statFeeders.textContent = feeders;
+      statBirdsPerFeeder.textContent = bpf;
+      statStatus.textContent = (bpf<=25? 'OK' : (bpf<=30? 'Ajustable' : 'Añadir comedero'));
+
+      // consejos
+      adviceList.innerHTML = '';
+      const items = [heightAdvice(age), spacingAdvice(), 'No sobrellenar (1/3–1/2) y reponer en horas frescas.', 'Limpieza diaria de restos húmedos.'];
+      items.forEach(t=>{ const li=document.createElement('li'); li.textContent=t; adviceList.appendChild(li); });
+
+      // alerta si sobrepasa
+      if(bpf>30){
+        alertBox.classList.remove('hidden');
+        alertBox.textContent = 'Recomendación: añade al menos 1 comedero para bajar de 30 aves por comedero.';
+      } else {
+        alertBox.classList.add('hidden');
+        alertBox.textContent = '';
+      }
+    }
+
+    function refreshSavedList(store){
+      const keys = Object.keys(store.records).sort().reverse();
+      if(keys.length===0){ savedWrap.classList.add('hidden'); return; }
+      savedWrap.classList.remove('hidden');
+      savedSelect.innerHTML = '<option value="">Selecciona…</option>' + keys.map(k=>{
+        const r = store.records[k];
+        return `<option value="${k}">${r.date} · Edad ${r.age}d · ${r.count} aves · ${r.feeders} comederos</option>`;
+      }).join('');
+    }
+
+    function loadYesterday(store){
+      const d = new Date(); d.setDate(d.getDate()-1); const yKey = d.toISOString().slice(0,10);
+      const r = store.records[yKey];
+      if(!r){ yWrap.classList.add('hidden'); return; }
+      yWrap.classList.remove('hidden');
+      yDate.textContent = r.date; yCount.textContent = r.count; yAge.textContent = r.age; yFeeders.textContent = r.feeders; yBirdsPerFeeder.textContent = r.birdsPerFeeder;
+    }
+
+    function saveToday(){
+      const key = todayKey();
+      const store = loadStore();
+      const count = parseInt(countEl.value||'0');
+      const age = parseInt(ageEl.value||'1');
+      const feeders = feedersNeeded(count);
+      const bpf = birdsPerFeederReal(count, feeders);
+
+      const record = {
+        date: key,
+        savedAt: nowIso(),
+        count, age,
+        feeders, birdsPerFeeder: bpf,
+        notes: noteEl.value,
+      };
+      store.records[key] = record;
+      store.lastSave = key;
+      saveStore(store);
+      lastSave.textContent = key;
+      refreshSavedList(store);
+      loadYesterday(store);
+      alert('✅ Registro guardado.');
+    }
+
+    function loadSaved(key){
+      const store = loadStore(); const rec = store.records[key]; if(!rec) return;
+      savedSelect.value = key;
+      countEl.value = rec.count; ageEl.value = rec.age; ageLabel.textContent = rec.age; noteEl.value = rec.notes||'';
+      recalc();
+    }
+
+    function initFromURL(){
+      const p = new URLSearchParams(location.search);
+      const c = p.get('count'); const a = p.get('age'); const n = p.get('note');
+      if(c && !isNaN(parseInt(c))) countEl.value = parseInt(c);
+      if(a && !isNaN(parseInt(a))) { ageEl.value = Math.max(1,Math.min(56,parseInt(a))); ageLabel.textContent = ageEl.value; }
+      if(n) noteEl.value = n;
+    }
+
+    function buildShareUrl(){
+      const base = location.origin + location.pathname;
+      const p = new URLSearchParams();
+      p.set('count', String(parseInt(countEl.value||'0')));
+      p.set('age', String(parseInt(ageEl.value||'1')));
+      if(noteEl.value) p.set('note', noteEl.value);
+      return `${base}?${p.toString()}`;
+    }
+
+    async function share(){
+      const url = buildShareUrl();
+      try{
+        if(navigator.share){ await navigator.share({title:'Allpa · Comederos manuales', text:'Configuración de comederos (25 aves/comedor)', url}); }
+        else { await navigator.clipboard.writeText(url); alert('🔗 Enlace copiado al portapapeles'); }
+      }catch(e){ /* cancel */ }
+    }
+
+    // Eventos
+    ['input','change'].forEach(evt=>{
+      ageEl.addEventListener(evt,()=>{ ageLabel.textContent = ageEl.value; recalc(); });
+      countEl.addEventListener(evt,recalc);
+    });
+    btnSave.addEventListener('click', saveToday);
+    btnShare.addEventListener('click', share);
+    savedSelect.addEventListener('change', ()=>{ if(savedSelect.value) loadSaved(savedSelect.value); });
+
+    // Arranque
+    (function start(){
+      const store = loadStore();
+      lastSave.textContent = store.lastSave || '—';
+      refreshSavedList(store);
+      loadYesterday(store);
+      initFromURL();
+      recalc();
+    })();
+  })();
+  </script></body>
+</html>
