@@ -8,14 +8,14 @@
   // ---- CONFIG DEFAULTS ------------------------------------------------------
   const DEFAULTS = {
     lang: 'auto',               // 'auto' | 'es' | 'en'
-    tiktokUser: 'El pollo Ingeniero', // tu @ sin @ (solo el uniqueId)
+    tiktokUser: 'stiven9708', // tu @ sin @ (solo el uniqueId)
     tiktokWeb:  'https://www.tiktok.com/@stiven9708',
     nequiNumber: '3152112644',
     nequiName:   'ALLPA Agricultura 4.0',
     primaryColor: '#2c6e2f',    // verde Allpa
     secondaryColor: '#e6f3e6',  // verde claro
     delayMs: 2000,              // espera antes de mostrar barra
-    ttlHours: 24,               // no mostrar de nuevo tras cerrar
+    ttlHours: 0,               // no mostrar de nuevo tras cerrar
     autoShow: true,             // mostrar automáticamente
     zIndex: 60_000,             // sobre todo
     i18n: {
