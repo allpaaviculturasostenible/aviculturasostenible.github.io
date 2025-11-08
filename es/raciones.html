@@ -1,500 +1,360 @@
-<!doctype html>
-<html lang="es">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Allpa · Calculadora diaria de raciones</title>
-  <!-- Tailwind por CDN (modo Play, suficiente para una página estática) -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- React 18 por CDN -->
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-  <!-- Babel Standalone para transpilar JSX/TS en el navegador -->
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-</head>
-<body class="bg-neutral-50">
-  <div id="root"></div>
+import React, { useEffect, useMemo, useState } from "react";
 
-  <!-- Tu app (JSX + TypeScript) -->
-  <script type="text/babel" data-presets="react,typescript">
-    const { useEffect, useMemo, useState } = React;
+/**
+ * Allpa – Calculadora diaria de raciones para pollos (v4 – ligera)
+ * Cambios:
+ * - Quita racha, peso esperado, tipo de alimento, consejo del día y progreso del ciclo.
+ * - Buenas prácticas en bloque colapsable <details>.
+ * - Quita footer sticky (se reemplazará por el JS anterior del sitio).
+ * - Añade "Número de comederos" para dividir raciones y mostrar kg por comedero y aves/comedero.
+ * - Curvas de consumo por raza usando vectores oficiales Cobb 500 y Ross 308.
+ */
 
-    /**
-     * Allpa – Calculadora diaria de raciones para pollos (v3)
-     * Cambios de esta versión:
-     * - Header: degradado SOLO en tonos verdes (sin ámbar).
-     * - Botón "Compartir" que genera URL con datos precargados (breed, count, age, note opcional) y usa Web Share API o copia al portapapeles.
-     * - Al cargar: si hay parámetros en la URL, se precargan automáticamente.
-     * - Lista desplegable de registros guardados (si existen) para cargar datos históricos al formulario.
-     * - Mantiene trazabilidad de visitas/guardados.
-     * - 6 raciones solo hasta día 5; desde día 6, 2 raciones.
-     * - Slider de días 1–56.
-     */
+// --- Utilidades ---
+const nowIso = () => new Date().toISOString();
+const todayKey = () => new Date().toISOString().slice(0,10);
+function formatG(v: number) { return `${Math.round(v)} g`; }
+function formatKg(v: number) { return `${(v/1000).toFixed(2)} kg`; }
 
-    // --- Utilidades ---
-    function lerp(a, b, t) { return a + (b - a) * t; }
-    function piecewiseLinear(age, points) {
-      if (age <= points[0][0]) return points[0][1];
-      if (age >= points[points.length - 1][0]) return points[points.length - 1][1];
-      for (let i = 0; i < points.length - 1; i++) {
-        const [aX, aY] = points[i];
-        const [bX, bY] = points[i + 1];
-        if (age >= aX && age <= bX) {
-          const t = (age - aX) / (bX - aX);
-          return lerp(aY, bY, t);
-        }
-      }
-      return points[points.length - 1][1];
+// ==== Curvas oficiales (g/ave/día) ====
+const rossDaily: number[] = [
+  12, 16, 20, 24, 27, 31, 35, 39, 44, 48, 52, 57, 62, 67, 72, 77, 83, 88,
+  94, 100, 105, 111, 117, 122, 128, 134, 139, 145, 150, 156, 161, 166,
+  171, 176, 180, 185, 189, 193, 197, 201, 204, 207, 211, 213, 216, 219,
+  221, 223, 225, 227, 229, 230, 231, 233, 233, 234,
+];
+const cobbDaily: number[] = [
+  14, 18, 22, 25, 29, 33, 37, 40, 44, 50, 57, 64, 73, 80, 84, 91, 98, 105,
+  111, 118, 125, 131, 137, 143, 149, 154, 160, 165, 169, 174, 178, 183,
+  187, 191, 194, 198, 202, 206, 209, 213, 217, 220, 224, 228, 232, 236,
+  239, 243, 247, 250, 253, 256, 258, 260, 261, 262,
+];
+
+function getDailyIntake(breed: string, day: number): number {
+  const idx = Math.max(1, Math.min(56, day)) - 1; // 0-based
+  if (breed === "ross308") return rossDaily[idx];
+  if (breed === "cobb500") return cobbDaily[idx];
+  // promedio simple si es Hubbard u otra línea
+  return Math.round(((rossDaily[idx] ?? 0) + (cobbDaily[idx] ?? 0)) / 2);
+}
+
+// Razas
+const BREEDS = [
+  { value: "cobb500", label: "Cobb 500" },
+  { value: "ross308", label: "Ross 308" },
+  { value: "hubbard", label: "Hubbard" },
+  { value: "otra", label: "Otra / mi línea" },
+];
+
+// Horarios
+ type Schedule = { mode: "adlib" | "six" | "two"; summary: string; details: string[] };
+function scheduleForAge(age: number): Schedule {
+  if (age <= 2) return { mode: "adlib", summary: "Días 1–2: alimentación a voluntad (24/7)", details: ["Comederos siempre llenos y accesibles."] };
+  if (age <= 5) return { mode: "six", summary: "Días 3–5: 6 raciones pequeñas para estimular consumo", details: ["6:00","9:00","12:00","15:00","17:00","19:00"] };
+  return { mode: "two", summary: "Desde día 6: 2 raciones (mañana y tarde)", details: ["6:00 (Ración 1)","17:00 (Ración 2)"] };
+}
+
+// Persistencia
+const LS_KEY = "allpa_calc_raciones_v4";
+
+type SavedRecord = {
+  date: string;
+  savedAt: string;
+  breed: string;
+  count: number;
+  feeders: number;
+  age: number;
+  intakePerBirdG: number;
+  totalIntakeKg: number;
+  schedule: Schedule;
+  note?: string;
+};
+
+type Store = {
+  records: Record<string, SavedRecord>;
+  lastSave: string | null;
+};
+
+export default function Page() {
+  const [breed, setBreed] = useState("cobb500");
+  const [count, setCount] = useState<number>(100);
+  const [feeders, setFeeders] = useState<number>(8);
+  const [age, setAge] = useState<number>(1);
+  const [note, setNote] = useState("");
+  const [lastSave, setLastSave] = useState<string | null>(null);
+  const [yesterdayRecord, setYesterdayRecord] = useState<SavedRecord | null>(null);
+  const [savedList, setSavedList] = useState<Array<SavedRecord>>([]);
+  const [selectedKey, setSelectedKey] = useState<string>("");
+
+  // Derivados
+  const schedule = useMemo(() => scheduleForAge(age), [age]);
+  const intakePerBirdG = useMemo(() => getDailyIntake(breed, age), [breed, age]);
+  const totalIntakeKg = useMemo(() => (intakePerBirdG * count) / 1000, [intakePerBirdG, count]);
+  const birdsPerFeeder = useMemo(() => (feeders > 0 ? Math.ceil(count / feeders) : 0), [count, feeders]);
+
+  // Raciones por horario (con división por comederos)
+  const rations = useMemo(() => {
+    if (schedule.mode === "adlib") return [] as Array<{ label: string, perBirdG: string, totalKg: string, perFeederKg?: string }>;
+    if (schedule.mode === "six") {
+      const per = intakePerBirdG / 6; // g/ave por ración
+      return schedule.details.map((d) => {
+        const totalG = per * count;
+        const perFeederKg = feeders > 0 ? (totalG / feeders) / 1000 : 0;
+        return { label: d, perBirdG: formatG(per), totalKg: formatKg(totalG), perFeederKg: formatKg(perFeederKg * 1000) };
+      });
     }
-    const nowIso = () => new Date().toISOString();
-    const todayKey = () => new Date().toISOString().slice(0,10);
+    const r1 = Math.round(intakePerBirdG * 0.6);
+    const r2 = intakePerBirdG - r1;
+    const rations = [r1, r2];
+    return rations.map((r, i) => {
+      const totalG = r * count;
+      const perFeederKg = feeders > 0 ? (totalG / feeders) / 1000 : 0;
+      return { label: schedule.details[i], perBirdG: formatG(r), totalKg: formatKg(totalG), perFeederKg: formatKg(perFeederKg * 1000) };
+    });
+  }, [schedule, intakePerBirdG, count, feeders]);
 
-    // --- Curvas base (aprox. orientativas) ---
-    const WEIGHT_CURVE_POINTS = [
-      [1, 42], [7, 180], [14, 450], [21, 900], [28, 1500], [35, 2200], [42, 2900], [56, 3600]
-    ];
-    const INTAKE_CURVE_POINTS = [
-      [1, 12], [2, 18], [5, 30], [7, 40], [14, 75], [21, 110], [28, 150], [35, 180], [42, 200], [56, 225]
-    ];
+  // Carga inicial: store + URL params + ayer + lista
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(LS_KEY);
+      const data: Store = raw ? JSON.parse(raw) : { records: {}, lastSave: null };
 
-    // Etapas por edad
-    function feedStage(age) {
-      if (age <= 7) return { code: "preiniciador", label: "Preiniciador (días 1–7)" };
-      if (age <= 21) return { code: "iniciador", label: "Iniciador (días 8–21)" };
-      if (age <= 35) return { code: "crecimiento", label: "Crecimiento (días 22–35)" };
-      return { code: "finalizador", label: "Finalizador (días 36–56)" };
+      setLastSave(data.lastSave || null);
+
+      // cargar AYER
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yKey = yesterday.toISOString().slice(0,10);
+      if (data.records && data.records[yKey]) setYesterdayRecord(data.records[yKey]);
+
+      // lista guardada
+      const list = Object.values(data.records).sort((a,b)=> a.date < b.date ? 1 : -1);
+      setSavedList(list);
+
+      // precargar por URL
+      const params = new URLSearchParams(window.location.search);
+      const qBreed = params.get("breed");
+      const qCount = params.get("count");
+      const qAge = params.get("age");
+      const qNote = params.get("note");
+      const qFeeders = params.get("feeders");
+      if (qBreed) setBreed(qBreed);
+      if (qCount && !isNaN(parseInt(qCount))) setCount(parseInt(qCount));
+      if (qAge && !isNaN(parseInt(qAge))) setAge(Math.max(1, Math.min(56, parseInt(qAge))));
+      if (qNote) setNote(qNote);
+      if (qFeeders && !isNaN(parseInt(qFeeders))) setFeeders(Math.max(1, parseInt(qFeeders)));
+    } catch { /* noop */ }
+  }, []);
+
+  function saveToday() {
+    const key = todayKey();
+    const record: SavedRecord = {
+      date: key,
+      savedAt: nowIso(),
+      breed, count, feeders, age,
+      intakePerBirdG, totalIntakeKg,
+      schedule, note,
+    };
+    try {
+      const raw = localStorage.getItem(LS_KEY);
+      const data: Store = raw ? JSON.parse(raw) : { records: {}, lastSave: null };
+
+      data.records[key] = record;
+      data.lastSave = key;
+      localStorage.setItem(LS_KEY, JSON.stringify(data));
+      setLastSave(key);
+
+      // refrescar AYER y lista
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yKey = yesterday.toISOString().slice(0,10);
+      setYesterdayRecord(data.records[yKey] || null);
+      setSavedList(Object.values(data.records).sort((a,b)=> a.date < b.date ? 1 : -1));
+
+      alert("✅ Registro guardado.");
+    } catch {
+      alert("No se pudo guardar el registro (modo privado del navegador o sin almacenamiento disponible).");
     }
+  }
 
-    // Consejos
-    const TIPS = [
-      "Mantén el agua entre 18–22 °C y limpia: el agua sucia baja el consumo.",
-      "Revisa la cama: humedad ideal 20–25%. Si huele a amoníaco, ventila.",
-      "Altura del comedero: a nivel del dorso del pollo para evitar desperdicio.",
-      "Evalúa temperatura del galpón por comportamiento, no solo por termómetro.",
-      "Pesa 10 aves al azar para validar el promedio de peso.",
-      "Registra mortalidad y causas para detectar patrones tempranos.",
-    ];
+  function loadSaved(key: string) {
+    try {
+      const raw = localStorage.getItem(LS_KEY);
+      if (!raw) return;
+      const data: Store = JSON.parse(raw);
+      const rec = data.records[key];
+      if (!rec) return;
+      setSelectedKey(key);
+      setBreed(rec.breed);
+      setCount(rec.count);
+      setFeeders(rec.feeders || 8);
+      setAge(rec.age);
+      setNote(rec.note || "");
+    } catch { /* noop */ }
+  }
 
-    // Razas
-    const BREEDS = [
-      { value: "cobb500", label: "Cobb 500" },
-      { value: "ross308", label: "Ross 308" },
-      { value: "hubbard", label: "Hubbard" },
-      { value: "otra", label: "Otra / mi línea" },
-    ];
-
-    // Horarios
-    // type Schedule = { mode: "adlib" | "six" | "two"; summary: string; details: string[] };
-    function scheduleForAge(age) {
-      if (age <= 2) {
-        return { mode: "adlib", summary: "Días 1–2: alimentación a voluntad (24/7)", details: ["Comederos siempre llenos y accesibles."] };
+  async function shareCurrent() {
+    const url = buildShareUrl({ breed, count, age, feeders, note });
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: "Allpa · Calculadora de raciones", text: "Consulta de raciones precargada", url });
+      } else {
+        await navigator.clipboard.writeText(url);
+        alert("🔗 Enlace copiado al portapapeles");
       }
-      if (age <= 5) {
-        return { mode: "six", summary: "Días 3–5: 6 raciones pequeñas para estimular consumo", details: ["6:00","9:00","12:00","15:00","17:00","19:00"] };
-      }
-      return { mode: "two", summary: "Desde día 6: 2 raciones (mañana y tarde)", details: ["6:00 (Ración 1)","17:00 (Ración 2)"] };
-    }
+    } catch { /* cancel */ }
+  }
 
-    // Persistencia
-    const LS_KEY = "allpa_calc_raciones_v3"; // nueva versión para compatibilidad
+  return (
+    <div className="min-h-screen bg-neutral-50 text-neutral-900">
+      {/* Header en tonos verdes */}
+      <div className="w-full bg-gradient-to-r from-emerald-800 via-emerald-700 to-emerald-500 text-white">
+        <header className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight">Allpa · Calculadora diaria de raciones</h1>
+          <button onClick={shareCurrent} className="rounded-xl bg-white/10 hover:bg-white/20 px-3 py-1.5 text-sm">Compartir</button>
+        </header>
+      </div>
 
-    // type SavedRecord = {
-    //   date: string;
-    //   savedAt: string;
-    //   breed: string;
-    //   count: number;
-    //   age: number;
-    //   intakePerBirdG: number;
-    //   expectedWeightG: number;
-    //   totalIntakeKg: number;
-    //   stage: any;
-    //   schedule: any;
-    //   note?: string;
-    //   rations: Array<{ label: string; perBirdG: string; totalKg: string }>;
-    // };
-
-    // type Store = {
-    //   records: Record<string, SavedRecord>;
-    //   streak: number;
-    //   lastSave: string | null;
-    //   visits: Array<{ at: string; action: "visit" | "save" }>;
-    // };
-
-    function Page() {
-      const [breed, setBreed] = useState("cobb500");
-      const [count, setCount] = useState(100);
-      const [age, setAge] = useState(1);
-      const [note, setNote] = useState("");
-      const [streak, setStreak] = useState(0);
-      const [lastSave, setLastSave] = useState(null);
-      const [yesterdayRecord, setYesterdayRecord] = useState(null);
-      const [savedList, setSavedList] = useState([]);
-      const [selectedKey, setSelectedKey] = useState("");
-
-      // Tip del día
-      const tipOfDay = useMemo(() => {
-        const idx = Math.abs(hashCode(todayKey())) % TIPS.length;
-        return TIPS[idx];
-      }, []);
-
-      // Derivados
-      const schedule = useMemo(() => scheduleForAge(age), [age]);
-      const intakePerBirdG = useMemo(() => Math.round(piecewiseLinear(age, INTAKE_CURVE_POINTS)), [age]);
-      const expectedWeightG = useMemo(() => Math.round(piecewiseLinear(age, WEIGHT_CURVE_POINTS)), [age]);
-      const totalIntakeKg = useMemo(() => ((intakePerBirdG * count) / 1000), [intakePerBirdG, count]);
-      const stage = useMemo(() => feedStage(age), [age]);
-
-      // Raciones por horario
-      const rations = useMemo(() => {
-        if (schedule.mode === "adlib") return [];
-        if (schedule.mode === "six") {
-          const per = intakePerBirdG / 6;
-          return schedule.details.map((d) => ({ label: d, perBirdG: formatG(per), totalKg: formatKg(per * count) }));
-        }
-        const r1 = Math.round(intakePerBirdG * 0.6);
-        const r2 = intakePerBirdG - r1;
-        return [
-          { label: schedule.details[0], perBirdG: formatG(r1), totalKg: formatKg(r1 * count) },
-          { label: schedule.details[1], perBirdG: formatG(r2), totalKg: formatKg(r2 * count) },
-        ];
-      }, [schedule, intakePerBirdG, count]);
-
-      // Al cargar: leer store, registrar visita, precargar por URL y preparar lista de registros
-      useEffect(() => {
-        try {
-          const raw = localStorage.getItem(LS_KEY);
-          const data = raw ? JSON.parse(raw) : { records: {}, streak: 0, lastSave: null, visits: [] };
-
-          // registrar visita
-          data.visits = Array.isArray(data.visits) ? data.visits : [];
-          data.visits.push({ at: nowIso(), action: "visit" });
-
-          // streak + lastSave al state
-          setStreak(data.streak || 0);
-          setLastSave(data.lastSave || null);
-
-          // cargar AYER
-          const yesterday = new Date();
-          yesterday.setDate(yesterday.getDate() - 1);
-          const yKey = yesterday.toISOString().slice(0,10);
-          if (data.records && data.records[yKey]) setYesterdayRecord(data.records[yKey]);
-
-          // cargar lista guardada
-          const list = Object.values(data.records).sort((a,b)=> a.date < b.date ? 1 : -1);
-          setSavedList(list);
-
-          // precargar por URL
-          const params = new URLSearchParams(window.location.search);
-          const qBreed = params.get("breed");
-          const qCount = params.get("count");
-          const qAge = params.get("age");
-          const qNote = params.get("note");
-          if (qBreed) setBreed(qBreed);
-          if (qCount && !isNaN(parseInt(qCount))) setCount(parseInt(qCount));
-          if (qAge && !isNaN(parseInt(qAge))) setAge(Math.max(1, Math.min(56, parseInt(qAge))));
-          if (qNote) setNote(qNote);
-
-          // guardar trazabilidad
-          localStorage.setItem(LS_KEY, JSON.stringify(data));
-        } catch { /* noop */ }
-      }, []);
-
-      function saveToday() {
-        const key = todayKey();
-        const record = {
-          date: key,
-          savedAt: nowIso(),
-          breed, count, age,
-          intakePerBirdG, expectedWeightG, totalIntakeKg,
-          stage, schedule, note,
-          rations,
-        };
-        try {
-          const raw = localStorage.getItem(LS_KEY);
-          const data = raw ? JSON.parse(raw) : { records: {}, streak: 0, lastSave: null, visits: [] };
-
-          // streak
-          let newStreak = data.streak || 0;
-          const prev = data.lastSave;
-          if (prev === key) newStreak = data.streak || 1; else {
-            if (prev) {
-              const prevDate = new Date(prev);
-              const y = new Date(key); y.setDate(y.getDate() - 1);
-              if (prevDate.toISOString().slice(0,10) === y.toISOString().slice(0,10)) newStreak = (data.streak || 0) + 1; else newStreak = 1;
-            } else newStreak = 1;
-          }
-
-          data.records[key] = record;
-          data.streak = newStreak;
-          data.lastSave = key;
-
-          // trazabilidad de guardado
-          data.visits = Array.isArray(data.visits) ? data.visits : [];
-          data.visits.push({ at: nowIso(), action: "save" });
-
-          localStorage.setItem(LS_KEY, JSON.stringify(data));
-          setStreak(newStreak);
-          setLastSave(key);
-
-          // refrescar AYER y lista
-          const yesterday = new Date();
-          yesterday.setDate(yesterday.getDate() - 1);
-          const yKey = yesterday.toISOString().slice(0,10);
-          setYesterdayRecord(data.records[yKey] || null);
-          setSavedList(Object.values(data.records).sort((a,b)=> a.date < b.date ? 1 : -1));
-
-          alert("✅ Registro guardado. ¡Sigue tu racha diaria!");
-        } catch {
-          alert("No se pudo guardar el registro (modo privado del navegador o sin almacenamiento disponible).");
-        }
-      }
-
-      function loadSaved(key) {
-        try {
-          const raw = localStorage.getItem(LS_KEY);
-          if (!raw) return;
-          const data = JSON.parse(raw);
-          const rec = data.records[key];
-          if (!rec) return;
-          setSelectedKey(key);
-          setBreed(rec.breed);
-          setCount(rec.count);
-          setAge(rec.age);
-          setNote(rec.note || "");
-        } catch { /* noop */ }
-      }
-
-      async function shareCurrent() {
-        const url = buildShareUrl({ breed, count, age, note });
-        try {
-          if (navigator.share) {
-            await navigator.share({ title: "Allpa · Calculadora de raciones", text: "Consulta de raciones precargada", url });
-          } else {
-            await navigator.clipboard.writeText(url);
-            alert("🔗 Enlace copiado al portapapeles");
-          }
-        } catch {
-          // Ignorar cancelaciones
-        }
-      }
-
-      return (
-        <div className="min-h-screen bg-neutral-50 text-neutral-900">
-          {/* Header con look Allpa: solo verdes */}
-          <div className="w-full bg-gradient-to-r from-emerald-800 via-emerald-700 to-emerald-500 text-white">
-            <header className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-              <h1 className="text-xl sm:text-2xl font-bold tracking-tight">Allpa · Calculadora diaria de raciones</h1>
+      {/* Main */}
+      <main className="max-w-5xl mx-auto px-4 py-6 grid gap-6">
+        {/* Formulario */}
+        <section className="rounded-2xl border bg-white p-4 md:p-6 grid gap-4">
+          <div className="flex items-center justify-between flex-wrap gap-3">
+            <h2 className="text-lg font-semibold">Datos del lote</h2>
+            {savedList.length > 0 && (
               <div className="flex items-center gap-2">
-                <button onClick={shareCurrent} className="rounded-xl bg-white/10 hover:bg-white/20 px-3 py-1.5 text-sm">Compartir</button>
-                <div className="text-sm">Racha: <span className="font-semibold">{streak} día{streak===1?'':'s'}</span></div>
+                <label className="text-sm">Cargar registro:</label>
+                <select value={selectedKey} onChange={(e)=>loadSaved(e.target.value)} className="rounded-xl border px-3 py-2 text-sm">
+                  <option value="">Selecciona…</option>
+                  {savedList.map(rec => (
+                    <option key={rec.date} value={rec.date}>{rec.date} · Edad {rec.age}d · {rec.count} aves</option>
+                  ))}
+                </select>
               </div>
-            </header>
+            )}
           </div>
 
-          {/* Main */}
-          <main className="max-w-5xl mx-auto px-4 py-6 grid gap-6">
-            {/* Formulario */}
-            <section className="rounded-2xl border bg-white p-4 md:p-6 grid gap-4">
-              <div className="flex items-center justify-between flex-wrap gap-3">
-                <h2 className="text-lg font-semibold">Datos del lote</h2>
-                {savedList.length > 0 && (
-                  <div className="flex items-center gap-2">
-                    <label className="text-sm">Cargar registro:</label>
-                    <select value={selectedKey} onChange={(e)=>loadSaved(e.target.value)} className="rounded-xl border px-3 py-2 text-sm">
-                      <option value="">Selecciona…</option>
-                      {savedList.map(rec => (
-                        <option key={rec.date} value={rec.date}>{rec.date} · Edad {rec.age}d · {rec.count} aves</option>
-                      ))}
-                    </select>
-                  </div>
-                )}
-              </div>
+          <div className="grid sm:grid-cols-5 gap-4 items-center">
+            <div className="sm:col-span-1">
+              <label className="text-sm font-medium">Raza</label>
+              <select value={breed} onChange={(e)=>setBreed(e.target.value)} className="mt-1 w-full rounded-xl border px-3 py-2">
+                {BREEDS.map(b=> <option key={b.value} value={b.value}>{b.label}</option>)}
+              </select>
+            </div>
+            <div className="sm:col-span-1">
+              <label className="text-sm font-medium">Cantidad de pollos</label>
+              <input type="number" min={1} value={count} onChange={(e)=>setCount(parseInt(e.target.value||'0'))} className="mt-1 w-full rounded-xl border px-3 py-2" />
+            </div>
+            <div className="sm:col-span-1">
+              <label className="text-sm font-medium">Comederos</label>
+              <input type="number" min={1} value={feeders} onChange={(e)=>setFeeders(Math.max(1, parseInt(e.target.value||'1')))} className="mt-1 w-full rounded-xl border px-3 py-2" />
+            </div>
+            <div className="sm:col-span-2">
+              <label className="text-sm font-medium flex items-center justify-between">
+                <span>Edad (días)</span>
+                <span className="text-xs text-neutral-600">Día seleccionado: <b>{age}</b>/56</span>
+              </label>
+              <input type="range" min={1} max={56} value={age} onChange={(e)=>setAge(parseInt(e.target.value||'1'))} className="mt-2 w-full" />
+            </div>
+          </div>
+          <p className="text-sm text-neutral-600">Al guardar, se registran automáticamente las observaciones y la hora para trazabilidad.</p>
+        </section>
 
-              <div className="grid sm:grid-cols-4 gap-4 items-center">
-                <div className="sm:col-span-1">
-                  <label className="text-sm font-medium">Raza</label>
-                  <select value={breed} onChange={(e)=>setBreed(e.target.value)} className="mt-1 w-full rounded-xl border px-3 py-2">
-                    {BREEDS.map(b=> <option key={b.value} value={b.value}>{b.label}</option>)}
-                  </select>
-                </div>
-                <div className="sm:col-span-1">
-                  <label className="text-sm font-medium">Cantidad de pollos</label>
-                  <input type="number" min={1} value={count} onChange={(e)=>setCount(parseInt(e.target.value||'0'))} className="mt-1 w-full rounded-xl border px-3 py-2" />
-                </div>
-                <div className="sm:col-span-2">
-                  <label className="text-sm font-medium flex items-center justify-between">
-                    <span>Edad (días)</span>
-                    <span className="text-xs text-neutral-600">Día seleccionado: <b>{age}</b>/56</span>
-                  </label>
-                  <input type="range" min={1} max={56} value={age} onChange={(e)=>setAge(parseInt(e.target.value||'1'))} className="mt-2 w-full" />
-                </div>
-              </div>
-              <p className="text-sm text-neutral-600">Usa la calculadora a diario: al guardar, tus observaciones y la hora quedan registradas automáticamente para trazabilidad.</p>
-            </section>
+        {/* Resultados */}
+        <section className="rounded-2xl border bg-white p-4 md:p-6 grid gap-6">
+          <h2 className="text-lg font-semibold">Resultados de hoy</h2>
+          <div className="grid md:grid-cols-2 gap-4">
+            <Stat label="Consumo recomendado (g/ave/día)" value={`${intakePerBirdG.toLocaleString()} g`} />
+            <Stat label="Total de alimento (kg/día)" value={`${totalIntakeKg.toFixed(2)} kg`} />
+          </div>
 
-            {/* Resultados */}
-            <section className="rounded-2xl border bg-white p-4 md:p-6 grid gap-6">
-              <h2 className="text-lg font-semibold">Resultados de hoy</h2>
-              <div className="grid md:grid-cols-3 gap-4">
-                <Stat label="Peso esperado hoy (g/ave)" value={`${expectedWeightG.toLocaleString()} g`} />
-                <Stat label="Consumo recomendado (g/ave/día)" value={`${intakePerBirdG.toLocaleString()} g`} />
-                <Stat label="Total de alimento (kg/día)" value={`${totalIntakeKg.toFixed(2)} kg`} />
-              </div>
+          <div className="rounded-xl border p-4">
+            <p className="font-medium mb-2">Horario recomendado</p>
+            <p className="text-sm text-neutral-700 mb-3">{schedule.summary}</p>
+            {schedule.mode !== 'adlib' ? (
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-left text-neutral-600">
+                    <th className="py-1">Ración</th>
+                    <th className="py-1">g/ave</th>
+                    <th className="py-1">kg total</th>
+                    <th className="py-1">kg/comedero</th>
+                    <th className="py-1">aves/comedero</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {rations.map((r, idx)=> (
+                    <tr key={idx} className="border-t">
+                      <td className="py-1">{r.label}</td>
+                      <td className="py-1">{r.perBirdG}</td>
+                      <td className="py-1">{r.totalKg}</td>
+                      <td className="py-1">{r.perFeederKg}</td>
+                      <td className="py-1">{birdsPerFeeder}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <div className="text-sm text-neutral-700">Asegura comederos disponibles las 24 horas. Cambia el alimento frecuentemente para mantenerlo fresco.</div>
+            )}
+          </div>
 
-              <div className="grid lg:grid-cols-2 gap-6">
-                {/* Horario y raciones */}
-                <div className="rounded-xl border p-4">
-                  <p className="font-medium mb-2">Horario recomendado</p>
-                  <p className="text-sm text-neutral-700 mb-3">{schedule.summary}</p>
-                  {schedule.mode !== 'adlib' ? (
-                    <table className="w-full text-sm">
-                      <thead>
-                        <tr className="text-left text-neutral-600">
-                          <th className="py-1">Ración</th>
-                          <th className="py-1">g/ave</th>
-                          <th className="py-1">kg total</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {rations.map((r, idx)=> (
-                          <tr key={idx} className="border-t">
-                            <td className="py-1">{r.label}</td>
-                            <td className="py-1">{r.perBirdG}</td>
-                            <td className="py-1">{r.totalKg}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  ) : (
-                    <div className="text-sm text-neutral-700">Asegura comederos disponibles las 24 horas. Cambia el alimento frecuentemente para mantenerlo fresco.</div>
-                  )}
-                </div>
-
-                {/* Tipo de alimento y consejo */}
-                <div className="rounded-xl border p-4 grid gap-3">
-                  <div>
-                    <p className="font-medium">Tipo de alimento para hoy</p>
-                    <p className="text-sm text-neutral-700">{stage.label}</p>
-                  </div>
-                  <div>
-                    <p className="font-medium">Consejo del día</p>
-                    <p className="text-sm text-neutral-700">💡 {tipOfDay}</p>
-                  </div>
-                  <div>
-                    <p className="font-medium">Progreso del ciclo</p>
-                    <Progress value={(age/56)*100} />
-                    <p className="text-xs text-neutral-600 mt-1">Día {age} de 56</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Notas y guardado */}
-              <div className="grid md:grid-cols-2 gap-4 items-start">
-                <div>
-                  <label className="text-sm font-medium">Observaciones de hoy</label>
-                  <textarea value={note} onChange={(e)=>setNote(e.target.value)} rows={4} className="mt-1 w-full rounded-xl border px-3 py-2" placeholder="Ej.: consumo bajo por calor al mediodía, mejorar ventilación" />
-                </div>
-                <div className="rounded-xl border p-4 grid gap-3">
-                  <button onClick={saveToday} className="w-full rounded-xl bg-emerald-600 text-white py-2 font-medium hover:bg-emerald-700 transition">💾 Guardar registro de hoy</button>
-                  <p className="text-xs text-neutral-600">Último guardado: {lastSave || "—"}</p>
-                  {yesterdayRecord && (
-                    <div className="text-sm bg-neutral-50 rounded-lg border p-3">
-                      <p className="font-medium mb-1">Ayer ({yesterdayRecord.date})</p>
-                      <ul className="text-xs list-disc ml-4 space-y-1">
-                        <li>Edad: {yesterdayRecord.age} días</li>
-                        <li>Peso esperado: {yesterdayRecord.expectedWeightG} g</li>
-                        <li>Consumo: {yesterdayRecord.intakePerBirdG} g/ave/día</li>
-                        <li>Total alimento: {Number(yesterdayRecord.totalIntakeKg).toFixed(2)} kg</li>
-                      </ul>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </section>
-
-            {/* Buenas prácticas */}
-            <section className="rounded-2xl border bg-white p-4 md:p-6">
-              <h2 className="text-lg font-semibold mb-3">Buenas prácticas rápidas</h2>
-              <ul className="text-sm space-y-2 list-disc ml-5 text-neutral-700">
-                <li>En días 3–5, usa raciones pequeñas y frecuentes para estimular el consumo.</li>
-                <li>En climas cálidos, prioriza mayor % de la ración en la mañana.</li>
-                <li>Revisa a diario ventilación, cama, agua y comportamiento.</li>
-                <li>Pesa una muestra de aves semanalmente para validar el peso real vs esperado.</li>
-              </ul>
-            </section>
-          </main>
-
-          {/* Footer magnético con CTAs */}
-          <MagneticFooter />
-        </div>
-      );
-    }
-
-    function Stat({ label, value }) {
-      return (
-        <div className="rounded-xl border p-4 bg-neutral-50">
-          <p className="text-xs uppercase tracking-wide text-neutral-600">{label}</p>
-          <p className="text-xl font-semibold">{value}</p>
-        </div>
-      );
-    }
-
-    function Progress({ value }) {
-      return (
-        <div className="w-full h-3 bg-neutral-200 rounded-full overflow-hidden">
-          <div className="h-full bg-emerald-600" style={{ width: `${Math.max(0, Math.min(100, value))}%` }} />
-        </div>
-      );
-    }
-
-    function MagneticFooter() {
-      const [open, setOpen] = useState(false);
-      return (
-        <div className="fixed inset-x-0 bottom-0 z-50">
-          <div className="max-w-5xl mx-auto px-4 pb-4">
-            <div className="rounded-2xl shadow-lg border bg-white">
-              <div className="p-3 flex items-center justify-between">
-                <div>
-                  <p className="font-semibold">¿Te sirvió la calculadora?</p>
-                  <p className="text-xs text-neutral-600">Sigue al Pollo Ingeniero y apoya el proyecto Allpa</p>
-                </div>
-                <div className="flex gap-2">
-                  <a href="#" onClick={(e)=>{e.preventDefault(); setOpen(true);}} className="rounded-xl px-3 py-2 bg-black text-white text-sm font-medium">Síguenos en TikTok</a>
-                  <a href="#" onClick={(e)=>{e.preventDefault(); setOpen(true);}} className="rounded-xl px-3 py-2 border text-sm font-medium">Donaciones (Nequi)</a>
-                </div>
-              </div>
-              {open && (
-                <div className="border-t p-4 text-sm">
-                  <p className="font-medium mb-1">Gracias por apoyar a Allpa</p>
-                  <p className="text-neutral-700">Escanea el QR de Nequi o escríbenos para recibir el enlace. También puedes suscribirte a nuestro TikTok para más tips diarios. 💚</p>
-                  <div className="mt-3 flex gap-2 flex-wrap">
-                    <button className="rounded-xl px-3 py-2 bg-emerald-600 text-white text-sm font-medium">Recibir enlace por WhatsApp</button>
-                    <button className="rounded-xl px-3 py-2 border text-sm font-medium" onClick={()=>setOpen(false)}>Ocultar</button>
-                  </div>
+          {/* Notas y guardado */}
+          <div className="grid md:grid-cols-2 gap-4 items-start">
+            <div>
+              <label className="text-sm font-medium">Observaciones de hoy</label>
+              <textarea value={note} onChange={(e)=>setNote(e.target.value)} rows={4} className="mt-1 w-full rounded-xl border px-3 py-2" placeholder="Ej.: consumo bajo por calor al mediodía, mejorar ventilación" />
+            </div>
+            <div className="rounded-xl border p-4 grid gap-3">
+              <button onClick={saveToday} className="w-full rounded-xl bg-emerald-600 text-white py-2 font-medium hover:bg-emerald-700 transition">💾 Guardar registro de hoy</button>
+              <p className="text-xs text-neutral-600">Último guardado: {lastSave || "—"}</p>
+              {yesterdayRecord && (
+                <div className="text-sm bg-neutral-50 rounded-lg border p-3">
+                  <p className="font-medium mb-1">Ayer ({yesterdayRecord.date})</p>
+                  <ul className="text-xs list-disc ml-4 space-y-1">
+                    <li>Edad: {yesterdayRecord.age} días</li>
+                    <li>Consumo: {yesterdayRecord.intakePerBirdG} g/ave/día</li>
+                    <li>Total alimento: {Number(yesterdayRecord.totalIntakeKg).toFixed(2)} kg</li>
+                  </ul>
                 </div>
               )}
             </div>
           </div>
-        </div>
-      );
-    }
+        </section>
 
-    // Helpers
-    function formatG(v) { return `${Math.round(v)} g`; }
-    function formatKg(v) { return `${(v/1000).toFixed(2)} kg`; }
-    function hashCode(str) { let h = 0; for (let i=0;i<str.length;i++){ h = ((h<<5)-h)+str.charCodeAt(i); h|=0; } return h; }
-    function buildShareUrl({ breed, count, age, note }) {
-      const base = `${window.location.origin}${window.location.pathname}`;
-      const params = new URLSearchParams();
-      params.set("breed", String(breed));
-      params.set("count", String(count));
-      params.set("age", String(age));
-      if (note) params.set("note", note);
-      return `${base}?${params.toString()}`;
-    }
+        {/* Buenas prácticas (colapsable) */}
+        <section className="rounded-2xl border bg-white p-4 md:p-6">
+          <details>
+            <summary className="cursor-pointer select-none text-lg font-semibold">Buenas prácticas rápidas</summary>
+            <ul className="mt-3 text-sm space-y-2 list-disc ml-5 text-neutral-700">
+              <li>En días 3–5, usa raciones pequeñas y frecuentes para estimular el consumo.</li>
+              <li>En climas cálidos, prioriza mayor % de la ración en la mañana.</li>
+              <li>Revisa a diario ventilación, cama, agua y comportamiento.</li>
+              <li>Pesa una muestra de aves semanalmente para validar el peso real vs esperado.</li>
+            </ul>
+          </details>
+        </section>
+      </main>
+    </div>
+  );
+}
 
-    // Montaje
-    ReactDOM.createRoot(document.getElementById('root')).render(<Page />);
-  </script>
-</body>
-</html>
+function Stat({ label, value }: { label: string, value: string }) {
+  return (
+    <div className="rounded-xl border p-4 bg-neutral-50">
+      <p className="text-xs uppercase tracking-wide text-neutral-600">{label}</p>
+      <p className="text-xl font-semibold">{value}</p>
+    </div>
+  );
+}
+
+function buildShareUrl({ breed, count, age, feeders, note }: { breed: string; count: number; age: number; feeders: number; note?: string; }) {
+  const base = `${window.location.origin}${window.location.pathname}`;
+  const params = new URLSearchParams();
+  params.set("breed", String(breed));
+  params.set("count", String(count));
+  params.set("age", String(age));
+  params.set("feeders", String(feeders));
+  if (note) params.set("note", note);
+  return `${base}?${params.toString()}`;
+}
