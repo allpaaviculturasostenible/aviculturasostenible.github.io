@@ -1,442 +1,445 @@
-import React, { useEffect, useMemo, useState } from "react";
-
-/**
- * Allpa – Calculadora diaria de raciones para pollos (v3)
- * Cambios de esta versión:
- * - Header: degradado SOLO en tonos verdes (sin ámbar).
- * - Botón "Compartir" que genera URL con datos precargados (breed, count, age, note opcional) y usa Web Share API o copia al portapapeles.
- * - Al cargar: si hay parámetros en la URL, se precargan automáticamente.
- * - Lista desplegable de registros guardados (si existen) para cargar datos históricos al formulario.
- * - Mantiene trazabilidad de visitas/guardados.
- * - 6 raciones solo hasta día 5; desde día 6, 2 raciones.
- * - Slider de días 1–56.
- */
-
-// --- Utilidades ---
-function lerp(a: number, b: number, t: number) { return a + (b - a) * t; }
-function piecewiseLinear(age: number, points: Array<[number, number]>) {
-  if (age <= points[0][0]) return points[0][1];
-  if (age >= points[points.length - 1][0]) return points[points.length - 1][1];
-  for (let i = 0; i < points.length - 1; i++) {
-    const [aX, aY] = points[i];
-    const [bX, bY] = points[i + 1];
-    if (age >= aX && age <= bX) {
-      const t = (age - aX) / (bX - aX);
-      return lerp(aY, bY, t);
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Allpa · Calculadora diaria de raciones</title>
+  <meta name="description" content="Calculadora de raciones diarias para pollos – Allpa" />
+  <style>
+    :root{
+      --emerald-800:#065f46; --emerald-700:#047857; --emerald-500:#10b981;
+      --neutral-50:#fafafa; --neutral-200:#e5e5e5; --neutral-600:#525252; --neutral-700:#404040; --neutral-900:#171717;
+      --white:#fff; --black:#000;
     }
-  }
-  return points[points.length - 1][1];
-}
-const nowIso = () => new Date().toISOString();
-const todayKey = () => new Date().toISOString().slice(0,10);
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial,"Noto Sans","Liberation Sans",sans-serif;color:var(--neutral-900);background:var(--neutral-50)}
+    .container{max-width:960px;margin:0 auto;padding:24px}
+    header{color:var(--white);background:linear-gradient(90deg,var(--emerald-800),var(--emerald-700),var(--emerald-500));}
+    header .wrap{display:flex;align-items:center;justify-content:space-between;padding:12px 16px}
+    h1{margin:0;font-size:22px;font-weight:700}
+    .btn{display:inline-flex;align-items:center;gap:8px;border-radius:12px;border:1px solid transparent;padding:8px 12px;font-size:14px;cursor:pointer}
+    .btn-share{background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.2)}
+    .btn-share:hover{background:rgba(255,255,255,.2)}
+    .card{background:#fff;border:1px solid var(--neutral-200);border-radius:16px;padding:16px}
+    .grid{display:grid;gap:16px}
+    .grid-2{grid-template-columns:1fr;}
+    .grid-3{grid-template-columns:1fr;}
+    @media(min-width:768px){.grid-2{grid-template-columns:1fr 1fr}.grid-3{grid-template-columns:repeat(3,1fr)}}
+    label{font-size:14px;font-weight:600}
+    input[type="number"],select,textarea{width:100%;border:1px solid var(--neutral-200);border-radius:12px;padding:8px 10px;margin-top:6px;font-size:14px}
+    input[type="range"]{width:100%}
+    table{width:100%;border-collapse:collapse;font-size:14px}
+    th,td{padding:8px 6px;border-top:1px solid var(--neutral-200);text-align:left}
+    .stat{background:#f5f5f5;border:1px solid var(--neutral-200);border-radius:12px;padding:12px}
+    .stat .k{font-size:12px;letter-spacing:.06em;color:var(--neutral-600);text-transform:uppercase}
+    .stat .v{font-size:18px;font-weight:700}
+    .progress{height:10px;border-radius:999px;background:#e5e5e5;overflow:hidden}
+    .progress > span{display:block;height:100%;background:var(--emerald-600,#059669);width:0}
+    .text-xs{font-size:12px;color:var(--neutral-600)}
+    footer.magnet{position:fixed;left:0;right:0;bottom:0;padding:16px}
+    .magnet .bar{max-width:960px;margin:0 auto;background:#fff;border:1px solid var(--neutral-200);border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.08)}
+    .magnet .bar .inner{display:flex;align-items:center;justify-content:space-between;padding:12px 16px}
+    .btn-prim{background:var(--black);color:#fff}
+    .btn-sec{background:#fff;border-color:var(--neutral-200)}
+    .hidden{display:none}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>Allpa · Calculadora diaria de raciones</h1>
+      <div style="display:flex;align-items:center;gap:8px">
+        <button id="btnShare" class="btn btn-share">Compartir</button>
+        <div class="text-xs">Racha: <b id="streak">0</b> día(s)</div>
+      </div>
+    </div>
+  </header>
 
-// --- Curvas base (aprox. orientativas) ---
-const WEIGHT_CURVE_POINTS: Array<[number, number]> = [
-  [1, 42], [7, 180], [14, 450], [21, 900], [28, 1500], [35, 2200], [42, 2900], [56, 3600]
-];
-const INTAKE_CURVE_POINTS: Array<[number, number]> = [
-  [1, 12], [2, 18], [5, 30], [7, 40], [14, 75], [21, 110], [28, 150], [35, 180], [42, 200], [56, 225]
-];
-
-// Etapas por edad
-function feedStage(age: number) {
-  if (age <= 7) return { code: "preiniciador", label: "Preiniciador (días 1–7)" };
-  if (age <= 21) return { code: "iniciador", label: "Iniciador (días 8–21)" };
-  if (age <= 35) return { code: "crecimiento", label: "Crecimiento (días 22–35)" };
-  return { code: "finalizador", label: "Finalizador (días 36–56)" };
-}
-
-// Consejos
-const TIPS = [
-  "Mantén el agua entre 18–22 °C y limpia: el agua sucia baja el consumo.",
-  "Revisa la cama: humedad ideal 20–25%. Si huele a amoníaco, ventila.",
-  "Altura del comedero: a nivel del dorso del pollo para evitar desperdicio.",
-  "Evalúa temperatura del galpón por comportamiento, no solo por termómetro.",
-  "Pesa 10 aves al azar para validar el promedio de peso.",
-  "Registra mortalidad y causas para detectar patrones tempranos.",
-];
-
-// Razas
-const BREEDS = [
-  { value: "cobb500", label: "Cobb 500" },
-  { value: "ross308", label: "Ross 308" },
-  { value: "hubbard", label: "Hubbard" },
-  { value: "otra", label: "Otra / mi línea" },
-];
-
-// Horarios
-type Schedule = { mode: "adlib" | "six" | "two"; summary: string; details: string[] };
-function scheduleForAge(age: number): Schedule {
-  if (age <= 2) {
-    return { mode: "adlib", summary: "Días 1–2: alimentación a voluntad (24/7)", details: ["Comederos siempre llenos y accesibles."] };
-  }
-  if (age <= 5) {
-    return { mode: "six", summary: "Días 3–5: 6 raciones pequeñas para estimular consumo", details: ["6:00","9:00","12:00","15:00","17:00","19:00"] };
-  }
-  return { mode: "two", summary: "Desde día 6: 2 raciones (mañana y tarde)", details: ["6:00 (Ración 1)","17:00 (Ración 2)"] };
-}
-
-// Persistencia
-const LS_KEY = "allpa_calc_raciones_v3"; // nueva versión para compatibilidad
-
-type SavedRecord = {
-  date: string;
-  savedAt: string;
-  breed: string;
-  count: number;
-  age: number;
-  intakePerBirdG: number;
-  expectedWeightG: number;
-  totalIntakeKg: number;
-  stage: any;
-  schedule: any;
-  note?: string;
-  rations: Array<{ label: string; perBirdG: string; totalKg: string }>;
-};
-
-type Store = {
-  records: Record<string, SavedRecord>;
-  streak: number;
-  lastSave: string | null;
-  visits: Array<{ at: string; action: "visit" | "save" }>;
-};
-
-export default function Page() {
-  const [breed, setBreed] = useState("cobb500");
-  const [count, setCount] = useState<number>(100);
-  const [age, setAge] = useState<number>(1);
-  const [note, setNote] = useState("");
-  const [streak, setStreak] = useState(0);
-  const [lastSave, setLastSave] = useState<string | null>(null);
-  const [yesterdayRecord, setYesterdayRecord] = useState<SavedRecord | null>(null);
-  const [savedList, setSavedList] = useState<Array<SavedRecord>>([]);
-  const [selectedKey, setSelectedKey] = useState<string>("");
-
-  // Tip del día
-  const tipOfDay = useMemo(() => {
-    const idx = Math.abs(hashCode(todayKey())) % TIPS.length;
-    return TIPS[idx];
-  }, []);
-
-  // Derivados
-  const schedule = useMemo(() => scheduleForAge(age), [age]);
-  const intakePerBirdG = useMemo(() => Math.round(piecewiseLinear(age, INTAKE_CURVE_POINTS)), [age]);
-  const expectedWeightG = useMemo(() => Math.round(piecewiseLinear(age, WEIGHT_CURVE_POINTS)), [age]);
-  const totalIntakeKg = useMemo(() => ((intakePerBirdG * count) / 1000), [intakePerBirdG, count]);
-  const stage = useMemo(() => feedStage(age), [age]);
-
-  // Raciones por horario
-  const rations = useMemo(() => {
-    if (schedule.mode === "adlib") return [] as Array<{ label: string, perBirdG: string, totalKg: string }>;
-    if (schedule.mode === "six") {
-      const per = intakePerBirdG / 6;
-      return schedule.details.map((d) => ({ label: d, perBirdG: formatG(per), totalKg: formatKg(per * count) }));
-    }
-    const r1 = Math.round(intakePerBirdG * 0.6);
-    const r2 = intakePerBirdG - r1;
-    return [
-      { label: schedule.details[0], perBirdG: formatG(r1), totalKg: formatKg(r1 * count) },
-      { label: schedule.details[1], perBirdG: formatG(r2), totalKg: formatKg(r2 * count) },
-    ];
-  }, [schedule, intakePerBirdG, count]);
-
-  // Al cargar: leer store, registrar visita, precargar por URL y preparar lista de registros
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(LS_KEY);
-      const data: Store = raw ? JSON.parse(raw) : { records: {}, streak: 0, lastSave: null, visits: [] };
-
-      // registrar visita
-      data.visits = Array.isArray(data.visits) ? data.visits : [];
-      data.visits.push({ at: nowIso(), action: "visit" });
-
-      // streak + lastSave al state
-      setStreak(data.streak || 0);
-      setLastSave(data.lastSave || null);
-
-      // cargar AYER
-      const yesterday = new Date();
-      yesterday.setDate(yesterday.getDate() - 1);
-      const yKey = yesterday.toISOString().slice(0,10);
-      if (data.records && data.records[yKey]) setYesterdayRecord(data.records[yKey]);
-
-      // cargar lista guardada
-      const list = Object.values(data.records).sort((a,b)=> a.date < b.date ? 1 : -1);
-      setSavedList(list);
-
-      // precargar por URL
-      const params = new URLSearchParams(window.location.search);
-      const qBreed = params.get("breed");
-      const qCount = params.get("count");
-      const qAge = params.get("age");
-      const qNote = params.get("note");
-      if (qBreed) setBreed(qBreed);
-      if (qCount && !isNaN(parseInt(qCount))) setCount(parseInt(qCount));
-      if (qAge && !isNaN(parseInt(qAge))) setAge(Math.max(1, Math.min(56, parseInt(qAge))));
-      if (qNote) setNote(qNote);
-
-      // guardar trazabilidad
-      localStorage.setItem(LS_KEY, JSON.stringify(data));
-    } catch { /* noop */ }
-  }, []);
-
-  function saveToday() {
-    const key = todayKey();
-    const record: SavedRecord = {
-      date: key,
-      savedAt: nowIso(),
-      breed, count, age,
-      intakePerBirdG, expectedWeightG, totalIntakeKg,
-      stage, schedule, note,
-      rations,
-    };
-    try {
-      const raw = localStorage.getItem(LS_KEY);
-      const data: Store = raw ? JSON.parse(raw) : { records: {}, streak: 0, lastSave: null, visits: [] };
-
-      // streak
-      let newStreak = data.streak || 0;
-      const prev = data.lastSave;
-      if (prev === key) newStreak = data.streak || 1; else {
-        if (prev) {
-          const prevDate = new Date(prev);
-          const y = new Date(key); y.setDate(y.getDate() - 1);
-          if (prevDate.toISOString().slice(0,10) === y.toISOString().slice(0,10)) newStreak = (data.streak || 0) + 1; else newStreak = 1;
-        } else newStreak = 1;
-      }
-
-      data.records[key] = record;
-      data.streak = newStreak;
-      data.lastSave = key;
-
-      // trazabilidad de guardado
-      data.visits = Array.isArray(data.visits) ? data.visits : [];
-      data.visits.push({ at: nowIso(), action: "save" });
-
-      localStorage.setItem(LS_KEY, JSON.stringify(data));
-      setStreak(newStreak);
-      setLastSave(key);
-
-      // refrescar AYER y lista
-      const yesterday = new Date();
-      yesterday.setDate(yesterday.getDate() - 1);
-      const yKey = yesterday.toISOString().slice(0,10);
-      setYesterdayRecord(data.records[yKey] || null);
-      setSavedList(Object.values(data.records).sort((a,b)=> a.date < b.date ? 1 : -1));
-
-      alert("✅ Registro guardado. ¡Sigue tu racha diaria!");
-    } catch {
-      alert("No se pudo guardar el registro (modo privado del navegador o sin almacenamiento disponible).");
-    }
-  }
-
-  function loadSaved(key: string) {
-    try {
-      const raw = localStorage.getItem(LS_KEY);
-      if (!raw) return;
-      const data: Store = JSON.parse(raw);
-      const rec = data.records[key];
-      if (!rec) return;
-      setSelectedKey(key);
-      setBreed(rec.breed);
-      setCount(rec.count);
-      setAge(rec.age);
-      setNote(rec.note || "");
-    } catch { /* noop */ }
-  }
-
-  async function shareCurrent() {
-    const url = buildShareUrl({ breed, count, age, note });
-    try {
-      if (navigator.share) {
-        await navigator.share({ title: "Allpa · Calculadora de raciones", text: "Consulta de raciones precargada", url });
-      } else {
-        await navigator.clipboard.writeText(url);
-        alert("🔗 Enlace copiado al portapapeles");
-      }
-    } catch {
-      // Ignorar cancelaciones
-    }
-  }
-
-  return (
-    <div className="min-h-screen bg-neutral-50 text-neutral-900">
-      {/* Header con look Allpa: solo verdes */}
-      <div className="w-full bg-gradient-to-r from-emerald-800 via-emerald-700 to-emerald-500 text-white">
-        <header className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight">Allpa · Calculadora diaria de raciones</h1>
-          <div className="flex items-center gap-2">
-            <button onClick={shareCurrent} className="rounded-xl bg-white/10 hover:bg-white/20 px-3 py-1.5 text-sm">Compartir</button>
-            <div className="text-sm">Racha: <span className="font-semibold">{streak} día{streak===1?'':'s'}</span></div>
-          </div>
-        </header>
+  <main class="container grid" style="padding-bottom:120px">
+    <!-- Datos del lote -->
+    <section class="card grid">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+        <h2 style="margin:0;font-size:18px">Datos del lote</h2>
+        <div id="savedWrap" class="hidden" style="display:flex;align-items:center;gap:8px">
+          <label class="text-xs" for="savedSelect">Cargar registro:</label>
+          <select id="savedSelect"></select>
+        </div>
       </div>
 
-      {/* Main */}
-      <main className="max-w-5xl mx-auto px-4 py-6 grid gap-6">
-        {/* Formulario */}
-        <section className="rounded-2xl border bg-white p-4 md:p-6 grid gap-4">
-          <div className="flex items-center justify-between flex-wrap gap-3">
-            <h2 className="text-lg font-semibold">Datos del lote</h2>
-            {savedList.length > 0 && (
-              <div className="flex items-center gap-2">
-                <label className="text-sm">Cargar registro:</label>
-                <select value={selectedKey} onChange={(e)=>loadSaved(e.target.value)} className="rounded-xl border px-3 py-2 text-sm">
-                  <option value="">Selecciona…</option>
-                  {savedList.map(rec => (
-                    <option key={rec.date} value={rec.date}>{rec.date} · Edad {rec.age}d · {rec.count} aves</option>
-                  ))}
-                </select>
-              </div>
-            )}
+      <div class="grid" style="grid-template-columns:1fr;gap:16px">
+        <div class="grid" style="grid-template-columns:1fr 1fr;gap:16px">
+          <div>
+            <label>Raza</label>
+            <select id="breed">
+              <option value="cobb500">Cobb 500</option>
+              <option value="ross308">Ross 308</option>
+              <option value="hubbard">Hubbard</option>
+              <option value="otra">Otra / mi línea</option>
+            </select>
           </div>
-
-          <div className="grid sm:grid-cols-4 gap-4 items-center">
-            <div className="sm:col-span-1">
-              <label className="text-sm font-medium">Raza</label>
-              <select value={breed} onChange={(e)=>setBreed(e.target.value)} className="mt-1 w-full rounded-xl border px-3 py-2">
-                {BREEDS.map(b=> <option key={b.value} value={b.value}>{b.label}</option>)}
-              </select>
-            </div>
-            <div className="sm:col-span-1">
-              <label className="text-sm font-medium">Cantidad de pollos</label>
-              <input type="number" min={1} value={count} onChange={(e)=>setCount(parseInt(e.target.value||'0'))} className="mt-1 w-full rounded-xl border px-3 py-2" />
-            </div>
-            <div className="sm:col-span-2">
-              <label className="text-sm font-medium flex items-center justify-between">
-                <span>Edad (días)</span>
-                <span className="text-xs text-neutral-600">Día seleccionado: <b>{age}</b>/56</span>
-              </label>
-              <input type="range" min={1} max={56} value={age} onChange={(e)=>setAge(parseInt(e.target.value||'1'))} className="mt-2 w-full" />
-            </div>
+          <div>
+            <label>Cantidad de pollos</label>
+            <input id="count" type="number" min="1" value="100" />
           </div>
-          <p className="text-sm text-neutral-600">Usa la calculadora a diario: al guardar, tus observaciones y la hora quedan registradas automáticamente para trazabilidad.</p>
-        </section>
+        </div>
+        <div>
+          <label style="display:flex;align-items:center;justify-content:space-between">
+            <span>Edad (días)</span>
+            <span class="text-xs">Día seleccionado: <b id="ageLabel">1</b>/56</span>
+          </label>
+          <input id="age" type="range" min="1" max="56" value="1" />
+        </div>
+        <p class="text-xs">Usa la calculadora a diario: tus observaciones y la hora quedan registradas automáticamente para trazabilidad.</p>
+      </div>
+    </section>
 
-        {/* Resultados */}
-        <section className="rounded-2xl border bg-white p-4 md:p-6 grid gap-6">
-          <h2 className="text-lg font-semibold">Resultados de hoy</h2>
-          <div className="grid md:grid-cols-3 gap-4">
-            <Stat label="Peso esperado hoy (g/ave)" value={`${expectedWeightG.toLocaleString()} g`} />
-            <Stat label="Consumo recomendado (g/ave/día)" value={`${intakePerBirdG.toLocaleString()} g`} />
-            <Stat label="Total de alimento (kg/día)" value={`${totalIntakeKg.toFixed(2)} kg`} />
+    <!-- Resultados -->
+    <section class="card grid">
+      <h2 style="margin:0;font-size:18px">Resultados de hoy</h2>
+      <div class="grid grid-3">
+        <div class="stat"><div class="k">Peso esperado hoy (g/ave)</div><div class="v" id="statWeight">0 g</div></div>
+        <div class="stat"><div class="k">Consumo recomendado (g/ave/día)</div><div class="v" id="statIntake">0 g</div></div>
+        <div class="stat"><div class="k">Total de alimento (kg/día)</div><div class="v" id="statTotal">0 kg</div></div>
+      </div>
+
+      <div class="grid grid-2">
+        <div class="card" style="padding:12px">
+          <p style="margin:.2rem 0;font-weight:600">Horario recomendado</p>
+          <p id="scheduleSummary" class="text-xs" style="margin:.2rem 0 8px"></p>
+          <div id="scheduleTableWrap"></div>
+        </div>
+
+        <div class="card" style="padding:12px">
+          <div style="margin-bottom:8px">
+            <p style="margin:.2rem 0;font-weight:600">Tipo de alimento para hoy</p>
+            <p id="feedStage" class="text-xs" style="margin:.2rem 0"></p>
           </div>
-
-          <div className="grid lg:grid-cols-2 gap-6">
-            {/* Horario y raciones */}
-            <div className="rounded-xl border p-4">
-              <p className="font-medium mb-2">Horario recomendado</p>
-              <p className="text-sm text-neutral-700 mb-3">{schedule.summary}</p>
-              {schedule.mode !== 'adlib' ? (
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="text-left text-neutral-600">
-                      <th className="py-1">Ración</th>
-                      <th className="py-1">g/ave</th>
-                      <th className="py-1">kg total</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {rations.map((r, idx)=> (
-                      <tr key={idx} className="border-t">
-                        <td className="py-1">{r.label}</td>
-                        <td className="py-1">{r.perBirdG}</td>
-                        <td className="py-1">{r.totalKg}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              ) : (
-                <div className="text-sm text-neutral-700">Asegura comederos disponibles las 24 horas. Cambia el alimento frecuentemente para mantenerlo fresco.</div>
-              )}
-            </div>
-
-            {/* Tipo de alimento y consejo */}
-            <div className="rounded-xl border p-4 grid gap-3">
-              <div>
-                <p className="font-medium">Tipo de alimento para hoy</p>
-                <p className="text-sm text-neutral-700">{stage.label}</p>
-              </div>
-              <div>
-                <p className="font-medium">Consejo del día</p>
-                <p className="text-sm text-neutral-700">💡 {tipOfDay}</p>
-              </div>
-              <div>
-                <p className="font-medium">Progreso del ciclo</p>
-                <Progress value={(age/56)*100} />
-                <p className="text-xs text-neutral-600 mt-1">Día {age} de 56</p>
-              </div>
-            </div>
+          <div style="margin-bottom:8px">
+            <p style="margin:.2rem 0;font-weight:600">Consejo del día</p>
+            <p id="tip" class="text-xs" style="margin:.2rem 0"></p>
           </div>
-
-          {/* Notas y guardado */}
-          <div className="grid md:grid-cols-2 gap-4 items-start">
-            <div>
-              <label className="text-sm font-medium">Observaciones de hoy</label>
-              <textarea value={note} onChange={(e)=>setNote(e.target.value)} rows={4} className="mt-1 w-full rounded-xl border px-3 py-2" placeholder="Ej.: consumo bajo por calor al mediodía, mejorar ventilación" />
-            </div>
-            <div className="rounded-xl border p-4 grid gap-3">
-              <button onClick={saveToday} className="w-full rounded-xl bg-emerald-600 text-white py-2 font-medium hover:bg-emerald-700 transition">💾 Guardar registro de hoy</button>
-              <p className="text-xs text-neutral-600">Último guardado: {lastSave || "—"}</p>
-              {yesterdayRecord && (
-                <div className="text-sm bg-neutral-50 rounded-lg border p-3">
-                  <p className="font-medium mb-1">Ayer ({yesterdayRecord.date})</p>
-                  <ul className="text-xs list-disc ml-4 space-y-1">
-                    <li>Edad: {yesterdayRecord.age} días</li>
-                    <li>Peso esperado: {yesterdayRecord.expectedWeightG} g</li>
-                    <li>Consumo: {yesterdayRecord.intakePerBirdG} g/ave/día</li>
-                    <li>Total alimento: {Number(yesterdayRecord.totalIntakeKg).toFixed(2)} kg</li>
-                  </ul>
-                </div>
-              )}
-            </div>
+          <div>
+            <p style="margin:.2rem 0;font-weight:600">Progreso del ciclo</p>
+            <div class="progress"><span id="progressBar"></span></div>
+            <p class="text-xs" id="progressText" style="margin:.2rem 0"></p>
           </div>
-        </section>
+        </div>
+      </div>
 
-        {/* Buenas prácticas */}
-        <section className="rounded-2xl border bg-white p-4 md:p-6">
-          <h2 className="text-lg font-semibold mb-3">Buenas prácticas rápidas</h2>
-          <ul className="text-sm space-y-2 list-disc ml-5 text-neutral-700">
-            <li>En días 3–5, usa raciones pequeñas y frecuentes para estimular el consumo.</li>
-            <li>En climas cálidos, prioriza mayor % de la ración en la mañana.</li>
-            <li>Revisa a diario ventilación, cama, agua y comportamiento.</li>
-            <li>Pesa una muestra de aves semanalmente para validar el peso real vs esperado.</li>
-          </ul>
-        </section>
-      </main>
+      <div class="grid grid-2">
+        <div>
+          <label>Observaciones de hoy</label>
+          <textarea id="note" rows="4" placeholder="Ej.: consumo bajo por calor al mediodía, mejorar ventilación"></textarea>
+        </div>
+        <div class="card" style="padding:12px">
+          <button id="btnSave" class="btn btn-prim" style="width:100%">💾 Guardar registro de hoy</button>
+          <p class="text-xs" id="lastSaveText" style="margin-top:8px">Último guardado: —</p>
+          <div id="yesterdayWrap" class="hidden" style="margin-top:8px">
+            <p style="margin:.2rem 0;font-weight:600">Ayer (<span id="yesterdayDate"></span>)</p>
+            <ul class="text-xs" style="margin:.2rem 0 0 1rem">
+              <li>Edad: <span id="yAge"></span> días</li>
+              <li>Peso esperado: <span id="yWeight"></span> g</li>
+              <li>Consumo: <span id="yIntake"></span> g/ave/día</li>
+              <li>Total alimento: <span id="yTotal"></span> kg</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
 
+    <!-- Buenas prácticas -->
+    <section class="card">
+      <h2 style="margin:0 0 8px;font-size:18px">Buenas prácticas rápidas</h2>
+      <ul class="text-xs" style="margin:.2rem 0 0 1rem;line-height:1.6">
+        <li>En días 3–5, usa raciones pequeñas y frecuentes para estimular el consumo.</li>
+        <li>En climas cálidos, prioriza mayor % de la ración en la mañana.</li>
+        <li>Revisa a diario ventilación, cama, agua y comportamiento.</li>
+        <li>Pesa una muestra de aves semanalmente para validar el peso real vs esperado.</li>
+      </ul>
+    </section>
+  </main>
 
+  <!-- Footer magnético -->
+  <footer class="magnet">
+    <div class="bar">
+      <div class="inner">
+        <div>
+          <p style="margin:0;font-weight:600">¿Te sirvió la calculadora?</p>
+          <p class="text-xs" style="margin:2px 0 0">Sigue al Pollo Ingeniero y apoya el proyecto Allpa</p>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <a class="btn btn-prim" href="#">Síguenos en TikTok</a>
+          <a class="btn btn-sec" href="#">Donaciones (Nequi)</a>
+        </div>
+      </div>
     </div>
-  );
-}
+  </footer>
 
-function Stat({ label, value }: { label: string, value: string }) {
-  return (
-    <div className="rounded-xl border p-4 bg-neutral-50">
-      <p className="text-xs uppercase tracking-wide text-neutral-600">{label}</p>
-      <p className="text-xl font-semibold">{value}</p>
-    </div>
-  );
-}
+  <!-- Opción 1: JS externo en /js/app.js -->
+  <script src="js/app.js"></script>
 
-function Progress({ value }: { value: number }) {
-  return (
-    <div className="w-full h-3 bg-neutral-200 rounded-full overflow-hidden">
-      <div className="h-full bg-emerald-600" style={{ width: `${Math.max(0, Math.min(100, value))}%` }} />
-    </div>
-  );
-}
+  <!-- Opción 2 (rápida): pegar el mismo JS acá si no vas a usar carpeta js
+  <script>
+    // Pega aquí el contenido de js/app.js si prefieres un único archivo HTML.
+  </script>
+  -->
+</body>
+</html>
 
-// Helpers
-function formatG(v: number) { return `${Math.round(v)} g`; }
-function formatKg(v: number) { return `${(v/1000).toFixed(2)} kg`; }
-function hashCode(str: string) { let h = 0; for (let i=0;i<str.length;i++){ h = ((h<<5)-h)+str.charCodeAt(i); h|=0; } return h; }
-function buildShareUrl({ breed, count, age, note }: { breed: string; count: number; age: number; note?: string; }) {
-  const base = `${window.location.origin}${window.location.pathname}`;
-  const params = new URLSearchParams();
-  params.set("breed", String(breed));
-  params.set("count", String(count));
-  params.set("age", String(age));
-  if (note) params.set("note", note);
-  return `${base}?${params.toString()}`;
-}
+<!-- ==================  Archivo: js/app.js  ================== -->
+<script type="text/plain" data-filename="js/app.js">
+(function(){
+  // ===== Utilidades =====
+  const $ = (sel)=>document.querySelector(sel);
+  const nowIso = ()=>new Date().toISOString();
+  const todayKey = ()=>new Date().toISOString().slice(0,10);
+  function lerp(a,b,t){return a+(b-a)*t}
+  function piecewiseLinear(age, points){
+    if(age<=points[0][0]) return points[0][1];
+    if(age>=points[points.length-1][0]) return points[points.length-1][1];
+    for(let i=0;i<points.length-1;i++){
+      const [ax,ay]=points[i], [bx,by]=points[i+1];
+      if(age>=ax && age<=bx){ const t=(age-ax)/(bx-ax); return lerp(ay,by,t); }
+    }
+    return points[points.length-1][1];
+  }
+  function hashCode(str){let h=0;for(let i=0;i<str.length;i++){h=((h<<5)-h)+str.charCodeAt(i);h|=0}return h}
+  function formatG(v){return `${Math.round(v)} g`}
+  function formatKg(v){return `${(v/1000).toFixed(2)} kg`}
+
+  // ===== Datos base =====
+  const LS_KEY = 'allpa_calc_raciones_html_v1';
+  const WEIGHT = [[1,42],[7,180],[14,450],[21,900],[28,1500],[35,2200],[42,2900],[56,3600]];
+  const INTAKE = [[1,12],[2,18],[5,30],[7,40],[14,75],[21,110],[28,150],[35,180],[42,200],[56,225]];
+  const TIPS = [
+    'Mantén el agua entre 18–22 °C y limpia: el agua sucia baja el consumo.',
+    'Revisa la cama: humedad ideal 20–25%. Si huele a amoníaco, ventila.',
+    'Altura del comedero: a nivel del dorso del pollo para evitar desperdicio.',
+    'Evalúa temperatura del galpón por comportamiento, no solo por termómetro.',
+    'Pesa 10 aves al azar para validar el promedio de peso.',
+    'Registra mortalidad y causas para detectar patrones tempranos.',
+  ];
+
+  function feedStage(age){
+    if(age<=7) return 'Preiniciador (días 1–7)';
+    if(age<=21) return 'Iniciador (días 8–21)';
+    if(age<=35) return 'Crecimiento (días 22–35)';
+    return 'Finalizador (días 36–56)';
+  }
+
+  function scheduleForAge(age){
+    if(age<=2) return {mode:'adlib', summary:'Días 1–2: alimentación a voluntad (24/7)', details:['Comederos siempre llenos y accesibles.']};
+    if(age<=5) return {mode:'six', summary:'Días 3–5: 6 raciones pequeñas para estimular consumo', details:['6:00','9:00','12:00','15:00','17:00','19:00']};
+    return {mode:'two', summary:'Desde día 6: 2 raciones (mañana y tarde)', details:['6:00 (Ración 1)','17:00 (Ración 2)']};
+  }
+
+  // ===== Estado (inputs) =====
+  const breedEl = $('#breed');
+  const countEl = $('#count');
+  const ageEl = $('#age');
+  const ageLabel = $('#ageLabel');
+  const noteEl = $('#note');
+
+  // ===== UI de salida =====
+  const statWeight = $('#statWeight');
+  const statIntake = $('#statIntake');
+  const statTotal  = $('#statTotal');
+  const scheduleSummary = $('#scheduleSummary');
+  const scheduleTableWrap = $('#scheduleTableWrap');
+  const feedStageEl = $('#feedStage');
+  const tipEl = $('#tip');
+  const progressBar = $('#progressBar');
+  const progressText = $('#progressText');
+  const lastSaveText = $('#lastSaveText');
+  const streakEl = $('#streak');
+
+  // Ayer
+  const yWrap = $('#yesterdayWrap');
+  const yDate = $('#yesterdayDate');
+  const yAge = $('#yAge');
+  const yWeight = $('#yWeight');
+  const yIntake = $('#yIntake');
+  const yTotal = $('#yTotal');
+
+  // Guardados
+  const savedWrap = $('#savedWrap');
+  const savedSelect = $('#savedSelect');
+
+  // Botones
+  const btnSave = $('#btnSave');
+  const btnShare = $('#btnShare');
+
+  // ===== Store helpers =====
+  function loadStore(){
+    try{ return JSON.parse(localStorage.getItem(LS_KEY)) || {records:{},streak:0,lastSave:null,visits:[]} }catch{return {records:{},streak:0,lastSave:null,visits:[]}}
+  }
+  function saveStore(data){ localStorage.setItem(LS_KEY, JSON.stringify(data)); }
+
+  // ===== Inicialización =====
+  function initFromURL(){
+    const p = new URLSearchParams(location.search);
+    const b = p.get('breed'); const c = p.get('count'); const a = p.get('age'); const n = p.get('note');
+    if(b) breedEl.value = b;
+    if(c && !isNaN(parseInt(c))) countEl.value = parseInt(c);
+    if(a && !isNaN(parseInt(a))) { ageEl.value = Math.max(1,Math.min(56,parseInt(a))); ageLabel.textContent = ageEl.value; }
+    if(n) noteEl.value = n;
+  }
+
+  function refreshSavedList(store){
+    const keys = Object.keys(store.records).sort().reverse();
+    if(keys.length===0){ savedWrap.classList.add('hidden'); return; }
+    savedWrap.classList.remove('hidden');
+    savedSelect.innerHTML = '<option value="">Selecciona…</option>' + keys.map(k=>{
+      const r = store.records[k];
+      return `<option value="${k}">${r.date} · Edad ${r.age}d · ${r.count} aves</option>`;
+    }).join('');
+  }
+
+  function loadYesterday(store){
+    const d = new Date(); d.setDate(d.getDate()-1); const yKey = d.toISOString().slice(0,10);
+    const r = store.records[yKey];
+    if(!r){ yWrap.classList.add('hidden'); return; }
+    yWrap.classList.remove('hidden');
+    yDate.textContent = r.date; yAge.textContent = r.age; yWeight.textContent = r.expectedWeightG; yIntake.textContent = r.intakePerBirdG; yTotal.textContent = Number(r.totalIntakeKg).toFixed(2);
+  }
+
+  function tipOfDay(){ const list=TIPS; const idx=Math.abs(hashCode(todayKey()))%list.length; return list[idx]; }
+
+  function recalc(){
+    const age = parseInt(ageEl.value || '1');
+    const count = parseInt(countEl.value || '0');
+    const intake = Math.round(piecewiseLinear(age, INTAKE));
+    const weight = Math.round(piecewiseLinear(age, WEIGHT));
+    const totalKg = (intake*count)/1000;
+
+    statWeight.textContent = weight.toLocaleString('es-CO')+ ' g';
+    statIntake.textContent = intake.toLocaleString('es-CO')+ ' g';
+    statTotal.textContent = totalKg.toFixed(2) + ' kg';
+
+    const sch = scheduleForAge(age);
+    scheduleSummary.textContent = sch.summary;
+    if(sch.mode==='adlib'){
+      scheduleTableWrap.innerHTML = '<div class="text-xs">Asegura comederos disponibles las 24 horas. Cambia el alimento frecuentemente para mantenerlo fresco.</div>';
+    } else {
+      let rows='';
+      if(sch.mode==='six'){
+        const per = intake/6;
+        rows = sch.details.map(d=>`<tr><td>${d}</td><td>${formatG(per)}</td><td>${formatKg(per*count)}</td></tr>`).join('');
+      } else {
+        const r1 = Math.round(intake*0.6), r2 = intake - r1;
+        rows = `<tr><td>${sch.details[0]}</td><td>${formatG(r1)}</td><td>${formatKg(r1*count)}</td></tr>`+
+               `<tr><td>${sch.details[1]}</td><td>${formatG(r2)}</td><td>${formatKg(r2*count)}</td></tr>`;
+      }
+      scheduleTableWrap.innerHTML = `<table><thead><tr><th>Ración</th><th>g/ave</th><th>kg total</th></tr></thead><tbody>${rows}</tbody></table>`;
+    }
+
+    feedStageEl.textContent = feedStage(age);
+    tipEl.textContent = '💡 ' + tipOfDay();
+    const pct = (age/56)*100; $('#progressBar').style.width = pct+'%';
+    progressText.textContent = `Día ${age} de 56`;
+  }
+
+  function updateStreakAndVisits(store, action){
+    store.visits = Array.isArray(store.visits)?store.visits:[];
+    store.visits.push({at:nowIso(), action});
+    saveStore(store);
+  }
+
+  function saveToday(){
+    const store = loadStore();
+    const key = todayKey();
+    const age = parseInt(ageEl.value||'1');
+    const count = parseInt(countEl.value||'0');
+    const intake = Math.round(piecewiseLinear(age, INTAKE));
+    const weight = Math.round(piecewiseLinear(age, WEIGHT));
+    const totalKg = (intake*count)/1000;
+    const sch = scheduleForAge(age);
+
+    // streak
+    let newStreak = store.streak || 0;
+    const prev = store.lastSave;
+    if(prev === key) newStreak = store.streak || 1; else {
+      if(prev){
+        const prevDate = new Date(prev); const y = new Date(key); y.setDate(y.getDate()-1);
+        if(prevDate.toISOString().slice(0,10) === y.toISOString().slice(0,10)) newStreak = (store.streak||0)+1; else newStreak = 1;
+      } else newStreak = 1;
+    }
+
+    store.records[key] = {
+      date:key,
+      savedAt: nowIso(),
+      breed:breedEl.value,
+      count,
+      age,
+      intakePerBirdG:intake,
+      expectedWeightG:weight,
+      totalIntakeKg: totalKg,
+      stage: feedStage(age),
+      schedule: sch,
+      note: noteEl.value,
+      rations: [] // se calcula al vuelo, no necesario guardar desglose
+    };
+    store.streak = newStreak; store.lastSave = key;
+    updateStreakAndVisits(store, 'save');
+
+    streakEl.textContent = newStreak;
+    lastSaveText.textContent = 'Último guardado: ' + key;
+    refreshSavedList(store);
+    loadYesterday(store);
+    alert('✅ Registro guardado. ¡Sigue tu racha diaria!');
+  }
+
+  function loadSaved(key){
+    const store = loadStore(); const rec = store.records[key]; if(!rec) return;
+    savedSelect.value = key;
+    breedEl.value = rec.breed; countEl.value = rec.count; ageEl.value = rec.age; ageLabel.textContent = rec.age; noteEl.value = rec.note||'';
+    recalc();
+  }
+
+  function buildShareUrl(){
+    const base = location.origin + location.pathname;
+    const p = new URLSearchParams();
+    p.set('breed', breedEl.value);
+    p.set('count', String(parseInt(countEl.value||'0')));
+    p.set('age', String(parseInt(ageEl.value||'1')));
+    if(noteEl.value) p.set('note', noteEl.value);
+    return `${base}?${p.toString()}`;
+  }
+
+  async function share(){
+    const url = buildShareUrl();
+    try{
+      if(navigator.share){ await navigator.share({title:'Allpa · Calculadora de raciones', text:'Consulta de raciones precargada', url}); }
+      else { await navigator.clipboard.writeText(url); alert('🔗 Enlace copiado al portapapeles'); }
+    }catch(e){ /* cancel */ }
+  }
+
+  // ===== Eventos =====
+  ['input','change'].forEach(evt=>{
+    ageEl.addEventListener(evt,()=>{ ageLabel.textContent = ageEl.value; recalc(); });
+    countEl.addEventListener(evt,recalc);
+    breedEl.addEventListener(evt,recalc);
+    noteEl.addEventListener(evt,()=>{/* solo edición */});
+  });
+  btnSave.addEventListener('click', saveToday);
+  btnShare.addEventListener('click', share);
+  savedSelect.addEventListener('change', (e)=>{ if(savedSelect.value) loadSaved(savedSelect.value); });
+
+  // ===== Arranque =====
+  (function start(){
+    const store = loadStore();
+    // visita
+    updateStreakAndVisits(store, 'visit');
+    // precargar URL
+    initFromURL();
+    // nota del día si existe
+    if(store.records[todayKey()] && store.records[todayKey()].note){ noteEl.value = store.records[todayKey()].note; }
+    // UI
+    streakEl.textContent = store.streak||0; lastSaveText.textContent = 'Último guardado: '+(store.lastSave||'—');
+    refreshSavedList(store);
+    loadYesterday(store);
+    // cálculo inicial
+    recalc();
+  })();
+})();
+</script>
