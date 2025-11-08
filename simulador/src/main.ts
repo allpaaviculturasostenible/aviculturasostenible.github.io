@@ -3,21 +3,31 @@ import { BootScene } from './scenes/BootScene'
 import { UIScene } from './scenes/UIScene'
 import { SimScene } from './scenes/SimScene'
 
+const parentId = 'phaser-root'
+const parentEl = document.getElementById(parentId)!
+const width = parentEl.clientWidth
+const height = parentEl.clientHeight
+
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
-  parent: 'game',
+  parent: parentId,
   backgroundColor: '#cfe8ee',
+  width,
+  height,
+  physics: { default: 'arcade', arcade: { gravity: { x:0, y: 0 }, debug: false } },
   scale: {
-    mode: Phaser.Scale.RESIZE,
-    autoCenter: Phaser.Scale.CENTER_BOTH,
-    width: 1024,
-    height: 640
+    mode: Phaser.Scale.RESIZE,   // se adapta al contenedor
+    autoCenter: Phaser.Scale.CENTER_BOTH
   },
-  physics: {
-    default: 'arcade',
-    arcade: { gravity: { x:0, y: 0 }, debug: false }
-  },
-  scene: [BootScene, SimScene, UIScene]
+  scene: [BootScene, UIScene, SimScene]
 }
 
-new Phaser.Game(config)
+export const game = new Phaser.Game(config)
+
+// Reajusta al cambiar tamaño del contenedor/ventana
+const resize = () => {
+  const w = parentEl.clientWidth
+  const h = parentEl.clientHeight
+  game.scale.resize(w, h)
+}
+window.addEventListener('resize', resize)

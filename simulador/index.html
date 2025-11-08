@@ -2,44 +2,154 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <title>Simulador de Galpón - Allpa</title>
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Simulador de Galpón – Allpa</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Tipografías marca -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="/src/styles.css" />
   </head>
-  <body>
-    <div id="ui-panel">
-      <div class="row">
-        <label for="climate">Clima:</label>
-        <select id="climate">
-          <option value="templado" selected>Templado (30 kg/m²)</option>
-          <option value="caliente">Caliente (26 kg/m²)</option>
-          <option value="frio">Frío (33 kg/m²)</option>
-        </select>
-      </div>
+  <body class="allpa-body">
 
-      <div class="row">
-        <label for="barnW">Ancho del galpón (m):</label>
-        <input id="barnW" type="range" min="1" max="5" step="1" value="2" />
-        <span id="barnWVal">10</span> m
+    <!-- Header / Banner -->
+    <header class="allpa-header">
+      <div class="container">
+        <div class="hdr-left">
+          <!-- Si tienes SVG del logo Allpa, colócalo aquí -->
+          <div class="logo">ALLPA</div>
+          <h1>Simulador de Galpón</h1>
+        </div>
+        <div class="hdr-right">
+          <button id="shareBtn" class="btn btn-primary">Compartir</button>
+        </div>
       </div>
-      <div class="row">
-        <label for="barnH">Alto del galpón (m):</label>
-        <input id="barnH" type="range" min="1" max="5" step="1" value="2" />
-        <span id="barnHVal">10</span> m
-      </div>
+    </header>
 
-      <div class="row">
-        <label for="chickCount">Cantidad de pollitos:</label>
-        <input id="chickCount" type="range" min="1" max="52" step="1" value="48" />
-        <span id="chickCountVal">52</span>
-      </div>
+    <!-- Main content -->
+    <main class="container main-grid">
 
-      <div class="row" style="font-size:12px; opacity:.85;">
-        <span id="limitsHint">Recomendado: — | Máximo: —</span>
-      </div>
-    </div>
+      <!-- Panel de controles -->
+      <aside class="controls-card">
+        <div class="controls-header">Controles</div>
 
-    <div id="game"></div>
+        <div class="control-row">
+          <label for="climate">Clima</label>
+          <select id="climate">
+            <option value="templado" selected>Templado (30 kg/m²)</option>
+            <option value="caliente">Caliente (26 kg/m²)</option>
+            <option value="frio">Frío (33 kg/m²)</option>
+          </select>
+        </div>
+
+        <div class="control-row">
+          <label for="barnW">Ancho del galpón (m)</label>
+          <input id="barnW" type="range" min="1" max="30" step="1" value="12" />
+          <div class="small muted"><span id="barnWVal">12</span> m</div>
+        </div>
+
+        <div class="control-row">
+          <label for="barnH">Alto del galpón (m)</label>
+          <input id="barnH" type="range" min="1" max="30" step="1" value="12" />
+          <div class="small muted"><span id="barnHVal">12</span> m</div>
+        </div>
+
+        <div class="control-row">
+          <label for="chickCount">Cantidad de pollitos</label>
+          <input id="chickCount" type="range" min="1" max="52" step="1" value="26" />
+          <div class="small muted"><span id="chickCountVal">26</span> aves</div>
+        </div>
+
+        <div class="hint-chip" id="limitsHint">
+          Área efectiva — Recomendado | Máximo
+        </div>
+      </aside>
+
+      <!-- Frame / Card de la simulación -->
+      <section class="sim-card">
+        <div class="sim-frame" id="sim-frame">
+          <!-- El canvas de Phaser se inyecta dentro de este div -->
+          <div id="phaser-root" class="phaser-mount"></div>
+          <!-- Badge de estado (sin texto dentro del canvas) -->
+          <div id="statusBadge" class="status-badge" aria-hidden="true"></div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Carrusel educativo -->
+    <section class="container carousel-wrap">
+      <h2 class="section-title">¿Cómo calcular cuántas aves puedo criar?</h2>
+
+      <div class="carousel" id="eduCarousel">
+        <button class="carousel-nav prev" aria-label="Anterior" id="carPrev">‹</button>
+
+        <div class="carousel-track" id="carTrack">
+          <article class="card step">
+            <h3>1. Elige el clima</h3>
+            <p>Caliente (26 kg/m²), Templado (30), Frío (33). En calor baja la densidad para evitar estrés térmico.</p>
+          </article>
+
+          <article class="card step">
+            <h3>2. Peso objetivo</h3>
+            <p>Trabajamos con 2.3 kg/ave. Aves/m² = (kg/m²) ÷ (kg/ave).</p>
+          </article>
+
+          <article class="card step">
+            <h3>3. Área del galpón</h3>
+            <p>Usa ancho × alto. Para el aprendizaje, el cálculo se hace con un área efectiva entre 1 y 3 m².</p>
+          </article>
+
+          <article class="card step">
+            <h3>4. Aves recomendadas</h3>
+            <p>Verás el recomendado y el tope máximo (×2). Observa el semáforo del frame.</p>
+          </article>
+
+          <article class="card step">
+            <h3>5. Bebederos y comederos</h3>
+            <p>Reserva espacio. Regla simple: 1 comedero circular ~25 aves, 1 bebedero tina ~50 aves.</p>
+          </article>
+
+          <article class="card step">
+            <h3>6. Resultado</h3>
+            <p>Confirma el número final y revisa el confort. Ajusta área, clima o equipos según necesidad.</p>
+          </article>
+        </div>
+
+        <button class="carousel-nav next" aria-label="Siguiente" id="carNext">›</button>
+      </div>
+    </section>
+
+    <footer class="allpa-footer">
+      <div class="container">
+        <span>© Allpa — Economía circular aplicada a la avicultura.</span>
+      </div>
+    </footer>
+
+    <!-- Script del botón compartir y carrusel (ligero) -->
+    <script type="module">
+      const shareBtn = document.getElementById('shareBtn');
+      shareBtn?.addEventListener('click', async () => {
+        const url = window.location.href.split('#')[0];
+        const title = 'Simulador de Galpón — Allpa';
+        const text = 'Calcula cuántas aves puedes criar según clima, densidad y espacio.';
+        if (navigator.share) {
+          try { await navigator.share({ title, text, url }); } catch {}
+        } else {
+          await navigator.clipboard.writeText(url);
+          shareBtn.textContent = '¡Enlace copiado!';
+          setTimeout(()=> shareBtn.textContent = 'Compartir', 1500);
+        }
+      });
+
+      // Carrusel simple
+      const track = document.getElementById('carTrack');
+      let idx = 0;
+      const stepCount = track?.children.length ?? 0;
+      const snap = () => track?.scrollTo({ left: (track.clientWidth ?? 0) * idx, behavior: 'smooth' });
+      document.getElementById('carNext')?.addEventListener('click', () => { idx = Math.min(idx + 1, stepCount - 1); snap(); });
+      document.getElementById('carPrev')?.addEventListener('click', () => { idx = Math.max(idx - 1, 0); snap(); });
+      window.addEventListener('resize', snap);
+    </script>
+
+    <!-- Tu bundle de Phaser -->
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
