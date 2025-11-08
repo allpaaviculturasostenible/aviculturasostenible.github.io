@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Simulador de Galpón - Allpa</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <div id="ui-panel">
+      <div class="row">
+        <label for="climate">Clima:</label>
+        <select id="climate">
+          <option value="templado" selected>Templado (30 kg/m²)</option>
+          <option value="caliente">Caliente (26 kg/m²)</option>
+          <option value="frio">Frío (33 kg/m²)</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <label for="barnW">Ancho del galpón (m):</label>
+        <input id="barnW" type="range" min="1" max="5" step="1" value="2" />
+        <span id="barnWVal">10</span> m
+      </div>
+      <div class="row">
+        <label for="barnH">Alto del galpón (m):</label>
+        <input id="barnH" type="range" min="1" max="5" step="1" value="2" />
+        <span id="barnHVal">10</span> m
+      </div>
+
+      <div class="row">
+        <label for="chickCount">Cantidad de pollitos:</label>
+        <input id="chickCount" type="range" min="1" max="52" step="1" value="48" />
+        <span id="chickCountVal">52</span>
+      </div>
+
+      <div class="row" style="font-size:12px; opacity:.85;">
+        <span id="limitsHint">Recomendado: — | Máximo: —</span>
+      </div>
+    </div>
+
+    <div id="game"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
