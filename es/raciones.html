@@ -32,8 +32,8 @@
      */
 
     // --- Utilidades ---
-    function lerp(a: number, b: number, t: number) { return a + (b - a) * t; }
-    function piecewiseLinear(age: number, points: Array<[number, number]>) {
+    function lerp(a, b, t) { return a + (b - a) * t; }
+    function piecewiseLinear(age, points) {
       if (age <= points[0][0]) return points[0][1];
       if (age >= points[points.length - 1][0]) return points[points.length - 1][1];
       for (let i = 0; i < points.length - 1; i++) {
@@ -50,15 +50,15 @@
     const todayKey = () => new Date().toISOString().slice(0,10);
 
     // --- Curvas base (aprox. orientativas) ---
-    const WEIGHT_CURVE_POINTS: Array<[number, number]> = [
+    const WEIGHT_CURVE_POINTS = [
       [1, 42], [7, 180], [14, 450], [21, 900], [28, 1500], [35, 2200], [42, 2900], [56, 3600]
     ];
-    const INTAKE_CURVE_POINTS: Array<[number, number]> = [
+    const INTAKE_CURVE_POINTS = [
       [1, 12], [2, 18], [5, 30], [7, 40], [14, 75], [21, 110], [28, 150], [35, 180], [42, 200], [56, 225]
     ];
 
     // Etapas por edad
-    function feedStage(age: number) {
+    function feedStage(age) {
       if (age <= 7) return { code: "preiniciador", label: "Preiniciador (días 1–7)" };
       if (age <= 21) return { code: "iniciador", label: "Iniciador (días 8–21)" };
       if (age <= 35) return { code: "crecimiento", label: "Crecimiento (días 22–35)" };
@@ -84,8 +84,8 @@
     ];
 
     // Horarios
-    type Schedule = { mode: "adlib" | "six" | "two"; summary: string; details: string[] };
-    function scheduleForAge(age: number): Schedule {
+    // type Schedule = { mode: "adlib" | "six" | "two"; summary: string; details: string[] };
+    function scheduleForAge(age) {
       if (age <= 2) {
         return { mode: "adlib", summary: "Días 1–2: alimentación a voluntad (24/7)", details: ["Comederos siempre llenos y accesibles."] };
       }
@@ -98,38 +98,38 @@
     // Persistencia
     const LS_KEY = "allpa_calc_raciones_v3"; // nueva versión para compatibilidad
 
-    type SavedRecord = {
-      date: string;
-      savedAt: string;
-      breed: string;
-      count: number;
-      age: number;
-      intakePerBirdG: number;
-      expectedWeightG: number;
-      totalIntakeKg: number;
-      stage: any;
-      schedule: any;
-      note?: string;
-      rations: Array<{ label: string; perBirdG: string; totalKg: string }>;
-    };
+    // type SavedRecord = {
+    //   date: string;
+    //   savedAt: string;
+    //   breed: string;
+    //   count: number;
+    //   age: number;
+    //   intakePerBirdG: number;
+    //   expectedWeightG: number;
+    //   totalIntakeKg: number;
+    //   stage: any;
+    //   schedule: any;
+    //   note?: string;
+    //   rations: Array<{ label: string; perBirdG: string; totalKg: string }>;
+    // };
 
-    type Store = {
-      records: Record<string, SavedRecord>;
-      streak: number;
-      lastSave: string | null;
-      visits: Array<{ at: string; action: "visit" | "save" }>;
-    };
+    // type Store = {
+    //   records: Record<string, SavedRecord>;
+    //   streak: number;
+    //   lastSave: string | null;
+    //   visits: Array<{ at: string; action: "visit" | "save" }>;
+    // };
 
     function Page() {
       const [breed, setBreed] = useState("cobb500");
-      const [count, setCount] = useState<number>(100);
-      const [age, setAge] = useState<number>(1);
+      const [count, setCount] = useState(100);
+      const [age, setAge] = useState(1);
       const [note, setNote] = useState("");
       const [streak, setStreak] = useState(0);
-      const [lastSave, setLastSave] = useState<string | null>(null);
-      const [yesterdayRecord, setYesterdayRecord] = useState<SavedRecord | null>(null);
-      const [savedList, setSavedList] = useState<Array<SavedRecord>>([]);
-      const [selectedKey, setSelectedKey] = useState<string>("");
+      const [lastSave, setLastSave] = useState(null);
+      const [yesterdayRecord, setYesterdayRecord] = useState(null);
+      const [savedList, setSavedList] = useState([]);
+      const [selectedKey, setSelectedKey] = useState("");
 
       // Tip del día
       const tipOfDay = useMemo(() => {
@@ -146,7 +146,7 @@
 
       // Raciones por horario
       const rations = useMemo(() => {
-        if (schedule.mode === "adlib") return [] as Array<{ label: string, perBirdG: string, totalKg: string }>;
+        if (schedule.mode === "adlib") return [];
         if (schedule.mode === "six") {
           const per = intakePerBirdG / 6;
           return schedule.details.map((d) => ({ label: d, perBirdG: formatG(per), totalKg: formatKg(per * count) }));
@@ -163,7 +163,7 @@
       useEffect(() => {
         try {
           const raw = localStorage.getItem(LS_KEY);
-          const data: Store = raw ? JSON.parse(raw) : { records: {}, streak: 0, lastSave: null, visits: [] };
+          const data = raw ? JSON.parse(raw) : { records: {}, streak: 0, lastSave: null, visits: [] };
 
           // registrar visita
           data.visits = Array.isArray(data.visits) ? data.visits : [];
@@ -201,7 +201,7 @@
 
       function saveToday() {
         const key = todayKey();
-        const record: SavedRecord = {
+        const record = {
           date: key,
           savedAt: nowIso(),
           breed, count, age,
@@ -211,7 +211,7 @@
         };
         try {
           const raw = localStorage.getItem(LS_KEY);
-          const data: Store = raw ? JSON.parse(raw) : { records: {}, streak: 0, lastSave: null, visits: [] };
+          const data = raw ? JSON.parse(raw) : { records: {}, streak: 0, lastSave: null, visits: [] };
 
           // streak
           let newStreak = data.streak || 0;
@@ -249,11 +249,11 @@
         }
       }
 
-      function loadSaved(key: string) {
+      function loadSaved(key) {
         try {
           const raw = localStorage.getItem(LS_KEY);
           if (!raw) return;
-          const data: Store = JSON.parse(raw);
+          const data = JSON.parse(raw);
           const rec = data.records[key];
           if (!rec) return;
           setSelectedKey(key);
@@ -319,14 +319,14 @@
                 </div>
                 <div className="sm:col-span-1">
                   <label className="text-sm font-medium">Cantidad de pollos</label>
-                  <input type="number" min={1} value={count} onChange={(e)=>setCount(parseInt((e.target as HTMLInputElement).value||'0'))} className="mt-1 w-full rounded-xl border px-3 py-2" />
+                  <input type="number" min={1} value={count} onChange={(e)=>setCount(parseInt(e.target.value||'0'))} className="mt-1 w-full rounded-xl border px-3 py-2" />
                 </div>
                 <div className="sm:col-span-2">
                   <label className="text-sm font-medium flex items-center justify-between">
                     <span>Edad (días)</span>
                     <span className="text-xs text-neutral-600">Día seleccionado: <b>{age}</b>/56</span>
                   </label>
-                  <input type="range" min={1} max={56} value={age} onChange={(e)=>setAge(parseInt((e.target as HTMLInputElement).value||'1'))} className="mt-2 w-full" />
+                  <input type="range" min={1} max={56} value={age} onChange={(e)=>setAge(parseInt(e.target.value||'1'))} className="mt-2 w-full" />
                 </div>
               </div>
               <p className="text-sm text-neutral-600">Usa la calculadora a diario: al guardar, tus observaciones y la hora quedan registradas automáticamente para trazabilidad.</p>
@@ -392,7 +392,7 @@
               <div className="grid md:grid-cols-2 gap-4 items-start">
                 <div>
                   <label className="text-sm font-medium">Observaciones de hoy</label>
-                  <textarea value={note} onChange={(e)=>setNote((e.target as HTMLTextAreaElement).value)} rows={4} className="mt-1 w-full rounded-xl border px-3 py-2" placeholder="Ej.: consumo bajo por calor al mediodía, mejorar ventilación" />
+                  <textarea value={note} onChange={(e)=>setNote(e.target.value)} rows={4} className="mt-1 w-full rounded-xl border px-3 py-2" placeholder="Ej.: consumo bajo por calor al mediodía, mejorar ventilación" />
                 </div>
                 <div className="rounded-xl border p-4 grid gap-3">
                   <button onClick={saveToday} className="w-full rounded-xl bg-emerald-600 text-white py-2 font-medium hover:bg-emerald-700 transition">💾 Guardar registro de hoy</button>
@@ -430,7 +430,7 @@
       );
     }
 
-    function Stat({ label, value }: { label: string, value: string }) {
+    function Stat({ label, value }) {
       return (
         <div className="rounded-xl border p-4 bg-neutral-50">
           <p className="text-xs uppercase tracking-wide text-neutral-600">{label}</p>
@@ -439,7 +439,7 @@
       );
     }
 
-    function Progress({ value }: { value: number }) {
+    function Progress({ value }) {
       return (
         <div className="w-full h-3 bg-neutral-200 rounded-full overflow-hidden">
           <div className="h-full bg-emerald-600" style={{ width: `${Math.max(0, Math.min(100, value))}%` }} />
@@ -480,10 +480,10 @@
     }
 
     // Helpers
-    function formatG(v: number) { return `${Math.round(v)} g`; }
-    function formatKg(v: number) { return `${(v/1000).toFixed(2)} kg`; }
-    function hashCode(str: string) { let h = 0; for (let i=0;i<str.length;i++){ h = ((h<<5)-h)+str.charCodeAt(i); h|=0; } return h; }
-    function buildShareUrl({ breed, count, age, note }: { breed: string; count: number; age: number; note?: string; }) {
+    function formatG(v) { return `${Math.round(v)} g`; }
+    function formatKg(v) { return `${(v/1000).toFixed(2)} kg`; }
+    function hashCode(str) { let h = 0; for (let i=0;i<str.length;i++){ h = ((h<<5)-h)+str.charCodeAt(i); h|=0; } return h; }
+    function buildShareUrl({ breed, count, age, note }) {
       const base = `${window.location.origin}${window.location.pathname}`;
       const params = new URLSearchParams();
       params.set("breed", String(breed));
@@ -494,7 +494,7 @@
     }
 
     // Montaje
-    ReactDOM.createRoot(document.getElementById('root')!).render(<Page />);
+    ReactDOM.createRoot(document.getElementById('root')).render(<Page />);
   </script>
 </body>
 </html>
