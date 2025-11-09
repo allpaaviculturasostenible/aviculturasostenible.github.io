@@ -482,16 +482,33 @@
         Suscríbete a nuestro boletín y recibe guías prácticas y herramientas
         gratuitas para mejorar tu producción avícola.
       </p>
-      <input
-        type="email"
-        placeholder="Tu correo electrónico"
-        class="w-full border p-2 rounded-lg mb-4"
-      />
-      <button
-        class="w-full bg-[#2c6e2f] text-white p-3 rounded-lg hover:bg-[#4f8a45] transition"
+      <form
+        id="subscribeForm"
+        action="https://docs.google.com/forms/d/e/1FAIpQLSdLrvwfiUP4_K8OMIAfA8mWRQ_82-E06uQF_cfIQ3amehxYpQ/formResponse"
+        target="hidden_iframe"
+        method="POST"
       >
-        Suscribirme ahora
-      </button>
+        <input
+          type="email"
+          placeholder="Tu correo electrónico"
+          class="w-full border p-2 rounded-lg mb-4"
+          required
+          name="entry.1776799657"
+          id="emailInput"
+        />
+        <button
+          type="submit"
+          class="w-full bg-[#2c6e2f] text-white p-3 rounded-lg hover:bg-[#4f8a45] transition"
+        >
+          Suscribirme ahora
+        </button>
+      </form>
+      <iframe
+        name="hidden_iframe"
+        id="hidden_iframe"
+        style="display: none"
+        onload="if(submitted) { successMessage(); }"
+      ></iframe>
       <p class="text-gray-500 text-sm mt-4">
         Únete a nuestra comunidad y aprende más sobre avicultura circular:
       </p>
@@ -578,6 +595,9 @@
 
       const infografia = document.getElementById("infografia");
       const suscripcion = document.getElementById("suscripcion");
+
+      const subscribeForm = document.getElementById("subscribeForm");
+      let submitted = false; // Bandera para rastrear si el formulario se ha enviado
 
       const tblPre = document.getElementById("tblPre");
       const tblIni = document.getElementById("tblIni");
@@ -963,6 +983,38 @@
           console.warn("Self-tests failed", e);
         }
       })();
+
+      // Función para mostrar el mensaje de éxito
+      function successMessage() {
+        const socialLinks = suscripcion.querySelector(".flex.justify-center");
+        suscripcion.innerHTML = `
+    <h3 class="text-xl font-semibold mb-2 text-[#4f8a45]">
+      ¡Suscripción exitosa! 🎉
+    </h3>
+    <p class="text-gray-600 mb-4">
+      Gracias por unirte. Tu correo ha sido guardado.
+    </p>
+    <p class="text-gray-500 text-sm mt-4">
+      Mientras tanto, síguenos en nuestras redes:
+    </p>
+  `;
+        // Re-agrega los enlaces sociales
+        if (socialLinks) {
+          suscripcion.appendChild(socialLinks);
+        }
+        // Limpia la bandera
+        submitted = false;
+      }
+
+      // Evento que se dispara al enviar el formulario
+      if (subscribeForm) {
+        subscribeForm.addEventListener("submit", function () {
+          // Establece la bandera y el formulario se envía al iframe
+          submitted = true;
+          // Opcional: limpia el campo de email
+          document.getElementById("emailInput").value = "";
+        });
+      }
     </script>
 
     <script src="/assets/js/allpaFooter.js"></script>
