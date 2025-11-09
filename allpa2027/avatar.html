@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Roadmap Allpa – Escalera del Emprendedor Avícola</title>
+  <meta name="description" content="Roadmap interactivo para guiar a futuros avicultores desde el nivel 1 (Curioso digital) hasta el nivel 6 (Productor integral Allpa)."/>
+  <style>
+    :root{
+      --bg:#0b0f14;          /* fondo base */
+      --panel:#0f1620;       /* panel oscuro */
+      --muted:#9fb3c8;       /* texto suave */
+      --text:#e6eef7;        /* texto principal */
+      --acc:#7ddc65;         /* verde Allpa */
+      --acc2:#49a6ff;        /* azul de acción */
+      --warn:#f7c948;        /* acento cálido */
+      --danger:#ff6b6b;      
+      --ring: 0 0 0 2px var(--acc2); 
+      --radius: 18px;
+      --radius-sm: 12px;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --grid-gap: 18px;
+      --maxw: 1100px;
+    }
+    html, body{height:100%;background:radial-gradient(1200px 600px at 10% -10%,#13202f 0%, transparent 60%),radial-gradient(900px 600px at 110% 10%, #1e2937 0%, transparent 55%),var(--bg); color:var(--text); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica Neue, Arial, "Apple Color Emoji","Segoe UI Emoji";}
+    a{color:var(--acc2)}
+    .wrap{max-width:var(--maxw); margin: 24px auto; padding: 0 16px 80px;}
+    header{display:flex; gap:12px; align-items:center; justify-content:space-between; margin-bottom: 16px;}
+    .brand{display:flex; gap:12px; align-items:center}
+    .logo{height:44px; width:44px; border-radius:50%; background: conic-gradient(from 180deg, #7ddc65, #49a6ff, #7ddc65); box-shadow: inset 0 0 20px rgba(255,255,255,.25); position:relative}
+    .logo:after{content:""; position:absolute; inset:9px; background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.7), transparent 35%), rgba(11,15,20,.9); border-radius:50%;}
+    h1{font-size: clamp(20px, 2.6vw, 34px); letter-spacing:.2px; margin:0}
+    .muted{color:var(--muted)}
+    .bar{position:relative; background:linear-gradient(90deg, rgba(255,255,255,.06), rgba(255,255,255,.04)); border-radius: 999px; padding: 12px; box-shadow: var(--shadow);}
+    .bar-inner{height:14px; background:linear-gradient(90deg, var(--acc), #2ecc71); border-radius:999px; box-shadow: 0 0 0 1px rgba(0,0,0,.25), inset 0 2px 8px rgba(255,255,255,.15);}    
+    .bar-label{display:flex; justify-content:space-between; margin:8px 4px 0; font-size:12px}
+
+    .grid{display:grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap: var(--grid-gap); margin-top:18px;}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02)); border:1px solid rgba(255,255,255,.08); border-radius: var(--radius); box-shadow: var(--shadow); overflow:hidden; display:flex; flex-direction:column; min-height: 260px;}
+    .card header{padding:16px; border-bottom:1px solid rgba(255,255,255,.08); background: linear-gradient(180deg, rgba(125, 220, 101, .06), rgba(125,220,101,.01));}
+    .badge{font-weight:700; font-size:12px; padding:6px 10px; border-radius:999px; display:inline-flex; align-items:center; gap:6px; background:rgba(73,166,255,.15); color:#cde6ff; border:1px solid rgba(73,166,255,.35)}
+    .badge.green{background: rgba(125,220,101,.18); color:#e8ffe1; border-color: rgba(125,220,101,.4)}
+    .badge.yellow{background: rgba(247,201,72,.18); color:#fff6db; border-color: rgba(247,201,72,.35)}
+    .badge.gray{background: rgba(255,255,255,.1); color:#e6eef7; border-color: rgba(255,255,255,.18)}
+    .card .content{padding:16px; display:flex; flex-direction:column; gap:12px;}
+    .goals{display:flex; flex-direction:column; gap:10px;}
+    .goal{padding:10px 12px; border-radius:12px; border:1px dashed rgba(255,255,255,.15); display:flex; gap:10px; align-items:center; background: rgba(255,255,255,.03)}
+    .goal input{width:18px; height:18px}
+
+    .actions{display:flex; flex-wrap:wrap; gap:8px; margin-top:auto; padding: 0 16px 16px}
+    .btn{cursor:pointer; border:none; border-radius:12px; padding:10px 14px; font-weight:700; letter-spacing:.2px; background: rgba(255,255,255,.07); color:var(--text);}
+    .btn:hover{filter:brightness(1.12)}
+    .btn.acc{background: linear-gradient(90deg, var(--acc), #52ffa3); color:#0b2113}
+    .btn.ghost{border:1px solid rgba(255,255,255,.18)}
+    .btn.link{background: transparent; color: var(--acc2); text-decoration: underline; padding: 0}
+
+    .footer{position:fixed; inset:auto 0 0 0; background: linear-gradient(180deg, rgba(11,15,20,.0), rgba(11,15,20,.85) 28%); backdrop-filter: blur(6px);}
+    .footer-inner{max-width:var(--maxw); margin:0 auto; padding:16px; display:flex; gap:10px; align-items:center; justify-content:space-between}
+
+    details.accordion{border-top:1px solid rgba(255,255,255,.12); margin-top:24px; padding-top:12px}
+    details summary{cursor:pointer; list-style:none}
+    details summary::-webkit-details-marker{display:none}
+    .kbd{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 12px; padding:3px 6px; border-radius:6px; border:1px solid rgba(255,255,255,.2); background: rgba(255,255,255,.05);}
+
+    .pill-row{display:flex; gap:8px; flex-wrap:wrap}
+    .pill{font-size:12px; padding:6px 10px; border:1px solid rgba(255,255,255,.18); border-radius:999px; color:var(--muted)}
+
+    .toast{position:fixed; right:16px; bottom:80px; background:rgba(21,31,44,.96); color:var(--text); padding:10px 14px; border-radius:12px; border:1px solid rgba(255,255,255,.1); box-shadow:var(--shadow); opacity:0; transform: translateY(12px); transition: .25s ease}
+    .toast.show{opacity:1; transform: translateY(0)}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <h1>Roadmap Allpa – Escalera del Emprendedor Avícola</h1>
+          <div class="muted">Ubica tu nivel, marca tus metas y avanza paso a paso hasta el modelo circular.</div>
+        </div>
+      </div>
+      <div class="pill-row">
+        <button class="btn ghost" id="resetBtn" title="Reiniciar mi progreso">Reiniciar</button>
+        <button class="btn acc" id="shareBtn" title="Compartir">Compartir</button>
+      </div>
+    </header>
+
+    <!-- Barra de progreso -->
+    <section class="bar" aria-label="Progreso general">
+      <div id="progress" class="bar-inner" style="width: 0%"></div>
+      <div class="bar-label">
+        <span class="muted">Nivel actual: <strong id="levelNow">1</strong> / 6</span>
+        <span class="muted">Metas completadas: <strong id="goalsCount">0</strong></span>
+      </div>
+    </section>
+
+    <!-- Píldoras de navegación rápida -->
+    <div class="pill-row" style="margin-top:10px">
+      <span class="muted">Ir al nivel:</span>
+      <button class="pill" data-jump="1">1</button>
+      <button class="pill" data-jump="2">2</button>
+      <button class="pill" data-jump="3">3</button>
+      <button class="pill" data-jump="4">4</button>
+      <button class="pill" data-jump="5">5</button>
+      <button class="pill" data-jump="6">6</button>
+    </div>
+
+    <!-- Tarjetas por nivel -->
+    <section class="grid" id="cards"></section>
+
+    <details class="accordion">
+      <summary>
+        <div class="badge gray">¿Cómo usar este roadmap?</div>
+      </summary>
+      <div class="content">
+        <p><strong>1)</strong> Lee la tarjeta de tu nivel y marca las metas (checklist). <strong>2)</strong> Cuando completes el 80% de metas del nivel, podrás subir al siguiente. <strong>3)</strong> Vuelve cada semana para actualizar tu progreso. Todo queda guardado en tu navegador (localStorage).</p>
+        <p>Atajos: pulsa <span class="kbd">1…6</span> para saltar entre niveles • <span class="kbd">S</span> para compartir • <span class="kbd">R</span> para reiniciar</p>
+      </div>
+    </details>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="muted">¿Listo para el siguiente paso? Únete al <strong>Reto 10 Pollitos Allpa</strong> y recibe material guiado en tu correo.</div>
+      <div class="pill-row">
+        <a class="btn ghost" href="#" onclick="alert('Aquí enlaza tu landing de registro / WhatsApp.'); return false;">Unirme al reto</a>
+        <a class="btn acc" href="#" onclick="alert('Aquí enlaza tu masterclass o checkout.'); return false;">Ver Masterclass</a>
+      </div>
+    </div>
+  </footer>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    // --- Datos de niveles y metas -----------------------------------------
+    const LEVELS = [
+      {
+        n:1, icon:"🧠", title:"Curioso digital", badge:"Inicio", color:"green",
+        desc:"Sueña con tener su granja. Ve contenido en TikTok/YouTube, pero aún no ha empezado.",
+        goal:[
+          "Seguir a El Pollo Ingeniero en TikTok/YouTube",
+          "Ver la Masterclass gratuita 'De cero a tus primeros pollitos'",
+          "Descargar la guía 'Primer Lote'",
+          "Definir objetivo personal (ingresos, aprendizaje, tiempo)",
+          "Abrir una libreta/Drive para registrar avances"
+        ],
+        actions:[
+          {label:"Ver Masterclass", href:"#"},
+          {label:"Descargar Guía", href:"#"}
+        ]
+      },
+      {
+        n:2, icon:"🚀", title:"Aspirante emprendedor", badge:"Prueba", color:"yellow",
+        desc:"Da su primer paso con 10–20 pollitos en casa/patio para aprender con bajo riesgo.",
+        goal:[
+          "Habilitar un espacio limpio y ventilado",
+          "Conseguir comederos/bebederos básicos",
+          "Adquirir 10–20 pollitos y registrarlos",
+          "Aplicar checklist de los primeros 8 días",
+          "Medir peso semanal y anotar consumos"
+        ],
+        actions:[
+          {label:"Kit de inicio", href:"#"},
+          {label:"Checklist 8 días", href:"#"}
+        ]
+      },
+      {
+        n:3, icon:"🐣", title:"Pequeño productor", badge:"Operación", color:"green",
+        desc:"Tiene su primer galpón (100–500 aves). Comienza a optimizar costos y bioseguridad.",
+        goal:[
+          "Usar calculadora de alimento Allpa",
+          "Implementar ventilación y control de amoníaco",
+          "Plan de vacunación al día",
+          "Registro de mortalidad y causas",
+          "Meta de conversión alimenticia semanal"
+        ],
+        actions:[
+          {label:"Calculadora", href:"#"},
+          {label:"Asesoría Allpa", href:"#"}
+        ]
+      },
+      {
+        n:4, icon:"🐥", title:"Productor intermedio", badge:"Alimento propio", color:"green",
+        desc:"Controla el costo del alimento con su planta de concentrado (servicio o leasing).",
+        goal:[
+          "Auditar ingredientes locales disponibles",
+          "Capacitación en fórmulas y manejo de larva BSF",
+          "Pruebas piloto de molienda/mezclado",
+          "Evaluar CAPEX/OPEX del leasing",
+          "Trazabilidad básica por lote"
+        ],
+        actions:[
+          {label:"Planta en leasing", href:"#"},
+          {label:"Capacitación", href:"#"}
+        ]
+      },
+      {
+        n:5, icon:"🐓", title:"Productor avanzado", badge:"Valor agregado", color:"green",
+        desc:"Procesa y vende directamente con línea modular de sacrificio y estándares sanitarios.",
+        goal:[
+          "Diseño del flujo sanitario y áreas limpias",
+          "Gestión de residuos y vísceras para larvas",
+          "Etiquetado y marca local",
+          "Acuerdos comerciales con canales cercanos",
+          "Auditoría HACCP básica"
+        ],
+        actions:[
+          {label:"Línea de sacrificio", href:"#"},
+          {label:"Guía HACCP", href:"#"}
+        ]
+      },
+      {
+        n:6, icon:"🔄", title:"Productor integral Allpa", badge:"Circular + Automación", color:"green",
+        desc:"Produce, transforma y vende con energía circular, biodigestor y galpón automatizado.",
+        goal:[
+          "Instalar sensores de ambiente y consumo",
+          "Automatizar comederos/bebederos",
+          "Implementar biodigestor para energía térmica",
+          "Panel de trazabilidad y KPI",
+          "Contrato de mantenimiento Allpa"
+        ],
+        actions:[
+          {label:"Automatización", href:"#"},
+          {label:"Biodigestor Allpa", href:"#"}
+        ]
+      }
+    ];
+
+    // --- Helpers -----------------------------------------------------------
+    const $ = (q, el=document) => el.querySelector(q);
+    const $$ = (q, el=document) => [...el.querySelectorAll(q)];
+    const store = {
+      key: 'allpa_roadmap_v1',
+      get(){ try{ return JSON.parse(localStorage.getItem(this.key)) || {level:1, checks:{}} }catch{ return {level:1, checks:{}} } },
+      set(v){ localStorage.setItem(this.key, JSON.stringify(v)) }
+    }
+
+    function toast(msg){
+      const t = $('#toast');
+      t.textContent = msg; t.classList.add('show');
+      setTimeout(()=>t.classList.remove('show'), 1800);
+    }
+
+    // --- Render de tarjetas ------------------------------------------------
+    function render(){
+      const state = store.get();
+      const cont = $('#cards');
+      cont.innerHTML = '';
+
+      LEVELS.forEach(level => {
+        const done = (state.checks[level.n]||[]).length;
+        const total = level.goal.length;
+        const pct = Math.round((done/total)*100);
+
+        const card = document.createElement('article');
+        card.className = 'card';
+        card.innerHTML = `
+          <header style="justify-content:space-between">
+            <div style="display:flex; gap:12px; align-items:center">
+              <div style="font-size:28px">${level.icon}</div>
+              <div>
+                <div style="font-size:18px; font-weight:800">Nivel ${level.n}: ${level.title}</div>
+                <div class="muted">${level.desc}</div>
+              </div>
+            </div>
+            <div class="badge ${level.color}">${level.badge}</div>
+          </header>
+          <div class="content">
+            <div class="muted">Metas del nivel (${done}/${total})</div>
+            <div class="goals">
+              ${level.goal.map((g,i)=>{
+                const checked = (state.checks[level.n]||[]).includes(i) ? 'checked' : '';
+                return `<label class="goal"><input type="checkbox" data-l="${level.n}" data-i="${i}" ${checked}/> <span>${g}</span></label>`
+              }).join('')}
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn ghost" data-prev="${level.n}">← Nivel anterior</button>
+            <button class="btn acc" data-next="${level.n}">Siguiente nivel →</button>
+            <button class="btn link" data-scrolltop>Subir</button>
+            ${level.actions.map(a=>`<a class="btn ghost" href="${a.href}">${a.label}</a>`).join('')}
+          </div>
+        `;
+        cont.appendChild(card);
+      });
+
+      // Progress & labels
+      $('#levelNow').textContent = state.level;
+      const totalGoals = LEVELS.reduce((s,l)=> s+l.goal.length, 0);
+      const goalsDone = Object.values(state.checks).reduce((s,arr)=> s+(arr?arr.length:0), 0);
+      $('#goalsCount').textContent = `${goalsDone}/${totalGoals}`;
+      const levelPct = (state.level-1)/(LEVELS.length-1);
+      const overallPct = Math.max(levelPct*100, (goalsDone/totalGoals)*100*0.6); // mezcla ligera
+      $('#progress').style.width = `${overallPct.toFixed(0)}%`;
+
+      // Scroll al nivel actual
+      const currentCard = $(`#cards .card:nth-child(${state.level})`);
+      if(currentCard) currentCard.scrollIntoView({behavior:'smooth', block:'center'});
+
+      // Listeners de checklists
+      $$('#cards input[type="checkbox"]').forEach(chk=>{
+        chk.addEventListener('change', e=>{
+          const l = +e.target.dataset.l; const i = +e.target.dataset.i;
+          const st = store.get(); st.checks[l] = st.checks[l] || [];
+          if(e.target.checked){ if(!st.checks[l].includes(i)) st.checks[l].push(i); }
+          else{ st.checks[l] = st.checks[l].filter(x=>x!==i); }
+          store.set(st); render();
+        });
+      });
+
+      // Botones siguiente/anterior
+      $$('[data-next]').forEach(b=> b.onclick = ()=> moveTo(+b.dataset.next + 1));
+      $$('[data-prev]').forEach(b=> b.onclick = ()=> moveTo(+b.dataset.prev - 1));
+      $$('[data-scrolltop]').forEach(b=> b.onclick = ()=> window.scrollTo({top:0, behavior:'smooth'}));
+    }
+
+    function moveTo(level){
+      const st = store.get();
+      const clamped = Math.min(LEVELS.length, Math.max(1, level));
+      if(clamped !== st.level){ st.level = clamped; store.set(st); render(); toast(`Ahora estás en el nivel ${clamped}`); }
+    }
+
+    // --- UI global ---------------------------------------------------------
+    $('#resetBtn').onclick = ()=>{ localStorage.removeItem(store.key); render(); toast('Progreso reiniciado'); };
+    $('#shareBtn').onclick = async ()=>{
+      const url = location.href;
+      const text = `Mi Roadmap Allpa: voy en el nivel ${store.get().level} de 6. ¿Te unes?`;
+      try{
+        if(navigator.share){ await navigator.share({title:document.title, text, url}); }
+        else{ await navigator.clipboard.writeText(`${text} \n${url}`); toast('Enlace copiado ✅'); }
+      }catch{ /* cancelado */ }
+    };
+
+    // Navegación rápida por píldoras
+    $$('[data-jump]').forEach(b=> b.onclick = ()=> moveTo(+b.dataset.jump));
+
+    // Atajos de teclado (1-6, s, r)
+    window.addEventListener('keydown', (e)=>{
+      if(/^[1-6]$/.test(e.key)) moveTo(+e.key);
+      if(e.key.toLowerCase()==='s') $('#shareBtn').click();
+      if(e.key.toLowerCase()==='r') $('#resetBtn').click();
+    });
+
+    // Render inicial
+    render();
+  </script>
+</body>
+</html>

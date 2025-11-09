@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Allpa · Roadmap Interno (Técnico)</title>
+  <meta name="description" content="Roadmap técnico e interactivo para estructurar el programa formativo y de equipamiento Allpa por niveles (100/500/1000) y ejes (Productivo, Técnico, Económico, Comercial, Legal/Bioseguridad, Sostenibilidad, Personal)." />
+  <style>
+    :root{
+      --bg:#0a1010; --text:#eaf2fb; --muted:#9fc0b3; --panel:#0f1820; --border:rgba(255,255,255,.12);
+      /* Paleta Allpa */
+      --acc:#6CC24A;           /* Verde Allpa principal */
+      --acc2:#2BB0ED;          /* Azul apoyo Allpa */
+      --warm:#F7C948;          /* Acento cálido */
+      --danger:#FF6B6B;        /* Error */
+      --ok:#34D399;            /* Confirmación */
+      --radius:18px; --shadow:0 14px 40px rgba(0,0,0,.35);
+    }
+    html, body {height:100%; background: radial-gradient(1200px 600px at -10% 0%, #1b2a3b 0%, transparent 55%), radial-gradient(1000px 700px at 110% 10%, #162434 0%, transparent 60%), var(--bg); color:var(--text); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica Neue, Arial;}
+    *{box-sizing:border-box}
+    a{color:var(--acc2)}
+
+    .layout{display:grid; grid-template-columns: 290px 1fr; min-height:100vh}
+    .side{border-right:1px solid var(--border); background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));}
+    .main{padding:16px 18px 120px}
+
+    .brand{display:flex; gap:12px; align-items:center; padding:16px;}
+    .logo{width:40px; height:40px; border-radius:50%; background: conic-gradient(from 180deg, #6CC24A, #2BB0ED, #6CC24A); box-shadow: inset 0 0 18px rgba(255,255,255,.28)}
+    .brand h1{font-size:18px; margin:0}
+    .muted{color:var(--muted)}
+
+    .section{padding:14px 16px; border-top:1px solid var(--border)}
+    .pill{display:inline-flex; gap:8px; align-items:center; padding:8px 12px; border:1px solid var(--border); border-radius:999px; cursor:pointer; background:rgba(255,255,255,.03)}
+    .pill[aria-current="true"]{background: linear-gradient(90deg, rgba(125,220,101,.18), rgba(73,166,255,.15)); border-color: rgba(125,220,101,.45)}
+
+    .level-list{display:grid; gap:10px; padding: 8px 16px 16px}
+    .level{padding:12px; border:1px solid var(--border); border-radius:12px; background: rgba(255,255,255,.03); cursor:pointer;}
+    .level[aria-current="true"]{outline:2px solid var(--acc2); background: rgba(73,166,255,.12)}
+
+    .toolbar{display:flex; gap:8px; flex-wrap:wrap; align-items:center; justify-content:space-between; margin: 6px 2px 14px}
+    .btn{border:1px solid var(--border); background: rgba(255,255,255,.06); color:var(--text); padding:9px 12px; border-radius:10px; cursor:pointer; font-weight:700}
+    .btn.primary{background: linear-gradient(90deg, var(--acc), #52ffa3); color:#0a1d12}
+    .btn.warn{background: linear-gradient(90deg, #ffd86b, #f7c948); color:#251d00}
+    .btn.danger{background: linear-gradient(90deg, #ff6b6b, #ff8a8a)}
+    .btn.ghost{background: transparent}
+    .search{flex:1; display:flex; gap:8px}
+    .input{flex:1; background: rgba(255,255,255,.06); border:1px solid var(--border); border-radius:10px; padding:10px 12px; color:var(--text)}
+
+    .tabs{display:flex; gap:6px; flex-wrap:wrap}
+    .tab{padding:10px 12px; border:1px solid var(--border); border-radius:10px; background: rgba(255,255,255,.04); cursor:pointer; font-weight:700; color:var(--muted)}
+    .tab[aria-selected="true"]{background: linear-gradient(180deg, rgba(125,220,101,.18), rgba(125,220,101,.05)); color:var(--text); border-color: rgba(125,220,101,.45)}
+
+    .panel{margin-top:12px; display:grid; grid-template-columns: 1.3fr .9fr; gap:14px}
+    .card{border:1px solid var(--border); border-radius:14px; background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02)); box-shadow: var(--shadow);}
+    .card header{padding:12px 14px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between}
+    .card .content{padding:12px 14px}
+
+    .checklist{display:grid; gap:8px}
+    .row{display:flex; gap:8px; align-items:flex-start}
+    .row input[type="checkbox"]{margin-top:4px}
+    .row textarea{flex:1; min-height:48px; resize:vertical; border-radius:10px; padding:8px 10px; border:1px solid var(--border); background:rgba(255,255,255,.04); color:var(--text)}
+    .row .small{width:110px}
+
+    .kpi-grid{display:grid; grid-template-columns: repeat(auto-fit,minmax(130px,1fr)); gap:10px}
+    .kpi{padding:12px; border:1px solid var(--border); border-radius:12px; background: rgba(255,255,255,.03)}
+    .kpi label{font-size:12px; color:var(--muted)}
+    .kpi input{width:100%; margin-top:6px; padding:9px 10px; border-radius:10px; border:1px solid var(--border); background: rgba(255,255,255,.06); color:var(--text)}
+
+    .two{display:grid; grid-template-columns: 1fr 1fr; gap:10px}
+
+    .footer{position:fixed; inset:auto 14px 14px 320px; padding:10px 12px; border:1px solid var(--border); border-radius:12px; background: rgba(18,28,40,.92); display:flex; gap:8px; justify-content:space-between; align-items:center}
+    .progress{height:10px; width:100%; background: rgba(255,255,255,.06); border-radius:999px; overflow:hidden}
+    .progress>div{height:100%; background: linear-gradient(90deg, var(--acc), #2ecc71)}
+
+    .toast{position:fixed; right:24px; bottom:90px; background:rgba(21,31,44,.96); color:var(--text); padding:10px 14px; border-radius:12px; border:1px solid var(--border); box-shadow:var(--shadow); opacity:0; transform: translateY(12px); transition: .25s ease}
+    .toast.show{opacity:1; transform: translateY(0)}
+
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size:12px}
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="side">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <h1>Allpa · Roadmap interno</h1>
+          <div class="muted">Gestión técnica por niveles y ejes</div>
+        </div>
+      </div>
+
+      <!-- Selección de avatar/niveles -->
+      <div class="section">
+        <div class="muted" style="margin-bottom:10px">Niveles</div>
+        <div id="levels" class="level-list"></div>
+      </div>
+
+      <!-- Filtros y utilidades -->
+      <div class="section">
+        <div class="muted" style="margin-bottom:8px">Filtros</div>
+        <div class="tabs" id="axisTabs"></div>
+        <div style="margin-top:8px" class="search">
+          <input id="q" class="input" placeholder="Buscar tema/actividad… ( / )" />
+          <button class="btn" id="clearSearch">Limpiar</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="muted" style="margin-bottom:8px">Herramientas</div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap">
+          <button class="pill" id="exportBtn">Exportar JSON</button>
+          <label class="pill" style="cursor:pointer">Importar JSON<input id="importFile" type="file" accept="application/json" hidden></label>
+          <button class="pill" id="resetBtn">Reiniciar</button>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="toolbar">
+        <div class="tabs" id="viewTabs">
+          <button class="tab" data-view="check" aria-selected="true">Checklist</button>
+          <button class="tab" data-view="kpi">KPIs</button>
+          <button class="tab" data-view="temas">Temario</button>
+          <button class="tab" data-view="notas">Notas</button>
+          <button class="tab" data-view="admin">Admin</button>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center">
+          <span class="muted">Atajos: <span class="mono">1–6</span> niveles, <span class="mono">A–G</span> ejes, <span class="mono">/</span> buscar</span>
+        </div>
+      </div>
+
+      <section id="panels">
+        <!-- Panels se renderizan por JS -->
+      </section>
+    </main>
+  </div>
+
+  <!-- Footer progreso general -->
+  <div class="footer">
+    <div style="min-width:240px">
+      <div class="muted">Progreso general</div>
+      <div class="progress"><div id="progressBar" style="width:0%"></div></div>
+    </div>
+    <div style="display:flex; gap:8px; align-items:center">
+      <div class="muted">Completadas: <strong id="doneCnt">0</strong> / <span id="totalCnt">0</span></div>
+      <button class="btn primary" id="shareBtn">Compartir estado (copiar)</button>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    // ====== MODELO DE DATOS ==================================================
+    // Ejes (consistent with good pedagogy & enterprise value)
+    const AXES = [
+      { id:'prod',  name:'Productivo' },
+      { id:'tec',   name:'Técnico' },
+      { id:'eco',   name:'Económico' },
+      { id:'com',   name:'Comercial' },
+      { id:'legal', name:'Legal & Bioseguridad' },
+      { id:'sos',   name:'Sostenibilidad' },
+      { id:'per',   name:'Personal/Liderazgo' }
+    ];
+
+    // Estructura por niveles con temario sintetizado desde tus fotos + propuestos
+    const LEVELS = [
+      {
+        id:'L1', label:'Nivel 1 · 100 pollos', size:100,
+        temas:{
+          prod:[ 'Manejo primeros 8 días', 'Peso semanal y consumo', 'Checklist diario', 'Evaluación de lote y utilidad'],
+          tec:[ 'Ventilación y humedad', 'Instalaciones básicas', 'Mantenimiento de equipos'],
+          eco:[ 'Costos del primer lote', 'Registro mortalidad/consumo'],
+          com:[ 'Venta local directa (familiares/vecinos)'],
+          legal:[ 'Bioseguridad esencial', 'Buenas prácticas de limpieza'],
+          sos:[ 'Gestión simple de residuos'],
+          per:[ 'Disciplina de registros', 'Plan del siguiente ciclo']
+        }
+      },
+      {
+        id:'L2', label:'Nivel 2 · 500 pollos', size:500,
+        temas:{
+          prod:[ 'Normalidad del lote (parámetros)', 'Plan vacunación por edad', 'Control de plagas'],
+          tec:[ 'Galpón técnico', 'Motobomba/agua', 'Automatización básica', 'Construcción y ubicación', 'Bodega/vestieres', 'Cercos'],
+          eco:[ 'Finanzas y flujo caja', 'Conversión alimenticia', 'Diseño de flujo productivo'],
+          com:[ 'Clientes recurrentes', 'Marketing y registro fotográfico', 'Estrategias de venta directa'],
+          legal:[ 'Registros pecuarios (ICA, Cámara de Comercio)', 'Visita técnica y requisitos'],
+          sos:[ 'Gestión de residuos y compostaje'],
+          per:[ 'Capacitación de personal', 'Rutinas de equipo']
+        }
+      },
+      {
+        id:'L3', label:'Nivel 3 · 1000 pollos', size:1000,
+        temas:{
+          prod:[ 'Normalidad avanzada', 'Trazabilidad por lotes', 'Autogestión del alimento'],
+          tec:[ 'Planta de concentrado modular', 'Laboratorio básico', 'Control automático', 'Almacenamiento de materias primas'],
+          eco:[ 'Punto de equilibrio y costeo completo', 'Reinversión del ciclo'],
+          com:[ 'Transformación y venta directa', 'Marca y empaque', 'Canales digitales'],
+          legal:[ 'BPM/HACCP avícola', 'Auditorías internas'],
+          sos:[ 'Energía circular (biodigestor/solar)', 'Aprovechamiento de vísceras para larvas'],
+          per:[ 'Roles y liderazgo de equipo']
+        }
+      },
+      {
+        id:'L4', label:'Nivel 4 · Intermedio (2.000 pollos)', size:2000,
+        temas:{
+          prod:[ 'Estandarización de fórmulas de alimento', 'Pruebas de rendimiento por lote', 'Gestión de inventarios de insumos'],
+          tec:[ 'Planta de concentrado en leasing (puesta en marcha)', 'Recepción, molienda y mezclado', 'Presecado y harinas de larva BSF', 'Mantenimiento preventivo de planta'],
+          eco:[ 'Modelo OPEX/CAPEX del leasing', 'Análisis de costo por kg vivo', 'Trazabilidad de costos por subproceso'],
+          com:[ 'Acuerdos con proveedores locales', 'Plan comercial mayorista (restaurantes/tiendas)', 'Estrategia de precios y promociones por lote'],
+          legal:[ 'Registros y rotulado de alimento', 'Protocolos de seguridad industrial'],
+          sos:[ 'Plan de coprocesos con residuos orgánicos', 'Indicadores de agua/energía por kg'],
+          per:[ 'Formación técnica del operario de planta', 'Roles y turnos de producción']
+        }
+      },
+      {
+        id:'L5', label:'Nivel 5 · Avanzado (5.000 pollos)', size:5000,
+        temas:{
+          prod:[ 'Programación de lotes escalonados', 'Rendimiento de canal y mermas'],
+          tec:[ 'Línea modular de sacrificio (layout sanitario)', 'Frío y cadena de frío', 'Gestión de vísceras para BSF', 'Equipos CIP y saneamiento'],
+          eco:[ 'Costeo de transformación (canal, cortes, subproductos)', 'Flujo de caja con ventas directas y por encargo'],
+          com:[ 'Marca, etiquetado y empaque', 'Canales B2C y B2B', 'Fidelización y suscripción'],
+          legal:[ 'BPM y HACCP implementados', 'Registros sanitarios y auditorías externas'],
+          sos:[ 'Plan integral de residuos y agua', 'Trazabilidad digital'],
+          per:[ 'Cuadro de mando operativo', 'Capacitación en inocuidad y SST']
+        }
+      },
+      {
+        id:'L6', label:'Nivel 6 · Productor Integral Allpa (10.000+)', size:10000,
+        temas:{
+          prod:[ 'Plan maestro de producción anual', 'Optimización de conversión y genética'],
+          tec:[ 'Automatización del galpón (sensores, actuadores)', 'SCADA / Dashboard de ambiente y consumo', 'Integración de biodigestor y calderas', 'Mantenimiento predictivo'],
+          eco:[ 'Gobernanza financiera y escenarios de inversión', 'KPIs estratégicos y contratos de mantenimiento'],
+          com:[ 'Omnicanal (tienda propia, suscripción, horeca)', 'Trazabilidad blockchain/opcional'],
+          legal:[ 'Compliance integral y certificaciones', 'Gestión documental'],
+          sos:[ 'Balance energético y huella de carbono', 'Economía circular completa'],
+          per:[ 'Liderazgo, cultura y escalamiento de equipo']
+        }
+      }
+    ];
+
+    // ====== ESTADO Y PERSISTENCIA ===========================================
+    const store = {
+      key:'allpa_roadmap_internal_v1',
+      get:function(){
+        try {
+          return JSON.parse(localStorage.getItem(this.key)) || { level:'L1', axis:'prod', checks:{}, notes:'', kpi:{} };
+        } catch(e){
+          return { level:'L1', axis:'prod', checks:{}, notes:'', kpi:{} };
+        }
+      },
+      set:function(v){ localStorage.setItem(this.key, JSON.stringify(v)); }
+    };
+
+    // ====== UTILIDADES =======================================================
+    const $ = function(q, el){ return (el||document).querySelector(q); };
+    const $$ = function(q, el){ return Array.prototype.slice.call((el||document).querySelectorAll(q)); };
+    function toast(msg){ var t=$('#toast'); t.textContent=msg; t.classList.add('show'); setTimeout(function(){t.classList.remove('show');},1600); }
+
+    // ====== RENDER: LATERAL (niveles + ejes) =================================
+    function renderSidebar(){
+      var st = store.get();
+      var lv = $('#levels'); lv.innerHTML='';
+      LEVELS.forEach(function(L){
+        var el = document.createElement('div'); el.className='level'; el.setAttribute('data-level',L.id);
+        if(st.level===L.id) el.setAttribute('aria-current','true');
+        el.innerHTML = '<div style="display:flex; justify-content:space-between; align-items:center">\
+            <div>\
+              <strong>'+L.label+'</strong>\
+              <div class="muted" style="font-size:12px">'+L.size+' aves</div>\
+            </div>\
+            <div class="muted mono">'+doneCount(L.id)+'/'+totalCount(L.id)+'</div>\
+          </div>';
+        el.onclick = function(){ st.level=L.id; store.set(st); renderAll(); };
+        lv.appendChild(el);
+      });
+
+      var tabs = $('#axisTabs'); tabs.innerHTML='';
+      AXES.forEach(function(a){
+        var b = document.createElement('button'); b.className='pill'; b.textContent=a.name; b.dataset.axis=a.id; if(st.axis===a.id) b.setAttribute('aria-current','true');
+        b.onclick = function(){ st.axis=a.id; store.set(st); renderAll(); };
+        tabs.appendChild(b);
+      });
+    }
+
+    // ====== RENDER: MAIN =====================================================
+    function renderMain(){
+      var st = store.get();
+      var current = LEVELS.find(function(x){return x.id===st.level;});
+      var axis = st.axis;
+      var view = $('#viewTabs .tab[aria-selected="true"]').dataset.view;
+
+      var panels = $('#panels');
+      panels.innerHTML='';
+
+      if(view==='check'){
+        panels.appendChild(checklistPanel(current, axis));
+        panels.appendChild(sidePanel(current, axis));
+      }
+      if(view==='kpi'){
+        panels.appendChild(kpiPanel(current));
+        panels.appendChild(sidePanel(current, axis));
+      }
+      if(view==='temas'){
+        panels.appendChild(temasPanel(current));
+        panels.appendChild(sidePanel(current, axis));
+      }
+      if(view==='notas'){
+        panels.appendChild(notasPanel());
+        panels.appendChild(sidePanel(current, axis));
+      }
+      if(view==='admin'){
+        panels.appendChild(adminPanel(current));
+        panels.appendChild(sidePanel(current, axis));
+      }
+
+      // Footer progress
+      $('#doneCnt').textContent = grandDone();
+      $('#totalCnt').textContent = grandTotal();
+      var pct = Math.round((grandDone()/Math.max(grandTotal(),1))*100);
+      $('#progressBar').style.width = pct + '%';
+    }
+
+    // ====== SUB-PANELES ======================================================
+    function checklistPanel(L, axis){
+      var box = document.createElement('div'); box.className='panel';
+      // Left card: checklist por eje
+      var cardL = document.createElement('article'); cardL.className='card';
+      cardL.innerHTML = '<header><strong>'+L.label+' · '+AXES.find(function(a){return a.id===axis;}).name+'</strong><span class="muted">Checklist de actividades</span></header>';
+      var content = document.createElement('div'); content.className='content';
+
+      var list = L.temas[axis] || [];
+      var st = store.get();
+      st.checks = st.checks || {}; st.checks[L.id] = st.checks[L.id] || {}; st.checks[L.id][axis] = st.checks[L.id][axis] || [];
+      var done = st.checks[L.id][axis];
+
+      var wrapper = document.createElement('div'); wrapper.className='checklist';
+      list.forEach(function(topic, i){
+        var row = document.createElement('div'); row.className='row';
+        row.innerHTML = '<input type="checkbox" data-i="'+i+'" '+(done.indexOf(i)>-1?'checked':'')+'>\
+                         <textarea placeholder="Describe la actividad ejecutada, insumos, costos…">'+(((st.notes&&st.notes[L.id]&&st.notes[L.id][axis]&&st.notes[L.id][axis][i])||''))+'</textarea>';
+        row.querySelector('input').onchange = function(e){
+          var checked = e.target.checked; var idx = +e.target.dataset.i;
+          var st2 = store.get(); var arr = st2.checks[L.id][axis];
+          if(checked){ if(arr.indexOf(idx)===-1) arr.push(idx); }
+          else{ st2.checks[L.id][axis] = arr.filter(function(x){return x!==idx;}); }
+          store.set(st2); renderAll();
+        };
+        row.querySelector('textarea').onchange = function(e){
+          var t = e.target.value; var idx2 = +row.querySelector('input').dataset.i;
+          var st2 = store.get(); st2.notes = st2.notes||{}; st2.notes[L.id]=st2.notes[L.id]||{}; st2.notes[L.id][axis]=st2.notes[L.id][axis]||{}; st2.notes[L.id][axis][idx2]=t; store.set(st2);
+        };
+        wrapper.appendChild(row);
+      });
+      content.appendChild(wrapper); cardL.appendChild(content);
+
+      // Right card: resumen
+      var cardR = sideSummary(L, axis);
+
+      box.appendChild(cardL); box.appendChild(cardR);
+      return box;
+    }
+
+    function kpiPanel(L){
+      var box = document.createElement('div'); box.className='panel';
+      var cardL = document.createElement('article'); cardL.className='card';
+      cardL.innerHTML = '<header><strong>'+L.label+' · KPIs</strong><span class="muted">Indicadores de desempeño por lote</span></header>';
+      var content = document.createElement('div'); content.className='content';
+
+      var grid = document.createElement('div'); grid.className='kpi-grid';
+      var fields = [
+        {id:'peso7', label:'Peso día 7 (g)'},
+        {id:'peso21', label:'Peso día 21 (g)'},
+        {id:'peso42', label:'Peso día 42 (g)'},
+        {id:'conv', label:'Conversión alimenticia'},
+        {id:'mortalidad', label:'Mortalidad (%)'},
+        {id:'amon', label:'Amoníaco (ppm)'},
+        {id:'temp', label:'Temp. promedio (°C)'},
+        {id:'hum', label:'Humedad (%)'},
+        {id:'util', label:'Utilidad por lote ($)'}
+      ];
+      var st = store.get(); st.kpi = st.kpi || {}; st.kpi[L.id] = st.kpi[L.id] || {}; var data = st.kpi[L.id];
+      fields.forEach(function(f){
+        var k = document.createElement('div'); k.className='kpi';
+        k.innerHTML = '<label>'+f.label+'</label><input type="text" data-id="'+f.id+'" value="'+(data[f.id]||'')+'"/>';
+        k.querySelector('input').onchange = function(e){ var st2 = store.get(); st2.kpi[L.id][f.id]=e.target.value; store.set(st2); };
+        grid.appendChild(k);
+      });
+      content.appendChild(grid); cardL.appendChild(content);
+
+      var cardR = sideSummary(L, 'prod');
+      box.appendChild(cardL); box.appendChild(cardR); return box;
+    }
+
+    function temasPanel(L){
+      var box = document.createElement('div'); box.className='panel';
+      var cardL = document.createElement('article'); cardL.className='card';
+      cardL.innerHTML = '<header><strong>'+L.label+' · Temario por eje</strong><span class="muted">Vista de referencia</span></header>';
+      var content = document.createElement('div'); content.className='content';
+      var grid = document.createElement('div'); grid.className='two';
+      AXES.forEach(function(a){
+        var sec = document.createElement('div'); sec.className='card';
+        var temas = (L.temas[a.id]||[]).map(function(t){return '• '+t;}).join('<br>') || '<span class="muted">Sin temas</span>';
+        sec.innerHTML = '<header><strong>'+a.name+'</strong></header><div class="content">'+temas+'</div>';
+        grid.appendChild(sec);
+      });
+      content.appendChild(grid); cardL.appendChild(content);
+      var cardR = sideSummary(L,'prod'); box.appendChild(cardL); box.appendChild(cardR); return box;
+    }
+
+    function notasPanel(){
+      var st = store.get();
+      var box = document.createElement('div'); box.className='panel';
+      var card = document.createElement('article'); card.className='card';
+      card.innerHTML = '<header><strong>Notas generales del roadmap</strong><span class="muted">(interno Allpa)</span></header>';
+      var content = document.createElement('div'); content.className='content';
+      content.innerHTML = '<textarea id="notes" style="width:100%; min-height:280px" placeholder="Acuerdos internos, decisiones de diseño, pendientes…">'+(st.globalNotes||'')+'</textarea>';
+      card.appendChild(content); box.appendChild(card);
+      $('#panels').appendChild(box);
+      $('#notes').onchange = function(e){ var st2 = store.get(); st2.globalNotes = e.target.value; store.set(st2); };
+      return box;
+    }
+
+    function adminPanel(L){
+      var box = document.createElement('div'); box.className='panel';
+      var card = document.createElement('article'); card.className='card';
+      card.innerHTML = '<header><strong>'+L.label+' · Admin de Temas</strong><span class="muted">Agregar/editar temas por eje</span></header>';
+      var content = document.createElement('div'); content.className='content';
+
+      AXES.forEach(function(a){
+        var wrap = document.createElement('div'); wrap.style.marginBottom='14px';
+        var title = document.createElement('div'); title.innerHTML = '<strong>'+a.name+'</strong>'; wrap.appendChild(title);
+        var list = document.createElement('div'); list.style.marginTop='6px';
+        var temas = L.temas[a.id] || [];
+        temas.forEach(function(t, i){
+          var row = document.createElement('div'); row.className='row';
+          row.innerHTML = '<input class="input" value="'+t+'" style="flex:1"/> <button class="btn danger">Eliminar</button>';
+          row.querySelector('input').onchange = function(e){ t = e.target.value; var lvl = LEVELS.find(function(x){return x.id===L.id;}); lvl.temas[a.id][i]=t; store.set(store.get()); toast('Tema actualizado'); };
+          row.querySelector('button').onclick = function(){ var idx=i; var lvl=LEVELS.find(function(x){return x.id===L.id;}); lvl.temas[a.id].splice(idx,1); store.set(store.get()); renderAll(); };
+          list.appendChild(row);
+        });
+        var add = document.createElement('button'); add.className='btn'; add.textContent='Añadir tema'; add.onclick=function(){ var txt=prompt('Nuevo tema para '+a.name); if(!txt) return; var lvl=LEVELS.find(function(x){return x.id===L.id;}); lvl.temas[a.id]=lvl.temas[a.id]||[]; lvl.temas[a.id].push(txt); store.set(store.get()); renderAll(); };
+        wrap.appendChild(list); wrap.appendChild(add); content.appendChild(wrap);
+      });
+      card.appendChild(content); box.appendChild(card); return box;
+    }
+
+    function sidePanel(L, axis){
+      var card = document.createElement('article'); card.className='card';
+      card.innerHTML = '<header><strong>Resumen</strong><span class="muted">Nivel/Eje</span></header>';
+      var content = document.createElement('div'); content.className='content';
+      var total = totalCount(L.id, axis); var done = doneCount(L.id, axis);
+      content.innerHTML = '<div class="muted">'+L.label+'</div><div><strong>'+AXES.find(function(a){return a.id===axis;}).name+'</strong></div>\
+        <div style="margin:8px 0">Progreso eje: <strong>'+done+'/'+total+'</strong></div>\
+        <div class="progress"><div style="width:'+Math.round((done/Math.max(total,1))*100)+'%"></div></div>\
+        <div style="margin-top:10px" class="two">\
+          <button class="btn warn" id="promoteBtn">Subir de nivel →</button>\
+          <button class="btn ghost" id="prevBtn">← Nivel anterior</button>\
+        </div>\
+        <div style="margin-top:10px" class="two">\
+          <button class="btn" id="printBtn">Imprimir</button>\
+          <button class="btn" id="copyBtn">Copiar resumen</button>\
+        </div>';
+
+      setTimeout(function(){
+        $('#promoteBtn').onclick = function(){ moveLevel(1); };
+        $('#prevBtn').onclick    = function(){ moveLevel(-1); };
+        $('#printBtn').onclick   = function(){ window.print(); };
+        $('#copyBtn').onclick    = function(){ copySummary(L, axis); };
+      },0);
+      return card;
+    }
+
+    function sideSummary(L, axis){
+      return sidePanel(L, axis); // misma tarjeta para simplificar
+    }
+
+    // ====== CÁLCULOS DE PROGRESO ============================================
+    function totalCount(levelId, axis){
+      var L = LEVELS.find(function(x){return x.id===levelId;});
+      if(!L) return 0;
+      if(axis) return (L.temas[axis]||[]).length;
+      return AXES.reduce(function(s,a){ return s + ((L.temas[a.id] && L.temas[a.id].length) || 0); }, 0);
+    }
+    function doneCount(levelId, axis){
+      var st = store.get(); var check = (st.checks && st.checks[levelId]) || {};
+      if(axis) return (check[axis]||[]).length;
+      return AXES.reduce(function(s,a){ return s + ((check[a.id]||[]).length); }, 0);
+    }
+    function grandTotal(){ return LEVELS.reduce(function(s,L){ return s + totalCount(L.id); }, 0); }
+    function grandDone(){ return LEVELS.reduce(function(s,L){ return s + doneCount(L.id); }, 0); }
+
+    // ====== NAVEGACIÓN, BÚSQUEDA, EXPORT/IMPORT ==============================
+    function renderNav(){
+      // Cambiar pestañas de vista
+      $$('#viewTabs .tab').forEach(function(t){ t.onclick = function(){ $$('#viewTabs .tab').forEach(function(x){x.setAttribute('aria-selected','false');}); t.setAttribute('aria-selected','true'); renderMain(); }; });
+
+      // Buscar
+      $('#q').oninput = function(){ filterSearch(); };
+      $('#clearSearch').onclick = function(){ $('#q').value=''; filterSearch(); };
+
+      // Export
+      $('#exportBtn').onclick = function(){
+        var data = store.get(); var blob = new Blob([JSON.stringify({AXES:AXES, LEVELS:LEVELS, state:data}, null, 2)], {type:'application/json'});
+        var url = URL.createObjectURL(blob); var a = document.createElement('a'); a.href=url; a.download='allpa-roadmap.json'; a.click(); URL.revokeObjectURL(url);
+      };
+      // Import
+      $('#importFile').onchange = function(e){
+        var file = e.target.files[0]; if(!file) return; var r = new FileReader(); r.onload = function(){
+          try{ var json = JSON.parse(r.result); if(json.state) localStorage.setItem(store.key, JSON.stringify(json.state)); if(json.LEVELS) Object.assign(LEVELS, json.LEVELS); renderAll(); toast('Importado ✅'); }catch(err){ toast('Archivo inválido'); }
+        }; r.readAsText(file);
+      };
+
+      // Reset
+      $('#resetBtn').onclick = function(){ localStorage.removeItem(store.key); renderAll(); toast('Reiniciado'); };
+
+      // Share (copiar)
+      $('#shareBtn').onclick = function(){
+        var st = store.get(); var text = 'Allpa Roadmap — Nivel '+st.level+', Eje '+st.axis+'. Progreso: '+grandDone()+'/'+grandTotal();
+        navigator.clipboard.writeText(text).then(function(){ toast('Estado copiado ✅'); });
+      };
+
+      // Atajos: niveles 1-6, ejes A..G, / buscar, Esc limpiar
+      window.addEventListener('keydown', function(e){
+        if(e.key==='/'){ e.preventDefault(); $('#q').focus(); return; }
+        if(e.key==='Escape'){ $('#q').value=''; filterSearch(); return; }
+        if(['1','2','3','4','5','6'].indexOf(e.key)>-1){ var idx=parseInt(e.key,10)-1; var st=store.get(); st.level=LEVELS[idx].id; store.set(st); renderAll(); return; }
+        var axisKeys = ['a','b','c','d','e','f','g'];
+        if(axisKeys.indexOf(e.key.toLowerCase())>-1){ var i=axisKeys.indexOf(e.key.toLowerCase()); var st2=store.get(); st2.axis=AXES[i].id; store.set(st2); renderAll(); }
+      });
+    }
+
+    function filterSearch(){
+      var q = $('#q').value.trim().toLowerCase();
+      var st = store.get(); var L = LEVELS.find(function(x){return x.id===st.level;}); if(!L) return;
+      if(!q){ renderMain(); return; }
+      // Mostrar checklist del eje actual, filtrando por texto
+      $('#viewTabs .tab[data-view="check"]').click();
+      var axis = st.axis; var temas = (L.temas[axis]||[]).map(function(t,i){return {t:t,i:i};}).filter(function(x){return x.t.toLowerCase().includes(q);});
+      var list = $('.checklist'); if(!list) return;
+      list.innerHTML='';
+      temas.forEach(function(obj){
+        var t=obj.t; var i=obj.i;
+        var row = document.createElement('div'); row.className='row';
+        var st2 = store.get(); st2.checks = st2.checks||{}; st2.checks[L.id]=st2.checks[L.id]||{}; st2.checks[L.id][axis]=st2.checks[L.id][axis]||[];
+        row.innerHTML = '<input type="checkbox" data-i="'+i+'" '+(st2.checks[L.id][axis].indexOf(i)>-1?'checked':'')+'><textarea>'+(((st2.notes&&st2.notes[L.id]&&st2.notes[L.id][axis]&&st2.notes[L.id][axis][i])||''))+'</textarea>';
+        list.appendChild(row);
+      });
+    }
+
+    function copySummary(L, axis){
+      var d = doneCount(L.id, axis); var t = totalCount(L.id, axis);
+      var text = L.label+' — '+AXES.find(function(a){return a.id===axis;}).name+': '+d+'/'+t+' tareas. Global: '+grandDone()+'/'+grandTotal()+'.';
+      navigator.clipboard.writeText(text).then(function(){ toast('Resumen copiado ✅'); });
+    }
+
+    function moveLevel(delta){
+      var st = store.get(); var idx = LEVELS.findIndex(function(x){return x.id===st.level;}); var next = Math.min(LEVELS.length-1, Math.max(0, idx+delta));
+      st.level = LEVELS[next].id; store.set(st); renderAll(); toast('Nivel actual: ' + LEVELS[next].label);
+    }
+
+    // ====== BOOTSTRAP ========================================================
+    function renderAll(){ renderSidebar(); renderMain(); }
+    renderAll(); renderNav();
+
+    // ====== PRUEBAS BÁSICAS (auto-test en consola) ===========================
+    try{
+      console.assert(Array.isArray(AXES) && AXES.length===7, 'AXES debe tener 7 ejes');
+      console.assert(Array.isArray(LEVELS) && LEVELS.length===6, 'LEVELS debe tener 6 niveles');
+      // Simular set/get
+      var stTest = store.get(); stTest.level='L2'; store.set(stTest); var stTest2 = store.get();
+      console.assert(stTest2.level==='L2', 'Persistencia de nivel');
+      // Conteos
+      console.assert(totalCount('L1')>0, 'totalCount L1 > 0');
+      console.assert(typeof grandTotal()==='number', 'grandTotal numérico');
+      console.log('%c[Allpa Roadmap] Autotest OK','color:#6CC24A');
+    }catch(e){ console.error('Autotest falló', e); }
+  </script>
+</body>
+</html>
