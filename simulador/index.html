@@ -4,17 +4,80 @@
     <meta charset="UTF-8" />
     <title>Simulador de Galpón – Allpa</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <!-- Tipografías marca -->
+    <!-- Tipografías (opcional). Si prefieres 0 requests externos, puedes quitar esta línea. -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="./styles.css" />
-  </head>
-  <body class="allpa-body">
 
-    <!-- Header / Banner -->
+    <!-- ===== ESTILOS EMBEBIDOS ===== -->
+    <style>
+      :root{
+        --allpa-green:#2E7D32;
+        --allpa-green-200:#A5D6A7;
+        --allpa-beige:#F6EBDD;
+        --allpa-brown:#8B5E34;
+        --allpa-sky:#CFE8EE;
+        --ink:#313131;
+        --muted:#6b7280;
+        --card:#ffffff;
+        --radius:16px;
+      }
+      *{box-sizing:border-box}
+      html,body{height:100%}
+      body.allpa-body{
+        margin:0;
+        background:var(--allpa-sky);
+        color:var(--ink);
+        font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;
+      }
+      .container{max-width:1100px;margin-inline:auto;padding-inline:16px}
+      /* Header */
+      .allpa-header{position:sticky;top:0;z-index:50;backdrop-filter:saturate(120%) blur(6px);background:rgba(255,255,255,.85);border-bottom:1px solid rgba(0,0,0,.06)}
+      .allpa-header .container{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 16px}
+      .logo{background:var(--allpa-green);color:#fff;font-weight:700;padding:6px 10px;border-radius:10px;font-family:Poppins,Inter,sans-serif}
+      .hdr-left{display:flex;align-items:center;gap:12px}
+      .hdr-left h1{font:600 22px/1 Poppins,Inter,sans-serif;margin:0;color:var(--ink)}
+      .btn{border:none;cursor:pointer;padding:10px 16px;border-radius:9999px;font-weight:600}
+      .btn-primary{background:var(--allpa-green);color:#fff}
+      .btn-primary:hover{filter:brightness(.95)}
+      /* Grid principal */
+      .main-grid{display:grid;gap:20px;padding-block:20px;grid-template-columns:320px 1fr}
+      @media (max-width:1024px){.main-grid{grid-template-columns:1fr}}
+      /* Card controles */
+      .controls-card{background:var(--card);border-radius:var(--radius);box-shadow:0 10px 30px rgba(0,0,0,.08);padding:16px}
+      .controls-header{font:600 16px/1.2 Poppins,Inter;margin-bottom:12px}
+      .control-row{margin-bottom:16px}
+      .control-row label{display:block;font-weight:600;margin-bottom:6px}
+      .control-row input[type="range"]{width:100%}
+      .control-row select{width:100%;padding:8px 10px;border-radius:10px;border:1px solid #e5e7eb}
+      .small{font-size:12px}.muted{color:var(--muted)}
+      .hint-chip{margin-top:8px;padding:8px 10px;background:var(--allpa-green-200);border-radius:12px;font-size:12px;color:#1b5e20}
+      /* Card simulación */
+      .sim-card{background:var(--card);border-radius:var(--radius);box-shadow:0 10px 30px rgba(0,0,0,.08);padding:16px}
+      .sim-frame{position:relative;background:linear-gradient(180deg,#e8f2f5,#d9eef2);border:3px solid var(--allpa-brown);border-radius:14px;overflow:hidden;min-height:420px}
+      .phaser-mount{width:100%;height:min(70vh,640px)}
+      .status-badge{position:absolute;right:12px;top:12px;width:12px;height:12px;border-radius:9999px;box-shadow:0 0 0 2px rgba(255,255,255,.9);background:#22c55e}
+      /* Carrusel */
+      .carousel-wrap{padding:28px 16px 40px}
+      .section-title{font:600 22px/1.3 Poppins,Inter;margin:0 0 12px}
+      .carousel{position:relative}
+      .carousel-track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:14px;scroll-behavior:smooth;padding:8px 2px}
+      .carousel-track::-webkit-scrollbar{height:8px}
+      .carousel-track::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:9999px}
+      .card.step{min-width:280px;max-width:320px;flex:0 0 auto;background:#fff;border-radius:14px;padding:14px;scroll-snap-align:start;box-shadow:0 10px 24px rgba(0,0,0,.06)}
+      .card.step h3{font:600 16px/1.2 Poppins,Inter;margin:0 0 8px}
+      .card.step p{margin:0;font-size:14px;color:var(--ink)}
+      .carousel-nav{position:absolute;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.6);color:#fff;border:none;width:32px;height:32px;border-radius:50%;cursor:pointer}
+      .carousel-nav.prev{left:-6px}.carousel-nav.next{right:-6px}
+      /* Footer */
+      .allpa-footer{border-top:1px solid rgba(0,0,0,.06);background:#fff}
+      .allpa-footer .container{padding:14px 16px;font-size:13px;color:var(--muted)}
+    </style>
+    <!-- ===== FIN ESTILOS ===== -->
+  </head>
+
+  <body class="allpa-body">
     <header class="allpa-header">
       <div class="container">
         <div class="hdr-left">
-          <!-- Si tienes SVG del logo Allpa, colócalo aquí -->
           <div class="logo">ALLPA</div>
           <h1>Simulador de Galpón</h1>
         </div>
@@ -24,10 +87,7 @@
       </div>
     </header>
 
-    <!-- Main content -->
     <main class="container main-grid">
-
-      <!-- Panel de controles -->
       <aside class="controls-card">
         <div class="controls-header">Controles</div>
 
@@ -58,98 +118,56 @@
           <div class="small muted"><span id="chickCountVal">26</span> aves</div>
         </div>
 
-        <div class="hint-chip" id="limitsHint">
-          Área efectiva — Recomendado | Máximo
-        </div>
+        <div class="hint-chip" id="limitsHint">Área efectiva — Recomendado | Máximo</div>
       </aside>
 
-      <!-- Frame / Card de la simulación -->
       <section class="sim-card">
         <div class="sim-frame" id="sim-frame">
-          <!-- El canvas de Phaser se inyecta dentro de este div -->
           <div id="phaser-root" class="phaser-mount"></div>
-          <!-- Badge de estado (sin texto dentro del canvas) -->
           <div id="statusBadge" class="status-badge" aria-hidden="true"></div>
         </div>
       </section>
     </main>
 
-    <!-- Carrusel educativo -->
     <section class="container carousel-wrap">
       <h2 class="section-title">¿Cómo calcular cuántas aves puedo criar?</h2>
-
       <div class="carousel" id="eduCarousel">
         <button class="carousel-nav prev" aria-label="Anterior" id="carPrev">‹</button>
-
         <div class="carousel-track" id="carTrack">
-          <article class="card step">
-            <h3>1. Elige el clima</h3>
-            <p>Caliente (26 kg/m²), Templado (30), Frío (33). En calor baja la densidad para evitar estrés térmico.</p>
-          </article>
-
-          <article class="card step">
-            <h3>2. Peso objetivo</h3>
-            <p>Trabajamos con 2.3 kg/ave. Aves/m² = (kg/m²) ÷ (kg/ave).</p>
-          </article>
-
-          <article class="card step">
-            <h3>3. Área del galpón</h3>
-            <p>Usa ancho × alto. Para el aprendizaje, el cálculo se hace con un área efectiva entre 1 y 3 m².</p>
-          </article>
-
-          <article class="card step">
-            <h3>4. Aves recomendadas</h3>
-            <p>Verás el recomendado y el tope máximo (×2). Observa el semáforo del frame.</p>
-          </article>
-
-          <article class="card step">
-            <h3>5. Bebederos y comederos</h3>
-            <p>Reserva espacio. Regla simple: 1 comedero circular ~25 aves, 1 bebedero tina ~50 aves.</p>
-          </article>
-
-          <article class="card step">
-            <h3>6. Resultado</h3>
-            <p>Confirma el número final y revisa el confort. Ajusta área, clima o equipos según necesidad.</p>
-          </article>
+          <article class="card step"><h3>1. Elige el clima</h3><p>Caliente (26), Templado (30), Frío (33) kg/m².</p></article>
+          <article class="card step"><h3>2. Peso objetivo</h3><p>Usamos 2.3 kg/ave. Aves/m² = kg/m² ÷ kg/ave.</p></article>
+          <article class="card step"><h3>3. Área</h3><p>Ancho × alto. Cálculo educativo entre 1 y 3 m².</p></article>
+          <article class="card step"><h3>4. Recomendado</h3><p>Verás el recomendado y el tope ×2.</p></article>
+          <article class="card step"><h3>5. Equipos</h3><p>1 comedero ≈25 aves; 1 bebedero ≈50 aves.</p></article>
+          <article class="card step"><h3>6. Resultado</h3><p>Ajusta área, clima o equipos.</p></article>
         </div>
-
         <button class="carousel-nav next" aria-label="Siguiente" id="carNext">›</button>
       </div>
     </section>
 
     <footer class="allpa-footer">
-      <div class="container">
-        <span>© Allpa — Economía circular aplicada a la avicultura.</span>
-      </div>
+      <div class="container">© Allpa — Economía circular aplicada a la avicultura.</div>
     </footer>
 
-    <!-- Script del botón compartir y carrusel (ligero) -->
+    <!-- Share + carrusel (ligero) -->
     <script type="module">
       const shareBtn = document.getElementById('shareBtn');
       shareBtn?.addEventListener('click', async () => {
         const url = window.location.href.split('#')[0];
         const title = 'Simulador de Galpón — Allpa';
         const text = 'Calcula cuántas aves puedes criar según clima, densidad y espacio.';
-        if (navigator.share) {
-          try { await navigator.share({ title, text, url }); } catch {}
-        } else {
-          await navigator.clipboard.writeText(url);
-          shareBtn.textContent = '¡Enlace copiado!';
-          setTimeout(()=> shareBtn.textContent = 'Compartir', 1500);
-        }
+        if (navigator.share) { try { await navigator.share({ title, text, url }); } catch {} }
+        else { await navigator.clipboard.writeText(url); shareBtn.textContent='¡Enlace copiado!'; setTimeout(()=>shareBtn.textContent='Compartir',1500); }
       });
-
-      // Carrusel simple
       const track = document.getElementById('carTrack');
-      let idx = 0;
-      const stepCount = track?.children.length ?? 0;
+      let idx = 0; const stepCount = track?.children.length ?? 0;
       const snap = () => track?.scrollTo({ left: (track.clientWidth ?? 0) * idx, behavior: 'smooth' });
-      document.getElementById('carNext')?.addEventListener('click', () => { idx = Math.min(idx + 1, stepCount - 1); snap(); });
-      document.getElementById('carPrev')?.addEventListener('click', () => { idx = Math.max(idx - 1, 0); snap(); });
+      document.getElementById('carNext')?.addEventListener('click', () => { idx = Math.min(idx+1, stepCount-1); snap(); });
+      document.getElementById('carPrev')?.addEventListener('click', () => { idx = Math.max(idx-1, 0); snap(); });
       window.addEventListener('resize', snap);
     </script>
 
-    <!-- Tu bundle de Phaser -->
+    <!-- Tu bundle de Phaser compilado -->
     <script type="module" src="./assets/main.js"></script>
   </body>
 </html>
