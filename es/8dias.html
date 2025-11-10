@@ -215,4 +215,96 @@
         console.error("❌ Elemento con ID 'suscripcion' no encontrado.");
     }
   </script></body>
+
+  <!-- ===== Allpa Countdown Banner — INICIO ===== -->
+<!-- Coloca este bloque justo DESPUÉS de <body> para que quede arriba -->
+<div id="allpaCountdownBanner" role="region" aria-label="Cuenta regresiva masterclass"
+     style="position:sticky; top:0; z-index:9999; font-family:system-ui,Segoe UI,Roboto,Arial;
+            background:linear-gradient(90deg,#6CC24A,#2BB0ED); color:#0b1a10; border-bottom:1px solid rgba(0,0,0,.15);
+            box-shadow:0 8px 24px rgba(0,0,0,.25);">
+  <div style="max-width:1100px; margin:0 auto; padding:10px 16px; display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap">
+    <div style="display:flex; gap:10px; align-items:center; flex:1 1 360px; min-width:260px;">
+      <span style="display:inline-grid; place-items:center; width:34px; height:34px; border-radius:10px;
+                   background:rgba(255,255,255,.9); color:#0b1a10; font-weight:900;">🐣</span>
+      <div>
+        <strong style="display:block; font-size:16px; line-height:1.1;">Másterclass: “Día 0 al 8”</strong>
+        <span id="allpaBannerMsg" style="opacity:.9; font-size:13px;">Comienza en:</span>
+      </div>
+    </div>
+
+    <div aria-live="polite" aria-atomic="true"
+         style="display:flex; gap:8px; align-items:center; font-weight:800; letter-spacing:.5px;">
+      <div class="cd-box" style="background:rgba(255,255,255,.92); color:#0b1a10; padding:8px 10px; border-radius:10px; min-width:70px; text-align:center;">
+        <div id="cd-days" style="font-size:18px;">–</div><div style="font-size:11px; opacity:.8">Días</div>
+      </div>
+      <div class="cd-box" style="background:rgba(255,255,255,.92); color:#0b1a10; padding:8px 10px; border-radius:10px; min-width:70px; text-align:center;">
+        <div id="cd-hours" style="font-size:18px;">–</div><div style="font-size:11px; opacity:.8">Horas</div>
+      </div>
+      <div class="cd-box" style="background:rgba(255,255,255,.92); color:#0b1a10; padding:8px 10px; border-radius:10px; min-width:70px; text-align:center;">
+        <div id="cd-mins" style="font-size:18px;">–</div><div style="font-size:11px; opacity:.8">Min</div>
+      </div>
+      <div class="cd-box" style="background:rgba(255,255,255,.92); color:#0b1a10; padding:8px 10px; border-radius:10px; min-width:70px; text-align:center;">
+        <div id="cd-secs" style="font-size:18px;">–</div><div style="font-size:11px; opacity:.8">Seg</div>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:8px; align-items:center;">
+      <!-- Ajusta el href al id de tu formulario (por ej., #suscripcion) -->
+      <a href="#suscripcion"
+         style="background:#0b1a10; color:#eafff3; border:1px solid rgba(0,0,0,.25);
+                padding:10px 14px; border-radius:10px; font-weight:900; text-decoration:none; display:inline-block;">
+        Reservar mi cupo
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function(){
+    // ⚙️ CONFIGURA AQUÍ FECHA Y HORA (zona horaria -05:00 Bogotá)
+    // Ejemplo: 17 de noviembre de 2025 a las 19:00 (-05:00)
+    var TARGET_ISO = '2025-11-17T19:00:00-05:00';
+
+    var target = new Date(TARGET_ISO).getTime();
+    var $d = document.getElementById('cd-days');
+    var $h = document.getElementById('cd-hours');
+    var $m = document.getElementById('cd-mins');
+    var $s = document.getElementById('cd-secs');
+    var $msg = document.getElementById('allpaBannerMsg');
+
+    function pad(n){ return n < 10 ? ('0'+n) : String(n); }
+
+    function tick(){
+      var now = Date.now();
+      var diff = target - now;
+
+      if(diff <= 0){
+        // Es hoy — cambia el mensaje y deja un contador de cortesía en 00:00:00
+        $d.textContent = '00';
+        $h.textContent = '00';
+        $m.textContent = '00';
+        $s.textContent = '00';
+        if($msg) $msg.textContent = '¡Es HOY! Empezamos en breve ⏳';
+        clearInterval(timer);
+        return;
+      }
+
+      var sec = Math.floor(diff / 1000);
+      var days = Math.floor(sec / 86400); sec -= days*86400;
+      var hours = Math.floor(sec / 3600); sec -= hours*3600;
+      var mins = Math.floor(sec / 60); sec -= mins*60;
+
+      $d.textContent = pad(days);
+      $h.textContent = pad(hours);
+      $m.textContent = pad(mins);
+      $s.textContent = pad(sec);
+    }
+
+    // Primer pintado inmediato y luego cada segundo
+    tick();
+    var timer = setInterval(tick, 1000);
+  })();
+</script>
+<!-- ===== Allpa Countdown Banner — FIN ===== -->
+
 </html>
