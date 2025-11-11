@@ -9,6 +9,25 @@
     :root{ --acc:#6CC24A; --acc2:#2BB0ED; }
     .gradient{background:radial-gradient(900px 500px at -10% 0%, rgba(108,194,74,.25), transparent 40%), radial-gradient(900px 600px at 110% 10%, rgba(43,176,237,.18), transparent 45%)}
     .badge{background:rgba(108,194,74,.12); color:#14532d; border:1px solid rgba(108,194,74,.35)}
+
+    /* Altura mínima para desktop */
+:root { --banner-h: 70px; }
+
+/* Ajustes móviles: texto y cajas más pequeñas, menos padding */
+@media (max-width: 640px) {
+  #allpaCountdownBanner { padding: 4px 0 !important; }
+  #allpaCountdownBanner strong { font-size: 14px !important; }
+  #allpaCountdownBanner #allpaBannerMsg { font-size: 12px !important; }
+  #allpaCountdownBanner .cd-box,
+  #allpaCountdownBanner [style*="min-width:70px"] {
+    min-width: 56px !important;
+    padding: 6px 8px !important;
+  }
+  #allpaCountdownBanner [style*="font-size:18px"] { font-size: 16px !important; }
+}
+
+/* Asegura que el contenido baje lo mismo que mide el banner */
+body { padding-top: var(--banner-h); }
   </style>
 </head>
 <body class="bg-slate-950 text-slate-100">
@@ -311,7 +330,39 @@
 
   updateCountdown();
   const timer = setInterval(updateCountdown, 1000);
+
+  function setBannerPadding(){
+    var b = document.getElementById('allpaCountdownBanner');
+    if(!b) return;
+    var h = b.getBoundingClientRect().height;
+    document.documentElement.style.setProperty('--banner-h', h + 'px');
+    document.body.style.paddingTop = h + 'px';
+  }
+  // Ajusta al cargar, al redimensionar y si el banner cambia de tamaño
+  window.addEventListener('load', setBannerPadding);
+  window.addEventListener('resize', setBannerPadding);
+  try {
+    new ResizeObserver(setBannerPadding).observe(document.getElementById('allpaCountdownBanner'));
+  } catch(e) {
+    // fallback si el navegador no soporta ResizeObserver
+    setInterval(setBannerPadding, 1000);
+  }
+
+    var b = document.getElementById('allpaCountdownBanner');
+  if(!b) return;
+  var last = 0;
+  window.addEventListener('scroll', function(){
+    var y = window.scrollY || window.pageYOffset;
+    if (y > last && y > 80) {
+      b.style.transform = 'translateY(-100%)';
+    } else {
+      b.style.transform = 'translateY(0)';
+    }
+    last = y;
+  });
 })();
+
+
 </script>
 <!-- ===== Fin banner sticky ===== -->
   
