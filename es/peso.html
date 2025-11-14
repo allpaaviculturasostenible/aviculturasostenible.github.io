@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Calculadora de tamaño del pollo – Allpa</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --allpa-green: #2f855a;
+      --allpa-green-soft: #e6f4ec;
+      --allpa-yellow: #f6ad55;
+      --bg: #f9fafb;
+      --text-main: #1f2933;
+      --text-muted: #6b7280;
+      --card: #ffffff;
+      --border-soft: #e5e7eb;
+      --radius-lg: 18px;
+      --shadow-soft: 0 10px 25px rgba(15, 23, 42, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      background: radial-gradient(circle at top, #ecfdf3 0, #f9fafb 45%, #f9fafb 100%);
+      color: var(--text-main);
+    }
+
+    .page {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 1.5rem 1.25rem 3rem;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .logo-pill {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--allpa-green), #38b2ac);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 700;
+      font-size: 1.1rem;
+      box-shadow: 0 10px 22px rgba(22, 101, 52, 0.35);
+    }
+
+    header h1 {
+      font-size: 1.4rem;
+      margin: 0;
+    }
+
+    header p {
+      margin: 0;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.1fr);
+      gap: 1.5rem;
+      align-items: flex-start;
+    }
+
+    @media (max-width: 768px) {
+      .layout {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-soft);
+      padding: 1.25rem 1.2rem;
+      border: 1px solid var(--border-soft);
+    }
+
+    .card h2 {
+      font-size: 1.1rem;
+      margin: 0 0 0.4rem;
+    }
+
+    .card p.subtitle {
+      margin: 0 0 1rem;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .field-group {
+      margin-bottom: 1rem;
+    }
+
+    .field-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.88rem;
+      margin-bottom: 0.35rem;
+      color: var(--text-main);
+    }
+
+    .field-label span.helper {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    select,
+    input[type="number"],
+    input[type="range"] {
+      width: 100%;
+      font-size: 0.92rem;
+      padding: 0.55rem 0.7rem;
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      outline: none;
+      background: #fdfdfd;
+      transition: border 0.15s ease, box-shadow 0.15s ease,
+        background 0.15s ease;
+    }
+
+    select:focus,
+    input[type="number"]:focus,
+    input[type="range"]:focus {
+      border-color: var(--allpa-green);
+      box-shadow: 0 0 0 2px rgba(56, 161, 105, 0.2);
+      background: #ffffff;
+    }
+
+    input[type="range"] {
+      padding: 0;
+      height: 4px;
+      border-radius: 999px;
+      -webkit-appearance: none;
+      background: #d1fae5;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--allpa-green);
+      box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.25);
+      cursor: pointer;
+    }
+
+    .age-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 0.75rem;
+      align-items: center;
+      margin-top: 0.35rem;
+    }
+
+    .age-row span.age-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.2rem;
+      font-size: 0.82rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      background: var(--allpa-green-soft);
+      color: var(--allpa-green);
+      white-space: nowrap;
+    }
+
+    .age-row span.age-badge small {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .output-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 0.5rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .output-header h2 {
+      margin: 0;
+      font-size: 1.05rem;
+    }
+
+    .output-header span.tag {
+      font-size: 0.78rem;
+      padding: 0.15rem 0.55rem;
+      border-radius: 999px;
+      background: #fef3c7;
+      color: #92400e;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .weight-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.75rem;
+      margin-top: 0.75rem;
+      margin-bottom: 0.85rem;
+    }
+
+    .stat-pill {
+      padding: 0.7rem 0.8rem;
+      border-radius: 14px;
+      background: #f9fafb;
+      border: 1px dashed #e5e7eb;
+    }
+
+    .stat-pill strong {
+      display: block;
+      font-size: 0.9rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .stat-pill span.value {
+      font-weight: 600;
+      font-size: 1.05rem;
+      color: var(--allpa-green);
+    }
+
+    .stat-pill small {
+      display: block;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 0.05rem;
+    }
+
+    .visual-card {
+      margin-top: 1rem;
+      padding-top: 0.75rem;
+      border-top: 1px dashed var(--border-soft);
+    }
+
+    .visual-placeholder {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      border-radius: 16px;
+      background: repeating-linear-gradient(
+          45deg,
+          #ecfdf3,
+          #ecfdf3 10px,
+          #d1fae5 10px,
+          #d1fae5 20px
+        );
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 1.2rem;
+      color: #065f46;
+      font-size: 0.92rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .visual-placeholder::after {
+      content: "Referencia visual";
+      position: absolute;
+      top: 10px;
+      left: 12px;
+      font-size: 0.7rem;
+      padding: 0.18rem 0.5rem;
+      border-radius: 999px;
+      background: rgba(15, 118, 110, 0.12);
+      color: #0f766e;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .visual-placeholder span {
+      max-width: 260px;
+      line-height: 1.3;
+    }
+
+    .visual-placeholder span strong {
+      display: block;
+      font-size: 1rem;
+      margin-bottom: 0.15rem;
+    }
+
+    .visual-caption {
+      margin: 0.5rem 0 0;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .visual-caption span {
+      font-weight: 600;
+      color: var(--allpa-green);
+    }
+
+    .note {
+      margin-top: 0.7rem;
+      padding: 0.5rem 0.7rem;
+      border-radius: 12px;
+      background: #f9fafb;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      border: 1px dashed #e5e7eb;
+    }
+
+    /* CTA Masterclass */
+    .cta {
+      margin-top: 2rem;
+      padding: 1.4rem 1.3rem;
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      background: linear-gradient(
+        to right,
+        rgba(16, 185, 129, 0.06),
+        rgba(56, 189, 248, 0.02)
+      );
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.04);
+    }
+
+    .cta h2 {
+      margin: 0 0 0.25rem;
+      font-size: 1.05rem;
+    }
+
+    .cta p {
+      margin: 0 0 0.9rem;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .cta-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+    }
+
+    .btn-primary,
+    .btn-ghost {
+      border-radius: 999px;
+      padding: 0.55rem 1.1rem;
+      font-size: 0.9rem;
+      border: 1px solid transparent;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--allpa-green);
+      border-color: var(--allpa-green);
+      color: #f9fafb;
+      box-shadow: 0 10px 20px rgba(22, 163, 74, 0.35);
+    }
+
+    .btn-primary span.icon {
+      font-size: 1rem;
+    }
+
+    .btn-ghost {
+      background: rgba(255, 255, 255, 0.9);
+      border-color: rgba(15, 23, 42, 0.1);
+      color: var(--text-main);
+    }
+
+    .btn-ghost span.icon {
+      font-size: 1rem;
+    }
+
+    footer {
+      margin-top: 1.5rem;
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="logo-pill">A</div>
+      <div>
+        <h1>¿Cuánto debería pesar tu pollo hoy?</h1>
+        <p>
+          Compara la edad de tus pollos con los objetivos de Ross 308 y Cobb
+          500 para visualizar su crecimiento.
+        </p>
+      </div>
+    </header>
+
+    <main class="layout">
+      <!-- Panel de entrada -->
+      <section class="card">
+        <h2>1. Datos de tus pollos</h2>
+        <p class="subtitle">
+          Elige la línea genética y la edad en días para ver el peso objetivo y
+          una referencia visual de tamaño.
+        </p>
+
+        <div class="field-group">
+          <div class="field-label">
+            <label for="linea">Línea genética</label>
+            <span class="helper">Estándares comerciales</span>
+          </div>
+          <select id="linea">
+            <option value="ross">Ross 308</option>
+            <option value="cobb">Cobb 500</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <div class="field-label">
+            <label for="edad">Edad (en días)</label>
+            <span class="helper">De 0 a 56 días</span>
+          </div>
+          <input
+            id="edad"
+            type="range"
+            min="0"
+            max="56"
+            value="7"
+            step="1"
+          />
+          <div class="age-row">
+            <input
+              id="edadNumber"
+              type="number"
+              min="0"
+              max="56"
+              value="7"
+            />
+            <span class="age-badge">
+              <span id="weekBadge">Semana 1</span>
+              <small id="weekHint">(aprox.)</small>
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Panel de salida -->
+      <section class="card">
+        <div class="output-header">
+          <h2>2. Referencia de tamaño y peso</h2>
+          <span class="tag" id="lineaTag">Ross 308</span>
+        </div>
+        <p class="subtitle">
+          Estos valores son una guía aproximada basada en tablas de
+          rendimiento. Úsalos como referencia visual, no como un valor
+          absoluto.
+        </p>
+
+        <div class="weight-row">
+          <div class="stat-pill">
+            <strong>Edad objetivo</strong>
+            <span class="value">
+              <span id="edadLabel">7</span> días
+            </span>
+            <small id="semanaLabel">Semana 1</small>
+          </div>
+          <div class="stat-pill">
+            <strong>Peso objetivo</strong>
+            <span class="value" id="pesoObjetivo">213 g</span>
+            <small>Promedio esperado</small>
+          </div>
+          <div class="stat-pill">
+            <strong>Rango de referencia</strong>
+            <span class="value" id="rangoPeso">192 – 234 g</span>
+            <small>±10 % alrededor del objetivo</small>
+          </div>
+        </div>
+
+        <div class="visual-card">
+          <!--
+            Aquí va la IMAGEN REAL del pollo en esta etapa.
+            Más adelante puedes reemplazar este bloque por un <img>
+            dinámico según la semana y la línea genética.
+          -->
+          <div class="visual-placeholder" id="visualPlaceholder">
+            <span>
+              <strong id="visualTitle">
+                Pollito semana 1 (imagen de referencia)
+              </strong>
+              Aquí verás una imagen aproximada de cómo debería verse tu pollo
+              en esta edad. En la siguiente versión integraremos ilustraciones
+              reales por semana y por línea genética.
+            </span>
+          </div>
+          <p class="visual-caption">
+            Línea <span id="visualLinea">Ross 308</span> •
+            Semana <span id="visualSemana">1</span> •
+            Edad <span id="visualEdad">7</span> días
+          </p>
+        </div>
+
+        <div class="note">
+          <strong>Nota:</strong> Las tablas de crecimiento se diseñan para
+          pollos bien manejados (temperatura, ventilación, densidad y
+          alimentación correctas). En esta primera versión solo mostramos
+          <em>cómo se deberían ver en peso y etapa</em>; el manejo lo
+          desarrollaremos en la siguiente versión de la herramienta.
+        </div>
+      </section>
+    </main>
+
+    <!-- CTA hacia masterclass / captura de información -->
+    <section class="cta">
+      <h2>¿Quieres aprender a lograr estos pesos en tu galpón?</h2>
+      <p>
+        En la Masterclass de Avicultura Sostenible de Allpa te guiamos paso a
+        paso en temperatura, cama, alimentación y manejo por etapas para que
+        tus pollos se acerquen a estos objetivos de crecimiento.
+      </p>
+      <div class="cta-actions">
+        <!-- Enlace directo a la página de registro de la masterclass -->
+        <a
+          href="#"
+          target="_blank"
+          class="btn-primary"
+          id="btnMasterclass"
+        >
+          <span class="icon">🐥</span>
+          Ir a la Masterclass
+        </a>
+
+        <!-- Botón para futura integración de formulario / captura de datos -->
+        <button type="button" class="btn-ghost" id="btnContacto">
+          <span class="icon">✉️</span>
+          Quiero que me contacten
+        </button>
+      </div>
+    </section>
+
+    <footer>
+      Herramienta educativa Allpa · Versión 1 – Solo referencia de peso y
+      tamaño.
+    </footer>
+  </div>
+
+  <script>
+    // =========================
+    // Datos de referencia semanal (peso objetivo)
+    // =========================
+    // Valores basados en tablas oficiales, aproximados a semanas completas.
+
+    const ROSS_WEEKLY = [
+      { day: 0, weight: 44 },
+      { day: 7, weight: 213 },
+      { day: 14, weight: 533 },
+      { day: 21, weight: 1012 },
+      { day: 28, weight: 1616 },
+      { day: 35, weight: 2296 },
+      { day: 42, weight: 2998 },
+      { day: 49, weight: 3681 },
+      { day: 56, weight: 4318 }
+    ];
+
+    const COBB_WEEKLY = [
+      { day: 0, weight: 42 },
+      { day: 7, weight: 202 },
+      { day: 14, weight: 570 },
+      { day: 21, weight: 1116 },
+      { day: 28, weight: 1783 },
+      { day: 35, weight: 2521 },
+      { day: 42, weight: 3278 },
+      { day: 49, weight: 4001 },
+      { day: 56, weight: 4641 }
+    ];
+
+    function getDataForLinea(linea) {
+      return linea === "cobb" ? COBB_WEEKLY : ROSS_WEEKLY;
+    }
+
+    // Interpolación lineal entre puntos semanales
+    function getPesoEstimado(linea, edadDias) {
+      const tabla = getDataForLinea(linea);
+
+      if (edadDias <= tabla[0].day) {
+        return tabla[0].weight;
+      }
+      if (edadDias >= tabla[tabla.length - 1].day) {
+        return tabla[tabla.length - 1].weight;
+      }
+
+      // Buscar segmento donde cae la edad
+      for (let i = 0; i < tabla.length - 1; i++) {
+        const a = tabla[i];
+        const b = tabla[i + 1];
+        if (edadDias >= a.day && edadDias <= b.day) {
+          const t = (edadDias - a.day) / (b.day - a.day); // 0 a 1
+          return Math.round(a.weight + t * (b.weight - a.weight));
+        }
+      }
+
+      return tabla[tabla.length - 1].weight;
+    }
+
+    function formatRange(min, max) {
+      const f = (v) => Math.round(v);
+      return `${f(min)} – ${f(max)} g`;
+    }
+
+    function edadToSemana(edadDias) {
+      // Semana aproximada, desde 0
+      return Math.floor(edadDias / 7);
+    }
+
+    // =========================
+    // DOM
+    // =========================
+    const lineaSelect = document.getElementById("linea");
+    const lineaTag = document.getElementById("lineaTag");
+
+    const edadSlider = document.getElementById("edad");
+    const edadNumber = document.getElementById("edadNumber");
+
+    const weekBadge = document.getElementById("weekBadge");
+    const weekHint = document.getElementById("weekHint");
+
+    const edadLabel = document.getElementById("edadLabel");
+    const semanaLabel = document.getElementById("semanaLabel");
+    const pesoObjetivoEl = document.getElementById("pesoObjetivo");
+    const rangoPesoEl = document.getElementById("rangoPeso");
+
+    const visualTitle = document.getElementById("visualTitle");
+    const visualLinea = document.getElementById("visualLinea");
+    const visualSemana = document.getElementById("visualSemana");
+    const visualEdad = document.getElementById("visualEdad");
+
+    // CTA (aún sin lógica avanzada)
+    const btnMasterclass = document.getElementById("btnMasterclass");
+    const btnContacto = document.getElementById("btnContacto");
+
+    // Aquí puedes poner la URL real de la masterclass:
+    btnMasterclass.href = "https://aviculturasostenible.com/masterclass"; // TODO: actualizar con la URL final
+
+    btnContacto.addEventListener("click", () => {
+      // En una siguiente versión esto puede abrir un modal o enviar a un formulario.
+      alert(
+        "En la versión completa este botón te llevará a un formulario para dejar tus datos y recibir información de las próximas masterclass Allpa."
+      );
+    });
+
+    function updateUI() {
+      const linea = lineaSelect.value; // "ross" o "cobb"
+      const edadDias = Math.min(
+        56,
+        Math.max(0, parseInt(edadSlider.value, 10) || 0)
+      );
+
+      edadSlider.value = edadDias;
+      edadNumber.value = edadDias;
+
+      const peso = getPesoEstimado(linea, edadDias);
+      const rangoMin = peso * 0.9;
+      const rangoMax = peso * 1.1;
+
+      const semana = edadToSemana(edadDias);
+      const semanaTexto = `Semana ${semana}`;
+
+      // Actualizar etiquetas
+      const lineaNombre = linea === "cobb" ? "Cobb 500" : "Ross 308";
+      lineaTag.textContent = lineaNombre;
+
+      edadLabel.textContent = edadDias;
+      semanaLabel.textContent = semanaTexto;
+
+      pesoObjetivoEl.textContent = `${peso} g`;
+      rangoPesoEl.textContent = formatRange(rangoMin, rangoMax);
+
+      weekBadge.textContent = semanaTexto;
+      weekHint.textContent = edadDias === 0 ? "(recién nacido)" : "(aprox.)";
+
+      // Visual (texto, luego se reemplaza por imagen real)
+      visualLinea.textContent = lineaNombre;
+      visualSemana.textContent = semana;
+      visualEdad.textContent = edadDias;
+
+      visualTitle.textContent = `Pollo ${lineaNombre} – ${semanaTexto}`;
+    }
+
+    lineaSelect.addEventListener("change", updateUI);
+
+    edadSlider.addEventListener("input", () => {
+      edadNumber.value = edadSlider.value;
+      updateUI();
+    });
+
+    edadNumber.addEventListener("input", () => {
+      let v = parseInt(edadNumber.value, 10);
+      if (isNaN(v)) v = 0;
+      v = Math.max(0, Math.min(56, v));
+      edadSlider.value = v;
+      updateUI();
+    });
+
+    // Inicializar
+    updateUI();
+  </script>
+</body>
+</html>
