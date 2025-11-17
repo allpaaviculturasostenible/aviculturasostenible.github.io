@@ -869,9 +869,9 @@
 
       <nav class="nav-links">
         <a href="#calculadoras" class="nav-link">Calculadoras</a>
-        <a href="modelo-circular.html" class="nav-link">Modelo circular</a>
-        <a href="productos.html" class="nav-link">Productos</a>
-        <a href="contacto.html" class="nav-link">Contacto</a>
+        <a href="es/modelo-circular.html" class="nav-link">Modelo circular</a>
+        <a href="es/productos.html" class="nav-link">Productos</a>
+        <a href="es/contacto.html" class="nav-link">Contacto</a>
       </nav>
 
       <div class="header-actions">
@@ -1023,86 +1023,122 @@
 
       <!-- SECCIÓN COMUNIDAD & CONTACTO ---------------------------- -->
       <section id="community" class="section fade-in">
-        <div class="section-header">
-          <div>
-            <h2 class="section-title">Únete a la comunidad de avicultores</h2>
-            <p class="section-subtitle">
-              Déjanos un medio de contacto para enviarte plantillas, nuevas calculadoras y avisos de las próximas masterclass de El Pollo Ingeniero.
-            </p>
-          </div>
+  <div class="section-header">
+    <div>
+      <h2 class="section-title">Únete a la comunidad de avicultores</h2>
+      <p class="section-subtitle">
+        Déjanos un medio de contacto para enviarte plantillas, nuevas calculadoras y avisos de las próximas masterclass de El Pollo Ingeniero.
+      </p>
+    </div>
+  </div>
+
+  <div class="community">
+    <div class="community-card">
+      <div class="community-title">
+        Comunidad <span class="community-highlight">Allpa · El Pollo Ingeniero</span>
+      </div>
+      <p>
+        Diseñamos este proyecto para que los pequeños y medianos productores puedan tomar
+        decisiones con datos y no solo con “corazonadas”.
+      </p>
+      <ul class="community-list">
+        <li>Checklist imprimible para los <strong>primeros 8 días</strong>.</li>
+        <li>Plantilla sencilla en Excel para <strong>peso y mortalidad</strong>.</li>
+        <li>Acceso anticipado a nuevas calculadoras y guías.</li>
+      </ul>
+      <p class="community-meta">
+        No hacemos spam. Puedes darte de baja en cualquier momento.
+      </p>
+      <div style="margin-top:0.7rem;">
+        <!-- AHORA ABRE WHATSAPP -->
+        <button
+          class="btn btn-primary"
+          onclick="window.open('https://wa.me/573152112644?text=' + encodeURIComponent('Hola, quiero recibir las plantillas de Allpa para mi galpón de pollos.'), '_blank');"
+        >
+          Quiero recibir las plantillas
+        </button>
+      </div>
+    </div>
+
+    <div class="community-card">
+      <div class="community-title">Déjanos tus datos</div>
+
+      <!-- FORMULARIO CONECTADO A GOOGLE FORMS -->
+      <form
+        id="communityForm"
+        class="form"
+        action="https://docs.google.com/forms/d/e/1FAIpQLSfcTvlbuG4_w818DX9qywV2BagosTD-ha-fb4LOFeHiWoe2UA/formResponse"
+        method="POST"
+        target="_blank"
+      >
+        <div class="form-field">
+          <label class="form-label" for="name">Nombre</label>
+          <input
+            id="name"
+            name="entry.1522710900"
+            class="form-input"
+            type="text"
+            placeholder="Cómo te llamas"
+            required
+          />
         </div>
 
-        <div class="community">
-          <div class="community-card">
-            <div class="community-title">
-              Comunidad <span class="community-highlight">Allpa · El Pollo Ingeniero</span>
-            </div>
-            <p>
-              Diseñamos este proyecto para que los pequeños y medianos productores puedan tomar
-              decisiones con datos y no solo con “corazonadas”.
-            </p>
-            <ul class="community-list">
-              <li>Checklist imprimible para los <strong>primeros 8 días</strong>.</li>
-              <li>Plantilla sencilla en Excel para <strong>peso y mortalidad</strong>.</li>
-              <li>Acceso anticipado a nuevas calculadoras y guías.</li>
-            </ul>
-            <p class="community-meta">
-              No hacemos spam. Puedes darte de baja en cualquier momento.
-            </p>
-            <div style="margin-top:0.7rem;">
-              <button class="btn btn-primary" onclick="document.getElementById('communityForm').scrollIntoView({behavior:'smooth'});">
-                Quiero recibir las plantillas
-              </button>
-            </div>
-          </div>
-
-          <div class="community-card">
-            <div class="community-title">Déjanos tus datos</div>
-            <form id="communityForm" class="form" onsubmit="handleFormSubmit(event);">
-              <div class="form-field">
-                <label class="form-label" for="name">Nombre</label>
-                <input id="name" name="name" class="form-input" type="text" placeholder="Cómo te llamas" required />
-              </div>
-
-              <div class="form-field">
-                <label class="form-label" for="contact">Correo o WhatsApp</label>
-                <input id="contact" name="contact" class="form-input" type="text" placeholder="ej: 3001234567 / micorreo@email.com" required />
-              </div>
-
-              <div class="form-field">
-                <label class="form-label" for="size">Número aproximado de pollos</label>
-                <select id="size" name="size" class="form-select">
-                  <option value="">Selecciona una opción</option>
-                  <option>- 50 pollos</option>
-                  <option>50 – 200 pollos</option>
-                  <option>200 – 1000 pollos</option>
-                  <option>Más de 1000 pollos</option>
-                </select>
-              </div>
-
-              <div class="form-field">
-                <label class="form-label" for="goal">¿Qué quieres mejorar en tu galpón?</label>
-                <textarea id="goal" name="goal" class="form-textarea" placeholder="Ejemplo: bajar mortalidad en la primera semana, mejorar el peso final, organizar mejor el agua, etc."></textarea>
-              </div>
-
-              <div class="form-field">
-                <label style="display:flex; align-items:flex-start; gap:0.35rem; font-size:0.78rem;">
-                  <input type="checkbox" required style="margin-top:0.1rem;" />
-                  <span>Acepto que Allpa me contacte para enviarme material educativo sobre avicultura y el modelo circular.</span>
-                </label>
-              </div>
-
-              <button type="submit" class="btn btn-primary">
-                Enviar y recibir plantillas
-              </button>
-
-              <p class="form-footnote">
-                *Puedes conectar este formulario con Google Forms, Formspree u otro servicio. Por ahora solo muestra un mensaje de confirmación en pantalla.
-              </p>
-            </form>
-          </div>
+        <div class="form-field">
+          <label class="form-label" for="contact">Correo o WhatsApp</label>
+          <input
+            id="contact"
+            name="entry.1603528505"
+            class="form-input"
+            type="text"
+            placeholder="ej: 3001234567 / micorreo@email.com"
+            required
+          />
         </div>
-      </section>
+
+        <div class="form-field">
+          <label class="form-label" for="size">Número aproximado de pollos</label>
+          <select
+            id="size"
+            name="entry.215135421"
+            class="form-select"
+          >
+            <option value="">Selecciona una opción</option>
+            <option>- 50 pollos</option>
+            <option>50 – 200 pollos</option>
+            <option>200 – 1000 pollos</option>
+            <option>Más de 1000 pollos</option>
+          </select>
+        </div>
+
+        <div class="form-field">
+          <label class="form-label" for="goal">¿Qué quieres mejorar en tu galpón?</label>
+          <textarea
+            id="goal"
+            name="entry.1074943000"
+            class="form-textarea"
+            placeholder="Ejemplo: bajar mortalidad en la primera semana, mejorar el peso final, organizar mejor el agua, etc."
+          ></textarea>
+        </div>
+
+        <div class="form-field">
+          <label style="display:flex; align-items:flex-start; gap:0.35rem; font-size:0.78rem;">
+            <input type="checkbox" required style="margin-top:0.1rem;" />
+            <span>Acepto que Allpa me contacte para enviarme material educativo sobre avicultura y el modelo circular.</span>
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+          Enviar y recibir plantillas
+        </button>
+
+        <p class="form-footnote">
+          *Este formulario está conectado a Google Forms. Al enviar, se abrirá una pestaña de confirmación de Google.
+        </p>
+      </form>
+    </div>
+  </div>
+</section>
+
     </div>
   </main>
 
