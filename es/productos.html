@@ -1,43 +1,1801 @@
-<!doctype html>
+```html
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="UTF-8" />
+  <title>Productos Allpa · El Pollo Ingeniero</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Productos | ALLPA</title>
-  <meta name="description" content="Pollo sostenible, concentrado propio, fertilizantes y tecnología automatizada." />
-  <link rel="alternate" href="https://aviculturasostenible.com/en/" hreflang="en" />
-  <link rel="alternate" href="https://aviculturasostenible.com/es/" hreflang="es" />
-  <link rel="alternate" href="https://aviculturasostenible.com/" hreflang="x-default" />
-  <link rel="icon" href="/assets/icons/favicon.ico" />
-  <link rel="manifest" href="/assets/icons/site.webmanifest" />
-  <link rel="stylesheet" href="/assets/css/styles.css" />
-</head>
-<body>
-  <div id="__header"></div>
-  <main class="wrap">
-    
-<section class="grid">
-  <article class="card"><h2>Pollo sostenible</h2><p>Ross 500 alimentado naturalmente, con trazabilidad y bienestar animal.</p></article>
-  <article class="card"><h2>Concentrado propio</h2><p>Balanceado con granos locales y proteínas recicladas.</p></article>
-  <article class="card"><h2>Fertilizantes</h2><p>Abonos orgánicos derivados de la pollinaza.</p></article>
-  <article class="card"><h2>Tecnología propia</h2><p>Jaulas automatizadas, secadoras, mezcladoras, peletizadoras y monitoreo remoto.</p></article>
-</section>
+  <meta
+    name="description"
+    content="Marketplace de equipos y asesoría en avicultura sostenible. Aturdidor automático y asesoría personalizada con El Pollo Ingeniero."
+  />
 
-  </main>
-  <div id="__footer"></div>
-  <script>
-    async function inject(id, url) {
-        const el = document.getElementById(id);
-        const r = await fetch(url, { cache: "no-store" });
-        el.innerHTML = await r.text();
+  <style>
+    :root {
+      --allpa-green: #2b7a3d;
+      --allpa-green-dark: #1f5a2c;
+      --allpa-yellow: #ffd54f;
+      --allpa-brown: #6b4a2b;
+      --allpa-bg: #f7f5f0;
+      --allpa-text: #273238;
+      --allpa-muted: #8b97a0;
+      --radius-lg: 1.5rem;
+      --radius-md: 1rem;
+      --shadow-soft: 0 14px 30px rgba(0, 0, 0, 0.12);
+      --shadow-light: 0 6px 18px rgba(0, 0, 0, 0.08);
+      --transition-fast: 0.18s ease-out;
+      --transition-med: 0.25s ease-out;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      background: radial-gradient(circle at top, #ffffff 0, var(--allpa-bg) 65%);
+      color: var(--allpa-text);
+      line-height: 1.6;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    /* Layout base */
+
+    .page-wrapper {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    /* Header */
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(10px);
+      background: linear-gradient(
+        to right,
+        rgba(247, 245, 240, 0.98),
+        rgba(255, 255, 255, 0.98)
+      );
+      border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 0;
+      gap: 1rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 20%, #ffffff, #c8e6c9);
+      border: 2px solid rgba(43, 122, 61, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      color: var(--allpa-green-dark);
+      font-size: 1.1rem;
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      gap: 0.1rem;
+    }
+
+    .brand-title {
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .brand-subtitle {
+      font-size: 0.8rem;
+      color: var(--allpa-muted);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .pill-tag {
+      font-size: 0.78rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      border: 1px dashed rgba(43, 122, 61, 0.35);
+      color: var(--allpa-green-dark);
+      background: rgba(232, 245, 233, 0.8);
+      white-space: nowrap;
+    }
+
+    .btn {
+      border-radius: 999px;
+      border: none;
+      padding: 0.55rem 1.2rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: transform var(--transition-fast),
+        box-shadow var(--transition-fast), background-color var(--transition-fast);
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: linear-gradient(
+        135deg,
+        var(--allpa-green),
+        var(--allpa-green-dark)
+      );
+      color: #fff;
+      box-shadow: var(--shadow-light);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .btn-outline {
+      background: #ffffff;
+      border: 1px solid rgba(39, 50, 56, 0.1);
+      color: var(--allpa-text);
+    }
+
+    .btn-outline:hover {
+      background: #f9fafb;
+      transform: translateY(-1px);
+    }
+
+    .btn-sm {
+      padding: 0.4rem 0.9rem;
+      font-size: 0.8rem;
+    }
+
+    .btn-icon {
+      font-size: 1.1rem;
+    }
+
+    /* Hero */
+
+    #hero {
+      padding: 2.5rem 0 2rem;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2.4fr);
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .hero-kicker {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--allpa-green-dark);
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.2rem 0.7rem;
+      border-radius: 999px;
+      background: rgba(232, 245, 233, 0.9);
+      border: 1px solid rgba(43, 122, 61, 0.25);
+      margin-bottom: 0.6rem;
+    }
+
+    .hero-kicker-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--allpa-yellow);
+    }
+
+    .hero-title {
+      font-size: clamp(2rem, 4vw, 2.6rem);
+      line-height: 1.15;
+      margin: 0 0 0.8rem;
+    }
+
+    .hero-highlight {
+      color: var(--allpa-green-dark);
+    }
+
+    .hero-subtitle {
+      font-size: 1rem;
+      color: var(--allpa-muted);
+      max-width: 32rem;
+      margin-bottom: 1.4rem;
+    }
+
+    .hero-ctas {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      font-size: 0.8rem;
+      color: var(--allpa-muted);
+      align-items: center;
+    }
+
+    .hero-meta span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .hero-meta-dot {
+      width: 3px;
+      height: 3px;
+      border-radius: 999px;
+      background: rgba(39, 50, 56, 0.35);
+    }
+
+    .hero-card {
+      border-radius: var(--radius-lg);
+      background: linear-gradient(145deg, #ffffff, #f1f8e9);
+      box-shadow: var(--shadow-soft);
+      padding: 1rem 1rem 0.9rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-card-badge {
+      position: absolute;
+      top: 0.9rem;
+      right: 1rem;
+      padding: 0.25rem 0.7rem;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      background: rgba(255, 213, 79, 0.95);
+      color: #5d4037;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.14);
+    }
+
+    .hero-card-heading {
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+      color: var(--allpa-green-dark);
+    }
+
+    .hero-card-text {
+      font-size: 0.85rem;
+      color: var(--allpa-text);
+      margin-bottom: 0.75rem;
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.8rem;
+    }
+
+    .hero-stat {
+      flex: 1;
+      min-width: 0;
+      padding: 0.5rem 0.65rem;
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(43, 122, 61, 0.12);
+    }
+
+    .hero-stat-label {
+      font-size: 0.7rem;
+      color: var(--allpa-muted);
+      margin-bottom: 0.15rem;
+    }
+
+    .hero-stat-value {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--allpa-green-dark);
+    }
+
+    .hero-avatar-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.8rem;
+      padding-top: 0.5rem;
+      border-top: 1px dashed rgba(39, 50, 56, 0.12);
+      margin-top: 0.4rem;
+    }
+
+    .hero-avatar-info {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+    }
+
+    .hero-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 20%, #ffffff, #ffe0b2);
+      border: 1.5px solid rgba(107, 74, 43, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #5d4037;
+    }
+
+    .hero-avatar-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .hero-avatar-name {
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .hero-avatar-role {
+      font-size: 0.7rem;
+      color: var(--allpa-muted);
+    }
+
+    .hero-social {
+      text-align: right;
+    }
+
+    .hero-social-label {
+      font-size: 0.7rem;
+      color: var(--allpa-muted);
+      margin-bottom: 0.15rem;
+    }
+
+    .hero-social-handle {
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    /* Sección de confianza */
+
+    #trust {
+      padding: 0.5rem 0 1.75rem;
+    }
+
+    .trust-strip {
+      border-radius: 999px;
+      background: #ffffff;
+      border: 1px solid rgba(39, 50, 56, 0.06);
+      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.06);
+      padding: 0.55rem 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+    }
+
+    .trust-label {
+      font-weight: 600;
+      color: var(--allpa-green-dark);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .trust-items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .trust-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.25rem 0.7rem;
+      border-radius: 999px;
+      background: rgba(247, 245, 240, 0.9);
+      color: var(--allpa-muted);
+    }
+
+    .trust-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--allpa-green);
+    }
+
+    /* Productos */
+
+    #productos {
+      padding: 1.5rem 0 1rem;
+    }
+
+    .section-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+    }
+
+    .section-title {
+      font-size: 1.4rem;
+      margin: 0 0 0.25rem;
+    }
+
+    .section-subtitle {
+      font-size: 0.9rem;
+      color: var(--allpa-muted);
+      max-width: 28rem;
+    }
+
+    .section-tag {
+      font-size: 0.75rem;
+      color: var(--allpa-green-dark);
+      padding: 0.2rem 0.65rem;
+      border-radius: 999px;
+      background: rgba(232, 245, 233, 0.9);
+      border: 1px solid rgba(43, 122, 61, 0.16);
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 1.1rem;
+    }
+
+    @media (min-width: 768px) {
+      .products-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
-      (async () => {
-        await inject("__header", "/partials/header.html"); // o header_en.html en EN
-        await inject("__footer", "/partials/footer.html");
-        document.dispatchEvent(new Event("allpa:partials-ready"));
-      })();
+    }
+
+    .product-card {
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      padding: 1.2rem 1.1rem;
+      box-shadow: var(--shadow-light);
+      border: 1px solid rgba(39, 50, 56, 0.04);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      transform: translateY(0);
+      transition: transform var(--transition-med), box-shadow var(--transition-med),
+        border-color var(--transition-med);
+    }
+
+    .product-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(
+        circle at top right,
+        rgba(255, 213, 79, 0.16),
+        transparent 60%
+      );
+      opacity: 0;
+      transition: opacity var(--transition-med);
+    }
+
+    .product-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-soft);
+      border-color: rgba(43, 122, 61, 0.14);
+    }
+
+    .product-card:hover::before {
+      opacity: 1;
+    }
+
+    .product-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.5rem;
+      align-items: flex-start;
+    }
+
+    .product-labels {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .badge {
+      font-size: 0.68rem;
+      padding: 0.18rem 0.6rem;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+      border: 1px solid transparent;
+      background: #eceff1;
+      color: #455a64;
+    }
+
+    .badge-equip {
+      background: rgba(232, 245, 233, 0.95);
+      color: var(--allpa-green-dark);
+      border-color: rgba(43, 122, 61, 0.3);
+    }
+
+    .badge-service {
+      background: #fff3e0;
+      color: #e65100;
+      border-color: rgba(255, 183, 77, 0.7);
+    }
+
+    .badge-preventa {
+      background: rgba(255, 213, 79, 0.96);
+      color: #5d4037;
+      border-color: rgba(255, 179, 0, 0.7);
+    }
+
+    .badge-coming {
+      background: #eceff1;
+      color: #607d8b;
+      border-style: dashed;
+    }
+
+    .product-title {
+      font-size: 1.05rem;
+      margin: 0 0 0.2rem;
+    }
+
+    .product-subtitle {
+      font-size: 0.9rem;
+      color: var(--allpa-muted);
+      margin: 0;
+    }
+
+    .product-points {
+      list-style: none;
+      padding: 0;
+      margin: 0.35rem 0 0.15rem;
+      font-size: 0.86rem;
+      color: var(--allpa-text);
+    }
+
+    .product-points li {
+      display: flex;
+      gap: 0.4rem;
+      margin-bottom: 0.15rem;
+    }
+
+    .product-points li::before {
+      content: "•";
+      color: var(--allpa-green-dark);
+      font-size: 1.1rem;
+      line-height: 1;
+      margin-top: 1px;
+    }
+
+    .product-footer {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 0.6rem;
+      margin-top: 0.35rem;
+    }
+
+    .product-note {
+      font-size: 0.78rem;
+      color: var(--allpa-muted);
+    }
+
+    .product-ctas {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      justify-content: flex-end;
+    }
+
+    /* Preventa / formulario */
+
+    #preventa {
+      padding: 1.75rem 0 1.5rem;
+    }
+
+    .preventa-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2.4fr);
+      gap: 1.8rem;
+    }
+
+    .preventa-card {
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      padding: 1.2rem 1.1rem;
+      box-shadow: var(--shadow-light);
+      border: 1px solid rgba(39, 50, 56, 0.05);
+    }
+
+    .preventa-title {
+      margin: 0 0 0.4rem;
+      font-size: 1.2rem;
+    }
+
+    .preventa-text {
+      font-size: 0.9rem;
+      color: var(--allpa-muted);
+      margin-bottom: 0.9rem;
+    }
+
+    .preventa-highlight {
+      font-weight: 600;
+      color: var(--allpa-green-dark);
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 0.7rem;
+    }
+
+    @media (min-width: 640px) {
+      .form-grid-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--allpa-text);
+      display: block;
+      margin-bottom: 0.15rem;
+    }
+
+    .required-asterisk {
+      color: #e53935;
+      margin-left: 0.1rem;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border-radius: 0.75rem;
+      border: 1px solid rgba(39, 50, 56, 0.14);
+      padding: 0.5rem 0.6rem;
+      font: inherit;
+      font-size: 0.9rem;
+      background: #fdfdfd;
+      transition: border-color var(--transition-fast),
+        box-shadow var(--transition-fast), background-color var(--transition-fast);
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: rgba(43, 122, 61, 0.7);
+      box-shadow: 0 0 0 1px rgba(43, 122, 61, 0.2);
+      background: #ffffff;
+    }
+
+    textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    .form-footnote {
+      font-size: 0.75rem;
+      color: var(--allpa-muted);
+      margin-top: 0.4rem;
+    }
+
+    .preventa-side {
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+    }
+
+    .preventa-chip-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      font-size: 0.8rem;
+    }
+
+    .preventa-chip {
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      background: #ffffff;
+      border: 1px solid rgba(39, 50, 56, 0.08);
+      color: var(--allpa-text);
+    }
+
+    .preventa-whatsapp-box {
+      border-radius: var(--radius-lg);
+      padding: 0.9rem 0.9rem;
+      background: linear-gradient(135deg, #e8f5e9, #ffffff);
+      border: 1px solid rgba(43, 122, 61, 0.35);
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .preventa-whatsapp-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--allpa-green-dark);
+    }
+
+    .preventa-whatsapp-text {
+      font-size: 0.85rem;
+      color: var(--allpa-text);
+    }
+
+    .preventa-steps {
+      font-size: 0.8rem;
+      color: var(--allpa-muted);
+    }
+
+    .preventa-steps ol {
+      margin: 0.3rem 0 0;
+      padding-left: 1.2rem;
+    }
+
+    .preventa-steps li {
+      margin-bottom: 0.15rem;
+    }
+
+    /* Roadmap */
+
+    #roadmap {
+      padding: 1rem 0 1.4rem;
+    }
+
+    .roadmap-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 0.9rem;
+    }
+
+    .roadmap-card {
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      padding: 0.9rem 0.9rem;
+      border: 1px dashed rgba(39, 50, 56, 0.18);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+    }
+
+    .roadmap-title {
+      font-size: 0.95rem;
+      margin: 0 0 0.2rem;
+      display: flex;
+      gap: 0.35rem;
+      align-items: center;
+    }
+
+    .roadmap-text {
+      font-size: 0.84rem;
+      color: var(--allpa-muted);
+      margin-bottom: 0.4rem;
+    }
+
+    .roadmap-input-row {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .roadmap-input-row input {
+      border-radius: 999px;
+      font-size: 0.85rem;
+      padding: 0.45rem 0.6rem;
+    }
+
+    .btn-xs {
+      padding: 0.38rem 0.7rem;
+      font-size: 0.78rem;
+    }
+
+    /* Lead magnet */
+
+    #lead-magnet {
+      padding: 0.5rem 0 1.5rem;
+    }
+
+    .lead-card {
+      border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, #fff8e1, #ffffff);
+      border: 1px solid rgba(255, 213, 79, 0.6);
+      padding: 1rem 1.1rem;
+      box-shadow: var(--shadow-light);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.9rem;
+    }
+
+    .lead-text {
+      flex: 2;
+      min-width: 0;
+    }
+
+    .lead-title {
+      font-size: 1.05rem;
+      margin: 0 0 0.25rem;
+      color: var(--allpa-brown);
+    }
+
+    .lead-subtitle {
+      font-size: 0.9rem;
+      color: #795548;
+    }
+
+    .lead-form {
+      flex: 1.6;
+      min-width: min(260px, 100%);
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+
+    .lead-form input {
+      flex: 1;
+      min-width: 0;
+      border-radius: 999px;
+      font-size: 0.85rem;
+    }
+
+    /* Testimonios */
+
+    #testimonios {
+      padding: 0.5rem 0 1.4rem;
+    }
+
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 0.9rem;
+    }
+
+    .testimonial-card {
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      padding: 0.85rem 0.9rem;
+      border: 1px solid rgba(39, 50, 56, 0.06);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+      font-size: 0.85rem;
+    }
+
+    .testimonial-text {
+      margin-bottom: 0.45rem;
+    }
+
+    .testimonial-author {
+      font-size: 0.8rem;
+      color: var(--allpa-muted);
+    }
+
+    /* Compartir */
+
+    #compartir {
+      padding: 0.5rem 0 2.25rem;
+    }
+
+    .share-card {
+      border-radius: var(--radius-lg);
+      background: #ffffff;
+      padding: 1rem 1.1rem;
+      border: 1px solid rgba(39, 50, 56, 0.07);
+      box-shadow: var(--shadow-light);
+      text-align: center;
+    }
+
+    .share-title {
+      font-size: 1.02rem;
+      margin: 0 0 0.35rem;
+    }
+
+    .share-text {
+      font-size: 0.9rem;
+      color: var(--allpa-muted);
+      margin-bottom: 0.8rem;
+    }
+
+    .share-buttons {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    /* Footer */
+
+    .site-footer {
+      border-top: 1px solid rgba(39, 50, 56, 0.06);
+      background: #ffffff;
+      padding: 0.9rem 0 1rem;
+      font-size: 0.8rem;
+      color: var(--allpa-muted);
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.7rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+    }
+
+    .footer-links a {
+      text-decoration: underline;
+      text-decoration-style: dotted;
+      text-underline-offset: 3px;
+    }
+
+    /* Animaciones simples */
+
+    .animate-on-scroll {
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+    }
+
+    .animate-on-scroll.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Responsividad */
+
+    @media (max-width: 900px) {
+      .hero-grid,
+      .preventa-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .hero-card {
+        order: -1;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .header-inner {
+        align-items: flex-start;
+      }
+
+      .hero-title {
+        font-size: 1.9rem;
+      }
+
+      .lead-card {
+        align-items: flex-start;
+      }
+
+      .hero-card {
+        padding: 0.9rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page-wrapper">
+    <header class="site-header">
+      <div class="container header-inner">
+        <div class="brand">
+          <div class="brand-logo">
+            A
+          </div>
+          <div class="brand-text">
+            <div class="brand-title">Allpa</div>
+            <div class="brand-subtitle">Avicultura sostenible · Economía circular</div>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <span class="pill-tag">
+            🐤 El Pollo Ingeniero · @stiven9708
+          </span>
+          <button class="btn btn-outline btn-sm" data-scroll-target="#productos">
+            Ver productos
+          </button>
+          <button class="btn btn-primary btn-sm" id="whatsapp-header-btn">
+            <span class="btn-icon">💬</span>
+            Hablar por WhatsApp
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- HERO -->
+      <section id="hero">
+        <div class="container hero-grid">
+          <div class="hero-content animate-on-scroll">
+            <div class="hero-kicker">
+              <span class="hero-kicker-dot"></span>
+              Equipos y asesoría para que tus pollos den el peso
+            </div>
+            <h1 class="hero-title">
+              Menos improvisación, más
+              <span class="hero-highlight">ingeniería en tu galpón</span>.
+            </h1>
+            <p class="hero-subtitle">
+              Allpa y El Pollo Ingeniero te acompañan desde la crianza hasta el sacrificio,
+              con equipos y asesoría pensados para pequeños y medianos productores.
+            </p>
+
+            <div class="hero-ctas">
+              <button class="btn btn-primary" id="whatsapp-hero-btn">
+                <span class="btn-icon">📲</span>
+                Hablar por WhatsApp ahora
+              </button>
+              <button class="btn btn-outline" data-scroll-target="#preventa">
+                Ver preventa y reservar cupo
+              </button>
+            </div>
+
+            <div class="hero-meta">
+              <span>✔ Diseñado para Colombia rural</span>
+              <span class="hero-meta-dot"></span>
+              <span>✔ Basado en experiencia real en galpones</span>
+              <span class="hero-meta-dot"></span>
+              <span>✔ Economía circular con larvas y biodigestor</span>
+            </div>
+          </div>
+
+          <aside class="hero-card animate-on-scroll">
+            <div class="hero-card-badge">
+              Preventa 2025 · Cupos limitados
+            </div>
+            <div class="hero-card-heading">
+              Aturdidor Automático Allpa + Asesoría 1 a 1
+            </div>
+            <div class="hero-card-text">
+              Ideal para productores que quieren mejorar bienestar animal,
+              presentación de canal y organización del proceso de sacrificio.
+            </div>
+            <div class="hero-stats">
+              <div class="hero-stat">
+                <div class="hero-stat-label">Capacidad objetivo</div>
+                <div class="hero-stat-value">Pequeñas y medianas granjas</div>
+              </div>
+              <div class="hero-stat">
+                <div class="hero-stat-label">Acompañamiento</div>
+                <div class="hero-stat-value">Diseño + arranque de uso</div>
+              </div>
+            </div>
+            <div class="hero-avatar-row">
+              <div class="hero-avatar-info">
+                <div class="hero-avatar">PI</div>
+                <div class="hero-avatar-text">
+                  <span class="hero-avatar-name">El Pollo Ingeniero</span>
+                  <span class="hero-avatar-role">Diseño y pruebas en granja</span>
+                </div>
+              </div>
+              <div class="hero-social">
+                <div class="hero-social-label">TikTok</div>
+                <div class="hero-social-handle">@stiven9708</div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- TRUST STRIP -->
+      <section id="trust">
+        <div class="container">
+          <div class="trust-strip animate-on-scroll">
+            <span class="trust-label">
+              🌱 Avicultura con economía circular
+            </span>
+            <div class="trust-items">
+              <span class="trust-item">
+                <span class="trust-dot"></span>
+                Residuos → larvas → concentrado → pollos
+              </span>
+              <span class="trust-item">
+                <span class="trust-dot"></span>
+                Menos desperdicio · Más rentabilidad
+              </span>
+              <span class="trust-item">
+                <span class="trust-dot"></span>
+                Pensado para galpones reales, no de laboratorio
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PRODUCTOS -->
+      <section id="productos">
+        <div class="container">
+          <div class="section-heading animate-on-scroll">
+            <div>
+              <h2 class="section-title">Marketplace Allpa</h2>
+              <p class="section-subtitle">
+                Empezamos con el aturdidor automático y la asesoría personalizada.
+                La lista de equipos y servicios irá creciendo con el proyecto.
+              </p>
+            </div>
+            <span class="section-tag">
+              🧩 Tarjetas modulares · Más productos pronto
+            </span>
+          </div>
+
+          <div class="products-grid">
+            <!-- PRODUCTO: Aturdidor Automático -->
+            <article
+              class="product-card animate-on-scroll"
+              data-product="Aturdidor automático Allpa"
+            >
+              <div class="product-header">
+                <div>
+                  <div class="product-labels">
+                    <span class="badge badge-equip">Equipo</span>
+                    <span class="badge badge-preventa">Preventa</span>
+                  </div>
+                  <h3 class="product-title">
+                    Aturdidor Automático Allpa para Pollos
+                  </h3>
+                  <p class="product-subtitle">
+                    Sacrificio humanitario, menos estrés y mejor presentación de canal.
+                  </p>
+                </div>
+              </div>
+
+              <ul class="product-points">
+                <li>Reduce variaciones entre operarios y esfuerzo físico.</li>
+                <li>Mejora bienestar animal y calidad de carne en el proceso.</li>
+                <li>Diseñado para pequeñas y medianas granjas en Colombia.</li>
+              </ul>
+
+              <div class="product-footer">
+                <div class="product-note">
+                  Serie piloto con prioridad en precio y acompañamiento
+                  para quienes entren en la preventa.
+                </div>
+                <div class="product-ctas">
+                  <button
+                    class="btn btn-outline btn-sm js-whatsapp-product"
+                    data-product="Aturdidor automático Allpa"
+                  >
+                    💬 Cotizar por WhatsApp
+                  </button>
+                  <button
+                    class="btn btn-primary btn-sm js-preventa-product"
+                    data-product="Aturdidor automático Allpa"
+                  >
+                    📝 Reservar en preventa
+                  </button>
+                </div>
+              </div>
+            </article>
+
+            <!-- PRODUCTO: Asesoría personalizada -->
+            <article
+              class="product-card animate-on-scroll"
+              data-product="Asesoría personalizada Allpa"
+            >
+              <div class="product-header">
+                <div>
+                  <div class="product-labels">
+                    <span class="badge badge-service">Servicio</span>
+                  </div>
+                  <h3 class="product-title">
+                    Asesoría 1 a 1 con El Pollo Ingeniero
+                  </h3>
+                  <p class="product-subtitle">
+                    Ajustamos contigo el manejo para que tus pollos ganen peso,
+                    se enfermen menos y el galpón funcione como sistema.
+                  </p>
+                </div>
+              </div>
+
+              <ul class="product-points">
+                <li>Arranque de pollitos: temperatura, cama, agua, bioseguridad.</li>
+                <li>Alimentación con residuos, larva de mosca soldado negra
+                  y concentrados.</li>
+                <li>Diseño de flujo del galpón y manejo de equipos.</li>
+              </ul>
+
+              <div class="product-footer">
+                <div class="product-note">
+                  Cuéntanos cuántas aves manejas y en qué etapa vas.
+                  Preparamos un plan ajustado a tu realidad.
+                </div>
+                <div class="product-ctas">
+                  <button
+                    class="btn btn-outline btn-sm js-whatsapp-product"
+                    data-product="Asesoría personalizada Allpa"
+                  >
+                    💬 Agendar por WhatsApp
+                  </button>
+                  <button
+                    class="btn btn-primary btn-sm js-preventa-product"
+                    data-product="Asesoría personalizada Allpa"
+                  >
+                    📩 Recibir propuesta
+                  </button>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- PREVENTA / FORMULARIO -->
+      <section id="preventa">
+        <div class="container preventa-grid">
+          <div class="preventa-card animate-on-scroll">
+            <h2 class="preventa-title">Reserva tu lugar en la preventa</h2>
+            <p class="preventa-text">
+              Llena este formulario y te contactaremos con una propuesta clara,
+              sin letra pequeña. Quienes entren en la
+              <span class="preventa-highlight">preventa</span>
+              tendrán prioridad en precio y acompañamiento durante la implementación.
+            </p>
+
+            <form id="preorder-form">
+              <div class="form-grid form-grid-2">
+                <div>
+                  <label for="nombre">
+                    Nombre completo
+                    <span class="required-asterisk">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    id="nombre"
+                    name="nombre"
+                    required
+                    autocomplete="name"
+                  />
+                </div>
+                <div>
+                  <label for="whatsapp">
+                    WhatsApp
+                    <span class="required-asterisk">*</span>
+                  </label>
+                  <input
+                    type="tel"
+                    id="whatsapp"
+                    name="whatsapp"
+                    required
+                    placeholder="+57..."
+                    autocomplete="tel"
+                  />
+                </div>
+              </div>
+
+              <div class="form-grid form-grid-2" style="margin-top: 0.5rem">
+                <div>
+                  <label for="correo">Correo electrónico</label>
+                  <input
+                    type="email"
+                    id="correo"
+                    name="correo"
+                    autocomplete="email"
+                  />
+                </div>
+                <div>
+                  <label for="ubicacion">Departamento / Municipio</label>
+                  <input
+                    type="text"
+                    id="ubicacion"
+                    name="ubicacion"
+                    placeholder="Ej: Nariño, Pasto"
+                  />
+                </div>
+              </div>
+
+              <div class="form-grid" style="margin-top: 0.5rem">
+                <div>
+                  <label for="interes">
+                    ¿Qué te interesa?
+                    <span class="required-asterisk">*</span>
+                  </label>
+                  <select id="interes" name="interes" required>
+                    <option value="">Selecciona una opción</option>
+                    <option value="Aturdidor automático Allpa">
+                      Aturdidor automático Allpa
+                    </option>
+                    <option value="Asesoría personalizada Allpa">
+                      Asesoría personalizada Allpa
+                    </option>
+                    <option value="Ambos">Ambos</option>
+                    <option value="Futuros equipos y cursos">
+                      Solo quiero que me avisen de nuevos equipos / cursos
+                    </option>
+                  </select>
+                </div>
+                <div>
+                  <label for="tamano">
+                    Tamaño de tu operación
+                    <span class="required-asterisk">*</span>
+                  </label>
+                  <select id="tamano" name="tamano" required>
+                    <option value="">Selecciona una opción</option>
+                    <option value="Menos de 100 pollos por ciclo">
+                      Estoy empezando (menos de 100 pollos por ciclo)
+                    </option>
+                    <option value="100-500 pollos por ciclo">
+                      Pequeño productor (100–500)
+                    </option>
+                    <option value="500-5000 pollos por ciclo">
+                      Productor mediano (500–5000)
+                    </option>
+                    <option value="Mas de 5000 pollos por ciclo">
+                      Más de 5000 pollos por ciclo
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-grid" style="margin-top: 0.5rem">
+                <div>
+                  <label for="mensaje">Cuéntanos el reto principal que tienes ahora</label>
+                  <textarea
+                    id="mensaje"
+                    name="mensaje"
+                    placeholder="Ej: mis pollos no llegan al peso, tengo problemas de mortalidad en la primera semana, quiero organizar mejor el sacrificio..."
+                  ></textarea>
+                </div>
+              </div>
+
+              <div
+                class="form-grid"
+                style="margin-top: 0.8rem; align-items: center"
+              >
+                <button class="btn btn-primary" type="submit">
+                  ✅ Enviar y guardar mi cupo de preventa
+                </button>
+                <p class="form-footnote">
+                  Tu información se usará solo para contactarte sobre la preventa
+                  y los productos de Allpa. Puedes pedir que la borremos cuando quieras.
+                </p>
+              </div>
+            </form>
+          </div>
+
+          <aside class="preventa-side animate-on-scroll">
+            <div>
+              <h3 style="margin: 0 0 0.4rem; font-size: 1rem">
+                ¿Esto es para ti?
+              </h3>
+              <p style="margin: 0 0 0.5rem; font-size: 0.9rem; color: var(--allpa-muted)">
+                Suele ayudar mucho a productores que:
+              </p>
+              <div class="preventa-chip-list">
+                <span class="preventa-chip">
+                  🐤 Están arrancando sus primeros galpones
+                </span>
+                <span class="preventa-chip">
+                  📉 Sienten que el peso final no da las cuentas
+                </span>
+                <span class="preventa-chip">
+                  🧪 Quieren probar economía circular en la granja
+                </span>
+                <span class="preventa-chip">
+                  🧑‍🔧 Buscan orden en el proceso de sacrificio
+                </span>
+              </div>
+            </div>
+
+            <div class="preventa-whatsapp-box">
+              <div class="preventa-whatsapp-title">
+                ¿Prefieres hablar por WhatsApp?
+              </div>
+              <div class="preventa-whatsapp-text">
+                Escríbenos y cuéntanos cuántas aves tienes y qué estás buscando.
+                Así vamos directo al punto.
+              </div>
+              <button class="btn btn-primary btn-sm" id="whatsapp-preventa-btn">
+                📲 Abrir WhatsApp con mensaje listo
+              </button>
+              <div class="preventa-steps">
+                <strong>Qué vamos a hacer:</strong>
+                <ol>
+                  <li>Te hacemos 3–4 preguntas clave sobre tu galpón.</li>
+                  <li>Te proponemos uno o varios escenarios posibles.</li>
+                  <li>Si te sirve, avanzamos a preventa, si no, igual te llevas ideas.</li>
+                </ol>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- ROADMAP · PRÓXIMOS PRODUCTOS -->
+      <section id="roadmap">
+        <div class="container">
+          <div class="section-heading animate-on-scroll">
+            <div>
+              <h2 class="section-title">Lo que viene en Allpa</h2>
+              <p class="section-subtitle">
+                Estamos construyendo un ecosistema completo: equipos, concentrados,
+                biodigestor y formación para que tu granja funcione como sistema.
+              </p>
+            </div>
+            <span class="section-tag">🔄 Motivo para volver a la página</span>
+          </div>
+
+          <div class="roadmap-grid">
+            <article class="roadmap-card animate-on-scroll">
+              <div class="product-labels" style="margin-bottom: 0.25rem">
+                <span class="badge badge-coming">Próximamente</span>
+              </div>
+              <h3 class="roadmap-title">
+                <span>🔋</span>
+                Biodigestor modular para galpones
+              </h3>
+              <p class="roadmap-text">
+                Aprovechar vísceras y residuos para producir biogás que alimente
+                tus equipos y reduzca tu dependencia de la energía externa.
+              </p>
+              <div class="roadmap-input-row">
+                <input
+                  type="email"
+                  placeholder="Tu correo para avisarte"
+                  aria-label="Correo para avisar biodigestor"
+                />
+                <button class="btn btn-outline btn-xs" type="button">
+                  Avisarme
+                </button>
+              </div>
+            </article>
+
+            <article class="roadmap-card animate-on-scroll">
+              <div class="product-labels" style="margin-bottom: 0.25rem">
+                <span class="badge badge-coming">Próximamente</span>
+              </div>
+              <h3 class="roadmap-title">
+                <span>🥬</span>
+                Máquinas para concentrado con larvas
+              </h3>
+              <p class="roadmap-text">
+                Transformar residuos de fruver y restaurante en proteína para tus
+                pollitos, usando larva de mosca soldado negra y economía circular.
+              </p>
+              <div class="roadmap-input-row">
+                <input
+                  type="email"
+                  placeholder="Tu correo para avisarte"
+                  aria-label="Correo para avisar máquinas de concentrado"
+                />
+                <button class="btn btn-outline btn-xs" type="button">
+                  Avisarme
+                </button>
+              </div>
+            </article>
+
+            <article class="roadmap-card animate-on-scroll">
+              <div class="product-labels" style="margin-bottom: 0.25rem">
+                <span class="badge badge-coming">Próximamente</span>
+              </div>
+              <h3 class="roadmap-title">
+                <span>🎓</span>
+                Masterclass y cursos de avicultura sostenible
+              </h3>
+              <p class="roadmap-text">
+                Clases prácticas con ejemplos reales, números claros y herramientas
+                descargables para que aprendas sin perderte en teoría.
+              </p>
+              <div class="roadmap-input-row">
+                <input
+                  type="email"
+                  placeholder="Tu correo para avisarte"
+                  aria-label="Correo para avisar masterclass"
+                />
+                <button class="btn btn-outline btn-xs" type="button">
+                  Avisarme
+                </button>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- LEAD MAGNET -->
+      <section id="lead-magnet">
+        <div class="container">
+          <div class="lead-card animate-on-scroll">
+            <div class="lead-text">
+              <h2 class="lead-title">
+                Ebook gratis: 10 errores que pulverizan la ganancia en pollos de engorde
+              </h2>
+              <p class="lead-subtitle">
+                Una guía sencilla para productores que quieren dejar de perder dinero
+                por detalles que se podían evitar en el manejo del galpón.
+              </p>
+            </div>
+            <form class="lead-form">
+              <input
+                type="email"
+                placeholder="Tu correo para recibir la guía"
+                required
+              />
+              <button class="btn btn-primary btn-sm" type="submit">
+                Enviar guía
+              </button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- TESTIMONIOS -->
+      <section id="testimonios">
+        <div class="container">
+          <div class="section-heading animate-on-scroll">
+            <div>
+              <h2 class="section-title">Productores que ya caminan con Allpa</h2>
+              <p class="section-subtitle">
+                Estamos documentando casos piloto. Estos son algunos comentarios
+                de personas que ya han trabajado con El Pollo Ingeniero.
+              </p>
+            </div>
+          </div>
+
+          <div class="testimonials-grid">
+            <article class="testimonial-card animate-on-scroll">
+              <p class="testimonial-text">
+                “Organizamos mejor el arranque de los pollitos y bajamos la mortalidad
+                del primer lote. Me ayudó a entender qué revisar cada día.”
+              </p>
+              <div class="testimonial-author">
+                — Productor pequeño, Nariño
+              </div>
+            </article>
+            <article class="testimonial-card animate-on-scroll">
+              <p class="testimonial-text">
+                “Yo estaba probando cosas al azar. Ahora tengo una ruta clara de manejo
+                y sé qué número mirar para saber si vamos bien o mal.”
+              </p>
+              <div class="testimonial-author">
+                — Emprendedora avícola, Valle del Cauca
+              </div>
+            </article>
+            <article class="testimonial-card animate-on-scroll">
+              <p class="testimonial-text">
+                “Me gustó que se enfoca en avicultura con residuos y larvas,
+                no solo en concentrado comercial. Eso para mí es clave.”
+              </p>
+              <div class="testimonial-author">
+                — Productor circular, Cundinamarca
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- COMPARTIR -->
+      <section id="compartir">
+        <div class="container">
+          <div class="share-card animate-on-scroll">
+            <h2 class="share-title">
+              ¿Conoces a alguien que sueña con tener su propio galpón?
+            </h2>
+            <p class="share-text">
+              Comparte esta página con ese amigo o familiar. Puede ser el empujón
+              que necesita para empezar bien, sin improvisar.
+            </p>
+            <div class="share-buttons">
+              <button class="btn btn-primary btn-sm" id="share-whatsapp-btn">
+                📲 Compartir por WhatsApp
+              </button>
+              <button class="btn btn-outline btn-sm" id="share-copy-btn">
+                🔗 Copiar enlace
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <div>
+          © <span id="year"></span> Allpa · Avicultura sostenible.
+          Hecho con 🤍, larvas y mucha ingeniería.
+        </div>
+        <div class="footer-links">
+          <a href="#" id="tiktok-link">TikTok: @stiven9708</a>
+          <a href="mailto:contacto@allpa.com">Correo de contacto</a>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // 👉 Configuración básica
+    const WHATSAPP_NUMBER = "57xxxxxxxxxx"; // TODO: reemplaza por tu número real, sin signos
+    const BASE_URL = window.location.href;
+
+    function buildWhatsAppUrl(message) {
+      const encoded = encodeURIComponent(message);
+      return `https://wa.me/${WHATSAPP_NUMBER}?text=${encoded}`;
+    }
+
+    // Scroll suave
+    document.querySelectorAll("[data-scroll-target]").forEach((el) => {
+      el.addEventListener("click", () => {
+        const target = el.getAttribute("data-scroll-target");
+        const node = document.querySelector(target);
+        if (node) {
+          node.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      });
+    });
+
+    // Botones WhatsApp generales
+    function openGeneralWhatsApp() {
+      const msg =
+        "Hola, vengo de la página de productos de Allpa. Quiero conversar sobre los equipos y asesoría para mi galpón.";
+      window.open(buildWhatsAppUrl(msg), "_blank");
+    }
+
+    document
+      .getElementById("whatsapp-header-btn")
+      .addEventListener("click", openGeneralWhatsApp);
+    document
+      .getElementById("whatsapp-hero-btn")
+      .addEventListener("click", openGeneralWhatsApp);
+    document
+      .getElementById("whatsapp-preventa-btn")
+      .addEventListener("click", openGeneralWhatsApp);
+
+    // Botones WhatsApp por producto
+    document.querySelectorAll(".js-whatsapp-product").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const product = btn.getAttribute("data-product") || "producto Allpa";
+        const msg =
+          `Hola, vengo de la página de productos de Allpa.\n` +
+          `Me interesa el siguiente producto: ${product}.\n` +
+          `Quisiera más información y una cotización.`;
+        window.open(buildWhatsAppUrl(msg), "_blank");
+      });
+    });
+
+    // Botones de preventa por producto -> preseleccionar opción en formulario
+    const selectInteres = document.getElementById("interes");
+    document.querySelectorAll(".js-preventa-product").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const product = btn.getAttribute("data-product");
+        if (selectInteres) {
+          selectInteres.value = product;
+        }
+        const preventaSection = document.getElementById("preventa");
+        if (preventaSection) {
+          preventaSection.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      });
+    });
+
+    // Formulario de preventa (por ahora solo evita recargar y muestra alerta)
+    const preorderForm = document.getElementById("preorder-form");
+    if (preorderForm) {
+      preorderForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        alert(
+          "Gracias por tu interés. Esta página aún está en modo demo.\nConfigura el envío del formulario (Formspree, backend, etc.) para recibir los datos."
+        );
+      });
+    }
+
+    // Lead magnet (simulación)
+    document.querySelectorAll(".lead-form").forEach((form) => {
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        alert(
+          "Perfecto. Cuando conectes este formulario a tu sistema de correos, aquí podrás enviar el ebook automáticamente."
+        );
+      });
+    });
+
+    // Compartir (WhatsApp y copiar enlace)
+    const shareWhatsAppBtn = document.getElementById("share-whatsapp-btn");
+    const shareCopyBtn = document.getElementById("share-copy-btn");
+
+    if (shareWhatsAppBtn) {
+      shareWhatsAppBtn.addEventListener("click", () => {
+        const msg =
+          "Mira esta página de Allpa con equipos y asesoría para avicultura sostenible. Creo que te puede servir para tu galpón: " +
+          BASE_URL;
+        window.open(buildWhatsAppUrl(msg), "_blank");
+      });
+    }
+
+    if (shareCopyBtn) {
+      shareCopyBtn.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(BASE_URL);
+          alert("Enlace copiado. Puedes pegarlo en WhatsApp u otra app.");
+        } catch (err) {
+          alert("No se pudo copiar automáticamente. Copia el enlace desde la barra del navegador.");
+        }
+      });
+    }
+
+    // Animación al hacer scroll
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      {
+        threshold: 0.12,
+      }
+    );
+
+    document.querySelectorAll(".animate-on-scroll").forEach((el) => {
+      observer.observe(el);
+    });
+
+    // Año en el footer
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    // TikTok link placeholder
+    document.getElementById("tiktok-link").href = "https://www.tiktok.com/@stiven9708";
   </script>
-  <script src="/assets/js/app.js"></script>
-  <script src="/assets/js/i18n.js"></script>
 </body>
 </html>
