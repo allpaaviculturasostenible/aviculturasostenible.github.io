@@ -1069,7 +1069,7 @@
         class="form"
         action="https://docs.google.com/forms/d/e/1FAIpQLSfcTvlbuG4_w818DX9qywV2BagosTD-ha-fb4LOFeHiWoe2UA/formResponse"
         method="POST"
-        target="_blank"
+        target="hiddenIframe"
       >
         <div class="form-field">
           <label class="form-label" for="name">Nombre</label>
@@ -1462,6 +1462,13 @@
   window.handleFormSubmit = handleFormSubmit;
   window.goToTool = goToTool;
 
+  document.getElementById("communityForm").addEventListener("submit", function () {
+  alert("¡Gracias! Tus datos fueron enviados correctamente. Muy pronto recibirás las plantillas.");
+});
+
+
 </script>
+<iframe name="hiddenIframe" style="display:none;"></iframe>
+
 </body>
 </html>
