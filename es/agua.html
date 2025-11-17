@@ -1,0 +1,1123 @@
+Perfecto, aquí va la página completa (un solo archivo potabilizacion-agua-pollos.html) con todo el flujo y los cálculos que diseñamos.
+
+Puedes copiar y pegar tal cual en un archivo .html y abrirlo en el navegador.
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Calculadora de Potabilización de Agua para Pollos - Allpa</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --primary: #2563eb;
+      --primary-soft: #dbeafe;
+      --accent: #22c55e;
+      --danger: #ef4444;
+      --text: #0f172a;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --radius: 14px;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 1.5rem;
+    }
+    header {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+    header h1 {
+      font-size: clamp(1.6rem, 2.2vw, 2.1rem);
+      margin: 0;
+      font-weight: 700;
+    }
+    header p {
+      margin: 0;
+      color: var(--muted);
+      max-width: 720px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: #ecfdf5;
+      color: #166534;
+      padding: 0.25rem 0.7rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 500;
+    }
+    .badge span {
+      font-size: 1rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 2.2fr) minmax(0, 1.8fr);
+      gap: 1.25rem;
+    }
+    @media (max-width: 900px) {
+      .grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.05);
+      border: 1px solid var(--border);
+    }
+    .card h2 {
+      margin: 0 0 0.5rem;
+      font-size: 1.1rem;
+    }
+    .card h3 {
+      margin: 0.4rem 0;
+      font-size: 0.98rem;
+    }
+    .card p {
+      margin: 0;
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+    .card + .card {
+      margin-top: 0.8rem;
+    }
+
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin-bottom: 0.2rem;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      margin-bottom: 0.65rem;
+    }
+    .field-group label {
+      font-size: 0.86rem;
+      font-weight: 500;
+      color: var(--text);
+    }
+    .help-text {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+    .inline-fields {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+    }
+    .inline-fields > div {
+      flex: 1 1 130px;
+    }
+
+    input[type="number"],
+    select,
+    input[type="text"] {
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      padding: 0.45rem 0.55rem;
+      font-size: 0.9rem;
+      font-family: inherit;
+      outline: none;
+      background: #f9fafb;
+      transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+    }
+    input[type="number"]:focus,
+    select:focus,
+    input[type="text"]:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 1px var(--primary-soft);
+      background: #ffffff;
+    }
+
+    .radio-row {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.6rem;
+    }
+    .radio-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.3rem 0.7rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      font-size: 0.84rem;
+      cursor: pointer;
+      background: #f9fafb;
+      transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+    }
+    .radio-pill input {
+      accent-color: var(--primary);
+    }
+    .radio-pill.active {
+      background: var(--primary-soft);
+      border-color: var(--primary);
+      box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.25);
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-top: 0.6rem;
+    }
+    button {
+      border-radius: 999px;
+      border: none;
+      font-family: inherit;
+      font-size: 0.9rem;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: background 0.15s, transform 0.05s, box-shadow 0.1s;
+      white-space: nowrap;
+    }
+    button.primary {
+      background: var(--primary);
+      color: #ffffff;
+      box-shadow: 0 10px 18px rgba(37, 99, 235, 0.35);
+    }
+    button.primary:hover {
+      background: #1d4ed8;
+      transform: translateY(-1px);
+    }
+    button.secondary {
+      background: #e5e7eb;
+      color: #111827;
+    }
+    button.secondary:hover {
+      background: #d1d5db;
+    }
+    button.icon {
+      padding-inline: 0.7rem;
+    }
+
+    .result-block {
+      margin-top: 0.7rem;
+      padding: 0.6rem 0.7rem;
+      border-radius: 10px;
+      background: #f9fafb;
+      border: 1px dashed #d1d5db;
+    }
+    .result-block strong {
+      font-size: 0.92rem;
+    }
+    .tagline {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 0.4rem;
+    }
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0.6rem;
+      margin-top: 0.5rem;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.18rem 0.55rem;
+      background: #eef2ff;
+      color: #312e81;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 500;
+    }
+    .warning {
+      font-size: 0.8rem;
+      color: var(--danger);
+      margin-top: 0.4rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.3rem;
+    }
+
+    .small-kpi {
+      font-size: 0.82rem;
+      color: var(--muted);
+      display: flex;
+      flex-direction: column;
+      gap: 0.1rem;
+    }
+    .small-kpi span.value {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #111827;
+    }
+
+    .footer-note {
+      margin-top: 0.8rem;
+      font-size: 0.76rem;
+      color: var(--muted);
+    }
+    .footer-note strong {
+      color: #111827;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="badge">
+        <span>🐥</span>
+        Agua segura para pollitos – Allpa
+      </div>
+      <h1>Calculadora de Potabilización de Agua para Pollos</h1>
+      <p>
+        Esta herramienta te ayuda a calcular el <strong>mínimo de agua diaria</strong>
+        según la edad y cantidad de aves, la <strong>cantidad de cloro</strong> para
+        potabilizar de forma segura y el <strong>ajuste de pH con vinagre o
+        bicarbonato</strong> usando medidas que puedes hacer con jeringas,
+        cucharitas y tapas.
+      </p>
+    </header>
+
+    <div class="grid">
+      <!-- Columna izquierda: Entradas -->
+      <div>
+        <!-- Sección 1: Agua mínima -->
+        <div class="card">
+          <div class="section-label">Paso 1</div>
+          <h2>Calcular litros de agua a tratar</h2>
+          <p>
+            Puedes dejar que la calculadora estime el consumo mínimo según la edad
+            de tus pollos, o escribir directamente cuántos litros de agua deseas
+            tratar hoy.
+          </p>
+
+          <div class="field-group" style="margin-top:0.6rem;">
+            <label>¿Cómo quieres calcular el agua?</label>
+            <div class="radio-row" id="modeRadios">
+              <label class="radio-pill active">
+                <input type="radio" name="mode" value="edad" checked />
+                <span>Según edad y número de aves</span>
+              </label>
+              <label class="radio-pill">
+                <input type="radio" name="mode" value="litros" />
+                <span>Ingresar litros manualmente</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Modo por edad -->
+          <div id="byAgeSection">
+            <div class="inline-fields">
+              <div class="field-group">
+                <label for="raza">Raza</label>
+                <select id="raza">
+                  <option value="ross">Ross 308</option>
+                  <option value="cobb">Cobb 500</option>
+                  <option value="otra">Otra / Desconocida</option>
+                </select>
+                <div class="help-text">
+                  Los consumos son aproximados; puedes usarlos para cualquier broiler.
+                </div>
+              </div>
+
+              <div class="field-group">
+                <label for="edadSemana">Edad (semanas)</label>
+                <select id="edadSemana">
+                  <option value="1">Semana 1 (1–7 días)</option>
+                  <option value="2">Semana 2</option>
+                  <option value="3">Semana 3</option>
+                  <option value="4">Semana 4</option>
+                  <option value="5">Semana 5</option>
+                  <option value="6">Semana 6</option>
+                  <option value="7">Semana 7+</option>
+                </select>
+                <div class="help-text">
+                  La calculadora usa un consumo mínimo diario por ave según la semana.
+                </div>
+              </div>
+            </div>
+
+            <div class="inline-fields">
+              <div class="field-group">
+                <label for="numAves">Número de aves</label>
+                <input
+                  type="number"
+                  id="numAves"
+                  min="1"
+                  step="1"
+                  value="100"
+                />
+                <div class="help-text">
+                  Ingresa la cantidad total de aves en el galpón.
+                </div>
+              </div>
+
+              <div class="field-group">
+                <label for="consumoOverride">
+                  Consumo mínimo por ave (L/día) <span style="color:var(--muted);font-weight:400;">(opcional)</span>
+                </label>
+                <input
+                  type="number"
+                  id="consumoOverride"
+                  min="0"
+                  step="0.01"
+                  placeholder="Dejar vacío para usar valores por defecto"
+                />
+                <div class="help-text">
+                  Si quieres, puedes ajustar manualmente el consumo de agua por ave.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modo litros directos -->
+          <div id="byLitersSection" style="display:none;">
+            <div class="field-group">
+              <label for="litrosManual">Litros de agua a tratar</label>
+              <input
+                type="number"
+                id="litrosManual"
+                min="1"
+                step="0.5"
+                value="50"
+              />
+              <div class="help-text">
+                Escribe directamente cuánta agua quieres potabilizar hoy.
+              </div>
+            </div>
+          </div>
+
+          <div class="button-row">
+            <button class="primary" id="btnCalcularAgua">
+              <span>Calcular litros de agua</span> 💧
+            </button>
+            <button class="secondary" id="btnReset">
+              Limpiar campos
+            </button>
+          </div>
+
+          <div id="aguaResultado" class="result-block" style="display:none;">
+            <strong>Resultado de agua mínima:</strong>
+            <div class="result-grid" style="margin-top:0.4rem;">
+              <div class="small-kpi">
+                <span>Litros de agua sugeridos hoy</span>
+                <span class="value" id="aguaLitrosTexto"></span>
+              </div>
+              <div class="small-kpi">
+                <span>Consumo mínimo por ave</span>
+                <span class="value" id="consumoAveTexto"></span>
+              </div>
+            </div>
+            <div class="tagline">
+              Esta es la cantidad de agua que deberías tener disponible para la
+              jornada de hoy antes de potabilizar.
+            </div>
+          </div>
+        </div>
+
+        <!-- Sección 2: Cloro -->
+        <div class="card">
+          <div class="section-label">Paso 2</div>
+          <h2>Potabilizar el agua con cloro</h2>
+          <p>
+            Se recomienda trabajar entre <strong>2 y 5 ppm de cloro libre</strong>
+            para agua de bebida en aves. Aquí calculamos la cantidad de cloro
+            comercial que debes agregar.
+          </p>
+
+          <div class="inline-fields" style="margin-top:0.6rem;">
+            <div class="field-group">
+              <label for="ppm">Nivel de cloro objetivo (ppm)</label>
+              <input
+                type="number"
+                id="ppm"
+                min="1"
+                max="10"
+                step="0.5"
+                value="3"
+              />
+              <div class="help-text">
+                Recomendado 2–5 ppm. Para galpones con buena higiene, 2–3 ppm es
+                suficiente.
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label for="cloroPorcentaje">Tipo de cloro</label>
+              <select id="cloroPorcentaje">
+                <option value="5">Cloro doméstico 5 %</option>
+                <option value="3">Cloro suave 3 %</option>
+                <option value="12">Hipoclorito concentrado 12 %</option>
+              </select>
+              <div class="help-text">
+                El porcentaje viene en la etiqueta del producto.
+              </div>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label for="litrosCloro">Litros de agua a clorar</label>
+            <input
+              type="number"
+              id="litrosCloro"
+              min="1"
+              step="0.5"
+              placeholder="Usar el cálculo del Paso 1 o escribir aquí"
+            />
+            <div class="help-text">
+              Si ya calculaste el agua mínima en el Paso 1, se rellenará solo. Si
+              quieres, puedes cambiar el valor aquí.
+            </div>
+          </div>
+
+          <div class="button-row">
+            <button class="primary" id="btnCalcularCloro">
+              <span>Calcular dosis de cloro</span> 🧴
+            </button>
+          </div>
+
+          <div id="cloroResultado" class="result-block" style="display:none;">
+            <strong>Dosis de cloro:</strong>
+            <div class="result-grid">
+              <div class="small-kpi">
+                <span>Cloro total</span>
+                <span class="value" id="cloroMlTexto"></span>
+              </div>
+              <div class="small-kpi">
+                <span>Equivalencias caseras</span>
+                <span class="value" id="cloroEquivalenciasTexto"></span>
+              </div>
+            </div>
+            <div class="tagline">
+              Mezcla muy bien el agua, espera al menos <strong>30 minutos</strong>
+              antes de ofrecerla a las aves o de medir el pH.
+            </div>
+            <div class="warning">
+              ⚠️
+              <span>
+                Nunca mezcles cloro con otros desinfectantes o medicinales sin
+                asesoría. Mantén el cloro fuera del alcance de niños y aves.
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sección 3: pH -->
+        <div class="card">
+          <div class="section-label">Paso 3</div>
+          <h2>Ajuste de pH con vinagre o bicarbonato</h2>
+          <p>
+            Después de clorar, mide el pH con tiras o medidor. El rango ideal
+            para pollos es entre <strong>pH 6.0 y 6.8</strong>. La calculadora te
+            dirá cuánto vinagre o bicarbonato agregar.
+          </p>
+
+          <div class="inline-fields" style="margin-top:0.6rem;">
+            <div class="field-group">
+              <label for="phMedido">pH medido</label>
+              <input
+                type="number"
+                id="phMedido"
+                min="3"
+                max="10"
+                step="0.1"
+                placeholder="Ej: 7.8"
+              />
+              <div class="help-text">
+                Escribe el valor que observas en la tira o medidor.
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label for="phObjetivo">pH objetivo</label>
+              <input
+                type="number"
+                id="phObjetivo"
+                min="5.5"
+                max="7"
+                step="0.1"
+                value="6.5"
+              />
+              <div class="help-text">
+                Valor recomendado para pollos entre 6.0 y 6.8. Por defecto 6.5.
+              </div>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label for="litrosPh">Litros para ajuste de pH</label>
+            <input
+              type="number"
+              id="litrosPh"
+              min="1"
+              step="0.5"
+              placeholder="Usar los mismos litros del cloro o escribir aquí"
+            />
+            <div class="help-text">
+              Normalmente es el mismo volumen que potabilizaste en el Paso 2.
+            </div>
+          </div>
+
+          <div class="button-row">
+            <button class="primary" id="btnCalcularPh">
+              <span>Calcular ajuste de pH</span> ⚗️
+            </button>
+          </div>
+
+          <div id="phResultado" class="result-block" style="display:none;">
+            <strong>Ajuste recomendado:</strong>
+            <div id="phTextoPrincipal" style="margin-top:0.4rem;"></div>
+            <div id="phEquivalencias" class="tagline"></div>
+            <div class="warning" id="phAdvertencia" style="display:none;">
+              ⚠️
+              <span>
+                Agrega el producto poco a poco, mezcla bien y vuelve a medir el pH
+                antes de dar el agua a las aves.
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Columna derecha: Resumen y compartir -->
+      <div>
+        <div class="card">
+          <div class="section-label">Resumen del día</div>
+          <h2>“Receta” de agua para tu galpón</h2>
+          <p>
+            Aquí se irá construyendo un resumen con los litros de agua,
+            desinfección con cloro y ajuste de pH listos para compartir por
+            WhatsApp o guardar en tus notas.
+          </p>
+
+          <div id="resumenTexto" class="result-block" style="margin-top:0.7rem;">
+            <strong>Paso a paso:</strong>
+            <ul id="resumenLista" style="padding-left:1.2rem; margin:0.3rem 0 0;">
+              <li style="font-size:0.85rem; color:var(--muted);">
+                Calcula primero los litros de agua (Paso 1).
+              </li>
+              <li style="font-size:0.85rem; color:var(--muted);">
+                Luego la dosis de cloro para potabilizar (Paso 2).
+              </li>
+              <li style="font-size:0.85rem; color:var(--muted);">
+                Finalmente ajusta el pH con vinagre o bicarbonato (Paso 3).
+              </li>
+            </ul>
+          </div>
+
+          <div class="button-row" style="margin-top:0.8rem;">
+            <button class="primary" id="btnWhatsapp">
+              Compartir por WhatsApp 📲
+            </button>
+            <button class="secondary icon" id="btnCopiar">
+              Copiar resumen 📋
+            </button>
+          </div>
+
+          <div class="footer-note">
+            <strong>Nota:</strong> Esta herramienta es educativa y se basa en
+            valores aproximados de consumo y ajuste. Cada granja puede afinar las
+            dosis según su experiencia, calidad del agua y asesoría técnica.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-label">Referencia rápida</div>
+          <h3>Consumo mínimo aproximado de agua por ave (L/día)</h3>
+          <p style="margin-top:0.3rem;">
+            Usado internamente por la calculadora cuando no se ingresa un valor
+            manual:
+          </p>
+          <ul style="font-size:0.8rem; color:var(--muted); margin-top:0.4rem; padding-left:1.1rem;">
+            <li>Semana 1: 0.18 L/ave/día</li>
+            <li>Semana 2: 0.28 L/ave/día</li>
+            <li>Semana 3: 0.43 L/ave/día</li>
+            <li>Semana 4: 0.57 L/ave/día</li>
+            <li>Semana 5: 0.70 L/ave/día</li>
+            <li>Semana 6: 0.75 L/ave/día</li>
+            <li>Semana 7+: 0.80 L/ave/día</li>
+          </ul>
+          <p class="tagline">
+            Estos valores son conservadores para asegurar agua disponible. Puedes
+            ajustar manualmente el consumo por ave en el Paso 1.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- Utilidades ---
+    function round(value, decimals) {
+      const factor = Math.pow(10, decimals);
+      return Math.round(value * factor) / factor;
+    }
+
+    function updateRadioStyles() {
+      const radioPills = document.querySelectorAll("#modeRadios .radio-pill");
+      radioPills.forEach((pill) => {
+        const input = pill.querySelector("input[type='radio']");
+        pill.classList.toggle("active", input.checked);
+      });
+    }
+
+    function getConsumoPorEdad(semana) {
+      // Valores aproximados (L/ave/día)
+      const mapa = {
+        1: 0.18,
+        2: 0.28,
+        3: 0.43,
+        4: 0.57,
+        5: 0.7,
+        6: 0.75,
+        7: 0.8,
+      };
+      return mapa[semana] || 0.5;
+    }
+
+    // --- Estado para el resumen ---
+    const estadoResumen = {
+      litrosAgua: null,
+      consumoAve: null,
+      cloroMl: null,
+      ppm: null,
+      cloroPorcentaje: null,
+      phMedido: null,
+      phObjetivo: null,
+      phAjusteTexto: null,
+    };
+
+    function refrescarResumen() {
+      const lista = document.getElementById("resumenLista");
+      lista.innerHTML = "";
+
+      // Paso 1: Agua
+      if (estadoResumen.litrosAgua != null) {
+        const li1 = document.createElement("li");
+        li1.style.fontSize = "0.85rem";
+        li1.innerHTML =
+          "1️⃣ Agua mínima diaria estimada: <strong>" +
+          round(estadoResumen.litrosAgua, 1) +
+          " L</strong> para el galpón.";
+        lista.appendChild(li1);
+
+        if (estadoResumen.consumoAve != null) {
+          const li1b = document.createElement("li");
+          li1b.style.fontSize = "0.8rem";
+          li1b.style.color = "#6b7280";
+          li1b.textContent =
+            "   (Consumo mínimo usado: " +
+            round(estadoResumen.consumoAve, 3) +
+            " L/ave/día)";
+          lista.appendChild(li1b);
+        }
+      }
+
+      // Paso 2: Cloro
+      if (estadoResumen.cloroMl != null) {
+        const li2 = document.createElement("li");
+        li2.style.fontSize = "0.85rem";
+        li2.innerHTML =
+          "2️⃣ Potabilización: agregar <strong>" +
+          round(estadoResumen.cloroMl, 2) +
+          " mL</strong> de cloro " +
+          (estadoResumen.cloroPorcentaje
+            ? estadoResumen.cloroPorcentaje + " %"
+            : "") +
+          " para alcanzar aproximadamente " +
+          (estadoResumen.ppm ? estadoResumen.ppm : "?") +
+          " ppm de cloro libre. Mezclar y esperar 30 minutos.";
+        lista.appendChild(li2);
+      }
+
+      // Paso 3: pH
+      if (estadoResumen.phAjusteTexto != null) {
+        const li3 = document.createElement("li");
+        li3.style.fontSize = "0.85rem";
+        li3.innerHTML =
+          "3️⃣ Ajuste de pH: " + estadoResumen.phAjusteTexto;
+        lista.appendChild(li3);
+      }
+
+      // Si no hay nada aún
+      if (!lista.children.length) {
+        const li = document.createElement("li");
+        li.style.fontSize = "0.85rem";
+        li.style.color = "#6b7280";
+        li.textContent =
+          "Calcula primero los litros de agua, luego la dosis de cloro y el ajuste de pH para ver aquí el resumen completo.";
+        lista.appendChild(li);
+      }
+    }
+
+    function generarTextoResumenPlain() {
+      const partes = [];
+      if (estadoResumen.litrosAgua != null) {
+        partes.push(
+          "1) Agua mínima diaria estimada: " +
+            round(estadoResumen.litrosAgua, 1) +
+            " L para el galpón."
+        );
+        if (estadoResumen.consumoAve != null) {
+          partes.push(
+            "   Consumo mínimo usado: " +
+              round(estadoResumen.consumoAve, 3) +
+              " L/ave/día."
+          );
+        }
+      }
+      if (estadoResumen.cloroMl != null) {
+        partes.push(
+          "2) Potabilización: agregar " +
+            round(estadoResumen.cloroMl, 2) +
+            " mL de cloro " +
+            (estadoResumen.cloroPorcentaje
+              ? estadoResumen.cloroPorcentaje + " % "
+              : "") +
+            "para alcanzar aprox. " +
+            (estadoResumen.ppm ? estadoResumen.ppm : "?") +
+            " ppm. Mezclar y esperar 30 min."
+        );
+      }
+      if (estadoResumen.phAjusteTexto != null) {
+        partes.push("3) Ajuste de pH: " + estadoResumen.phAjusteTexto);
+      }
+      if (!partes.length) {
+        partes.push(
+          "Aún no hay datos. Usa la calculadora de Allpa para definir agua mínima, dosis de cloro y ajuste de pH."
+        );
+      }
+      return "Protocolo de agua para pollos (Allpa):\n\n" + partes.join("\n");
+    }
+
+    // ---- Modo de cálculo de agua (edad / litros) ----
+    const modeRadiosContainer = document.getElementById("modeRadios");
+    const byAgeSection = document.getElementById("byAgeSection");
+    const byLitersSection = document.getElementById("byLitersSection");
+
+    modeRadiosContainer.addEventListener("change", (e) => {
+      const value = document.querySelector(
+        'input[name="mode"]:checked'
+      ).value;
+      if (value === "edad") {
+        byAgeSection.style.display = "";
+        byLitersSection.style.display = "none";
+      } else {
+        byAgeSection.style.display = "none";
+        byLitersSection.style.display = "";
+      }
+      updateRadioStyles();
+    });
+    updateRadioStyles();
+
+    // ---- Cálculo de agua mínima ----
+    const btnCalcularAgua = document.getElementById("btnCalcularAgua");
+    const aguaResultado = document.getElementById("aguaResultado");
+    const aguaLitrosTexto = document.getElementById("aguaLitrosTexto");
+    const consumoAveTexto = document.getElementById("consumoAveTexto");
+    const btnReset = document.getElementById("btnReset");
+
+    btnCalcularAgua.addEventListener("click", () => {
+      const mode = document.querySelector('input[name="mode"]:checked').value;
+      let litros = 0;
+      let consumoAve = null;
+
+      if (mode === "edad") {
+        const semana = parseInt(
+          document.getElementById("edadSemana").value,
+          10
+        );
+        const numAves = parseFloat(
+          document.getElementById("numAves").value
+        );
+        if (!numAves || numAves <= 0) {
+          alert("Por favor, ingresa un número válido de aves.");
+          return;
+        }
+
+        const override = parseFloat(
+          document.getElementById("consumoOverride").value
+        );
+        if (!isNaN(override) && override > 0) {
+          consumoAve = override;
+        } else {
+          consumoAve = getConsumoPorEdad(semana);
+        }
+
+        litros = consumoAve * numAves;
+      } else {
+        const litrosManual = parseFloat(
+          document.getElementById("litrosManual").value
+        );
+        if (!litrosManual || litrosManual <= 0) {
+          alert("Por favor, ingresa un valor válido de litros.");
+          return;
+        }
+        litros = litrosManual;
+        consumoAve = null;
+      }
+
+      aguaLitrosTexto.textContent = round(litros, 1) + " L/día";
+      if (consumoAve != null) {
+        consumoAveTexto.textContent =
+          round(consumoAve, 3) + " L por ave/día";
+      } else {
+        consumoAveTexto.textContent = "Definido manualmente por el usuario.";
+      }
+      aguaResultado.style.display = "block";
+
+      // Actualizar estado global
+      estadoResumen.litrosAgua = litros;
+      estadoResumen.consumoAve = consumoAve;
+      refrescarResumen();
+
+      // Prellenar litros para cloro y pH
+      const litrosCloroInput = document.getElementById("litrosCloro");
+      const litrosPhInput = document.getElementById("litrosPh");
+      if (!litrosCloroInput.value) litrosCloroInput.value = round(litros, 1);
+      if (!litrosPhInput.value) litrosPhInput.value = round(litros, 1);
+    });
+
+    btnReset.addEventListener("click", () => {
+      document.getElementById("numAves").value = 100;
+      document.getElementById("consumoOverride").value = "";
+      document.getElementById("litrosManual").value = 50;
+      aguaResultado.style.display = "none";
+
+      estadoResumen.litrosAgua = null;
+      estadoResumen.consumoAve = null;
+      refrescarResumen();
+    });
+
+    // ---- Cálculo de cloro ----
+    const btnCalcularCloro = document.getElementById("btnCalcularCloro");
+    const cloroResultado = document.getElementById("cloroResultado");
+    const cloroMlTexto = document.getElementById("cloroMlTexto");
+    const cloroEquivalenciasTexto = document.getElementById(
+      "cloroEquivalenciasTexto"
+    );
+
+    btnCalcularCloro.addEventListener("click", () => {
+      const ppm = parseFloat(document.getElementById("ppm").value);
+      const porcentaje = parseFloat(
+        document.getElementById("cloroPorcentaje").value
+      );
+      let litros = parseFloat(
+        document.getElementById("litrosCloro").value
+      );
+
+      if (!litros || litros <= 0) {
+        if (estadoResumen.litrosAgua != null) {
+          litros = estadoResumen.litrosAgua;
+          document.getElementById("litrosCloro").value = round(litros, 1);
+        } else {
+          alert("Por favor, ingresa los litros de agua a clorar.");
+          return;
+        }
+      }
+
+      if (!ppm || ppm <= 0) {
+        alert("Por favor, ingresa un valor válido de ppm.");
+        return;
+      }
+
+      // mg de cloro = ppm * L
+      const mgCloro = ppm * litros;
+      // 1 mL de cloro al X% tiene 10*X mg de cloro
+      const mgPorMl = 10 * porcentaje;
+      const mlCloro = mgCloro / mgPorMl;
+
+      const gotas = mlCloro * 20; // aprox 20 gotas = 1 mL
+      const jeringa1ml = mlCloro; // cantidad de jeringas de 1 mL
+      const jeringa3ml = mlCloro / 3;
+
+      cloroMlTexto.textContent = round(mlCloro, 2) + " mL de cloro total.";
+      cloroEquivalenciasTexto.textContent =
+        "~ " +
+        Math.round(gotas) +
+        " gotas  |  " +
+        round(jeringa1ml, 1) +
+        " jeringas de 1 mL  |  " +
+        round(jeringa3ml, 1) +
+        " jeringas de 3 mL";
+
+      cloroResultado.style.display = "block";
+
+      // Actualizar estado global
+      estadoResumen.cloroMl = mlCloro;
+      estadoResumen.ppm = ppm;
+      estadoResumen.cloroPorcentaje = porcentaje;
+      refrescarResumen();
+    });
+
+    // ---- Ajuste de pH ----
+    const btnCalcularPh = document.getElementById("btnCalcularPh");
+    const phResultado = document.getElementById("phResultado");
+    const phTextoPrincipal = document.getElementById("phTextoPrincipal");
+    const phEquivalencias = document.getElementById("phEquivalencias");
+    const phAdvertencia = document.getElementById("phAdvertencia");
+
+    btnCalcularPh.addEventListener("click", () => {
+      let phMedido = parseFloat(
+        document.getElementById("phMedido").value
+      );
+      let phObjetivo = parseFloat(
+        document.getElementById("phObjetivo").value
+      );
+      let litrosPh = parseFloat(
+        document.getElementById("litrosPh").value
+      );
+
+      if (isNaN(phMedido)) {
+        alert("Por favor, ingresa el pH medido.");
+        return;
+      }
+      if (isNaN(phObjetivo)) {
+        phObjetivo = 6.5;
+        document.getElementById("phObjetivo").value = 6.5;
+      }
+      if (!litrosPh || litrosPh <= 0) {
+        if (estadoResumen.litrosAgua != null) {
+          litrosPh = estadoResumen.litrosAgua;
+          document.getElementById("litrosPh").value = round(litrosPh, 1);
+        } else {
+          alert("Por favor, ingresa los litros para ajuste de pH.");
+          return;
+        }
+      }
+
+      const diferencia = Math.abs(phMedido - phObjetivo);
+      if (diferencia < 0.05) {
+        phTextoPrincipal.textContent =
+          "El pH ya está muy cerca del objetivo. No es necesario ajustar.";
+        phEquivalencias.textContent =
+          "Si decides ajustar, hazlo con cantidades mínimas y vuelve a medir.";
+        phAdvertencia.style.display = "none";
+
+        estadoResumen.phMedido = phMedido;
+        estadoResumen.phObjetivo = phObjetivo;
+        estadoResumen.phAjusteTexto =
+          "pH dentro del rango objetivo. No se requiere ajuste.";
+        phResultado.style.display = "block";
+        refrescarResumen();
+        return;
+      }
+
+      let texto = "";
+      let equivalencias = "";
+      if (phMedido > phObjetivo) {
+        // Necesitamos bajar pH -> vinagre
+        const vinagreMl =
+          diferencia * (litrosPh / 10) * 8; // fórmula propuesta
+        const tapas = vinagreMl / 5; // 1 tapa ≈ 5 mL
+        const jeringas3ml = vinagreMl / 3;
+
+        texto =
+          "El pH está por encima del objetivo. Para bajarlo desde pH " +
+          phMedido.toFixed(1) +
+          " hasta ~" +
+          phObjetivo.toFixed(1) +
+          ", agrega aproximadamente " +
+          round(vinagreMl, 1) +
+          " mL de vinagre (ácido acético 4–5 %) a " +
+          round(litrosPh, 1) +
+          " L de agua.";
+        equivalencias =
+          "~ " +
+          round(tapas, 1) +
+          " tapas de 5 mL  |  " +
+          round(jeringas3ml, 1) +
+          " jeringas de 3 mL";
+      } else {
+        // Necesitamos subir pH -> bicarbonato
+        const gramosBicar =
+          diferencia * (litrosPh / 10) * 1.5; // fórmula propuesta
+        const cucharaditas = gramosBicar / 5; // 1 cucharadita ≈ 5 g
+
+        texto =
+          "El pH está por debajo del objetivo. Para subirlo desde pH " +
+          phMedido.toFixed(1) +
+          " hasta ~" +
+          phObjetivo.toFixed(1) +
+          ", agrega aproximadamente " +
+          round(gramosBicar, 1) +
+          " g de bicarbonato de sodio a " +
+          round(litrosPh, 1) +
+          " L de agua.";
+        equivalencias =
+          "~ " +
+          round(cucharaditas, 2) +
+          " cucharaditas rasas (5 g c/u).";
+      }
+
+      phTextoPrincipal.textContent = texto;
+      phEquivalencias.textContent = equivalencias;
+      phAdvertencia.style.display = "block";
+      phResultado.style.display = "block";
+
+      // Actualizar estado global
+      estadoResumen.phMedido = phMedido;
+      estadoResumen.phObjetivo = phObjetivo;
+      estadoResumen.phAjusteTexto = texto;
+      refrescarResumen();
+    });
+
+    // ---- Compartir / copiar resumen ----
+    const btnWhatsapp = document.getElementById("btnWhatsapp");
+    const btnCopiar = document.getElementById("btnCopiar");
+
+    btnWhatsapp.addEventListener("click", () => {
+      const texto = generarTextoResumenPlain();
+      const url =
+        "https://wa.me/?text=" + encodeURIComponent(texto);
+      window.open(url, "_blank");
+    });
+
+    btnCopiar.addEventListener("click", async () => {
+      const texto = generarTextoResumenPlain();
+      try {
+        await navigator.clipboard.writeText(texto);
+        alert("Resumen copiado al portapapeles ✅");
+      } catch (e) {
+        alert(
+          "No se pudo copiar automáticamente. Puedes seleccionar y copiar el texto del resumen."
+        );
+      }
+    });
+  </script>
+</body>
+</html>
+
+Si quieres, en el siguiente paso podemos:
+
+Ajustar los valores de consumo de agua por semana a tus tablas específicas (Ross/Cobb).
+
+Cambiar textos al tono exacto de Allpa (más “pollo ingeniero”, más masterclass).
+
+Integrar este archivo con tus otras páginas (calculadora de crecimiento, comederos, etc.).
