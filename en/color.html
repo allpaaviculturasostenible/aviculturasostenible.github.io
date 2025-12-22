@@ -1,0 +1,481 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MixMatch – Mezcla de Témperas/Vinilos (MVP)</title>
+  <style>
+    :root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; }
+    body { margin: 0; background: #0b1220; color: #e8eefc; }
+    header { padding: 20px 16px; border-bottom: 1px solid rgba(255,255,255,.08); }
+    h1 { margin: 0; font-size: 18px; }
+    p { margin: 6px 0 0; opacity: .85; font-size: 13px; line-height: 1.3; }
+    main { padding: 16px; max-width: 1100px; margin: 0 auto; }
+    .grid { display: grid; gap: 14px; grid-template-columns: 1fr; }
+    @media (min-width: 900px) { .grid { grid-template-columns: 1fr 1fr; } }
+    .card { background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); border-radius: 14px; padding: 14px; }
+    .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    label { font-size: 13px; opacity: .9; }
+    input[type="file"] { color: #cfe0ff; }
+    input[type="text"] {
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 10px;
+      padding: 10px 10px;
+      color: #e8eefc;
+      outline: none;
+      width: 220px;
+    }
+    button {
+      background: #4c7dff;
+      border: 0;
+      color: white;
+      padding: 10px 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    button.secondary { background: rgba(255,255,255,.10); }
+    button:disabled { opacity: .5; cursor: not-allowed; }
+    .hint { font-size: 12px; opacity: .78; margin-top: 8px; }
+    .swatches { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; margin-top: 12px; }
+    .swatch {
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 14px;
+      padding: 10px;
+      background: rgba(255,255,255,.03);
+    }
+    .chip {
+      width: 28px; height: 28px; border-radius: 8px;
+      border: 1px solid rgba(255,255,255,.22);
+      box-shadow: 0 4px 16px rgba(0,0,0,.22);
+    }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono"; font-size: 12px; opacity: .9; }
+    .preview {
+      width: 100%; max-height: 260px; object-fit: contain;
+      border-radius: 12px; border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.25);
+    }
+    .split { display: grid; gap: 10px; grid-template-columns: 1fr; }
+    @media (min-width: 900px) { .split { grid-template-columns: 1fr 1fr; } }
+    .bar {
+      height: 10px; border-radius: 999px; overflow: hidden;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.10);
+    }
+    .bar > div { height: 100%; width: 0%; background: #8fb1ff; }
+    .small { font-size: 12px; opacity: .82; }
+    .warn { color: #ffd28f; }
+    .ok { color: #97ffb5; }
+    .footer { margin-top: 14px; font-size: 12px; opacity: .75; }
+  </style>
+</head>
+<body>
+<header>
+  <h1>MixMatch (MVP) – Mezcla de pinturas desde fotos</h1>
+  <p>Sube tus colores base (muestras) y una foto objetivo. La app toma un promedio del centro de cada imagen y sugiere porcentajes de mezcla.</p>
+</header>
+
+<main>
+  <div class="grid">
+    <section class="card">
+      <h2 style="margin:0 0 10px; font-size:15px;">1) Colores base (tus pinturas)</h2>
+      <div class="row">
+        <label>Nombre del color:</label>
+        <input id="baseName" type="text" placeholder="Ej: Amarillo / Rojo / Azul" />
+        <input id="baseFile" type="file" accept="image/*" />
+        <button id="addBaseBtn">Agregar color</button>
+        <button class="secondary" id="clearBaseBtn">Limpiar</button>
+      </div>
+      <div class="hint">
+        Tip: toma la foto en buena luz, sin sombras fuertes, y pon la muestra de pintura en un área grande.
+      </div>
+
+      <div id="baseSwatches" class="swatches"></div>
+    </section>
+
+    <section class="card">
+      <h2 style="margin:0 0 10px; font-size:15px;">2) Color objetivo (foto a igualar)</h2>
+      <div class="row">
+        <input id="targetFile" type="file" accept="image/*" />
+        <button id="analyzeBtn" disabled>Calcular mezcla</button>
+        <button class="secondary" id="resetTargetBtn">Quitar objetivo</button>
+      </div>
+
+      <div class="split" style="margin-top: 12px;">
+        <div>
+          <div class="small">Vista previa objetivo</div>
+          <img id="targetPreview" class="preview" alt="Vista previa objetivo" />
+        </div>
+        <div>
+          <div class="small">Color objetivo detectado (promedio centro)</div>
+          <div class="row" style="margin-top:8px;">
+            <div id="targetChip" class="chip"></div>
+            <div>
+              <div class="mono" id="targetRgb">RGB: –</div>
+              <div class="mono" id="targetHex">HEX: –</div>
+            </div>
+          </div>
+          <div class="hint warn">
+            Este MVP toma el promedio del centro (una “ventana” pequeña). Luego podemos mejorar a “toca para seleccionar” o recortar un área.
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <section class="card" style="margin-top: 14px;">
+    <h2 style="margin:0 0 10px; font-size:15px;">3) Resultado</h2>
+
+    <div class="row" style="justify-content: space-between;">
+      <div>
+        <div class="small">Color mezcla sugerido</div>
+        <div class="row" style="margin-top:8px;">
+          <div id="mixChip" class="chip"></div>
+          <div>
+            <div class="mono" id="mixRgb">RGB: –</div>
+            <div class="mono" id="mixHex">HEX: –</div>
+            <div class="mono" id="deltaInfo">Δ (error): –</div>
+          </div>
+        </div>
+      </div>
+      <div style="min-width: 280px;">
+        <div class="small">Similitud aproximada</div>
+        <div class="bar" style="margin-top:8px;">
+          <div id="scoreBar"></div>
+        </div>
+        <div class="mono" id="scoreText" style="margin-top:6px;">–</div>
+      </div>
+    </div>
+
+    <div id="mixList" style="margin-top: 14px;"></div>
+
+    <div class="footer">
+      Nota: esto es un estimador. En pintura real influyen opacidad, base blanca/negra, humedad, secado y el material (papel, madera, tela).
+    </div>
+  </section>
+
+  <canvas id="hiddenCanvas" style="display:none;"></canvas>
+</main>
+
+<script>
+  const baseName = document.getElementById('baseName');
+  const baseFile = document.getElementById('baseFile');
+  const addBaseBtn = document.getElementById('addBaseBtn');
+  const clearBaseBtn = document.getElementById('clearBaseBtn');
+
+  const targetFile = document.getElementById('targetFile');
+  const analyzeBtn = document.getElementById('analyzeBtn');
+  const resetTargetBtn = document.getElementById('resetTargetBtn');
+
+  const targetPreview = document.getElementById('targetPreview');
+  const targetChip = document.getElementById('targetChip');
+  const targetRgb = document.getElementById('targetRgb');
+  const targetHex = document.getElementById('targetHex');
+
+  const mixChip = document.getElementById('mixChip');
+  const mixRgb = document.getElementById('mixRgb');
+  const mixHex = document.getElementById('mixHex');
+  const deltaInfo = document.getElementById('deltaInfo');
+  const scoreBar = document.getElementById('scoreBar');
+  const scoreText = document.getElementById('scoreText');
+
+  const baseSwatches = document.getElementById('baseSwatches');
+  const mixList = document.getElementById('mixList');
+
+  const canvas = document.getElementById('hiddenCanvas');
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+  let baseColors = []; // {name, rgb:[r,g,b], hex, imgUrl}
+  let targetColor = null; // {rgb, hex, imgUrl}
+
+  function clamp01(x){ return Math.max(0, Math.min(1, x)); }
+  function rgbToHex([r,g,b]) {
+    const toHex = v => v.toString(16).padStart(2,'0');
+    return '#' + toHex(r) + toHex(g) + toHex(b);
+  }
+  function hexToRgb(hex){
+    const m = hex.replace('#','').match(/.{2}/g);
+    return m ? m.map(x=>parseInt(x,16)) : [0,0,0];
+  }
+  function dist(a,b){
+    const dr=a[0]-b[0], dg=a[1]-b[1], db=a[2]-b[2];
+    return Math.sqrt(dr*dr+dg*dg+db*db);
+  }
+
+  async function loadImageFromFile(file){
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    await new Promise((res, rej) => {
+      img.onload = res;
+      img.onerror = rej;
+      img.src = url;
+    });
+    return { img, url };
+  }
+
+  // MVP: promedio de una ventana centrada (por defecto 10% del ancho/alto)
+  function sampleCenterAverage(img, windowRatio = 0.12) {
+    const w = img.naturalWidth;
+    const h = img.naturalHeight;
+    canvas.width = w;
+    canvas.height = h;
+    ctx.drawImage(img, 0, 0);
+
+    const winW = Math.max(20, Math.floor(w * windowRatio));
+    const winH = Math.max(20, Math.floor(h * windowRatio));
+    const x0 = Math.floor((w - winW) / 2);
+    const y0 = Math.floor((h - winH) / 2);
+
+    const imageData = ctx.getImageData(x0, y0, winW, winH).data;
+
+    let r=0,g=0,b=0, count=0;
+    for (let i=0; i<imageData.length; i+=4) {
+      const a = imageData[i+3];
+      if (a < 10) continue;
+      r += imageData[i];
+      g += imageData[i+1];
+      b += imageData[i+2];
+      count++;
+    }
+    if (!count) return [0,0,0];
+    r = Math.round(r / count);
+    g = Math.round(g / count);
+    b = Math.round(b / count);
+    return [r,g,b];
+  }
+
+  function renderBaseSwatches(){
+    baseSwatches.innerHTML = '';
+    baseColors.forEach((c, idx) => {
+      const div = document.createElement('div');
+      div.className = 'swatch';
+      div.innerHTML = `
+        <div class="row" style="justify-content: space-between;">
+          <div class="row">
+            <div class="chip" style="background:${c.hex}"></div>
+            <div>
+              <div style="font-weight:700;">${escapeHtml(c.name)}</div>
+              <div class="mono">RGB: ${c.rgb.join(', ')}</div>
+              <div class="mono">HEX: ${c.hex}</div>
+            </div>
+          </div>
+          <button class="secondary" data-remove="${idx}">Quitar</button>
+        </div>
+        <div style="margin-top:10px;">
+          <img class="preview" src="${c.imgUrl}" alt="muestra ${escapeHtml(c.name)}" />
+        </div>
+      `;
+      div.querySelector('button[data-remove]').onclick = (e) => {
+        const i = parseInt(e.target.getAttribute('data-remove'), 10);
+        baseColors.splice(i,1);
+        renderBaseSwatches();
+        updateAnalyzeState();
+      };
+      baseSwatches.appendChild(div);
+    });
+  }
+
+  function updateAnalyzeState(){
+    analyzeBtn.disabled = !(baseColors.length >= 2 && targetColor);
+  }
+
+  function escapeHtml(str){
+    return (str||'').replace(/[&<>"']/g, m => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'
+    }[m]));
+  }
+
+  // Mezcla: buscamos pesos >=0, sum=1, que minimicen ||sum(w_i * base_i) - target||.
+  // MVP: aproximación simple:
+  // 1) resolvemos least-squares sin restricciones por componente (con normalización),
+  // 2) recortamos negativos a 0,
+  // 3) renormalizamos a sum=1.
+  function suggestMix(baseRGBs, targetRGB){
+    const n = baseRGBs.length;
+
+    // Construimos matrices para mínimos cuadrados (A w ≈ t), A: 3xn
+    // Usamos ecuaciones normales: (A^T A) w = A^T t
+    const ATA = Array.from({length:n}, () => Array(n).fill(0));
+    const ATt = Array(n).fill(0);
+
+    for (let i=0;i<n;i++){
+      for (let j=0;j<n;j++){
+        // dot(base_i, base_j)
+        ATA[i][j] = baseRGBs[i][0]*baseRGBs[j][0] + baseRGBs[i][1]*baseRGBs[j][1] + baseRGBs[i][2]*baseRGBs[j][2];
+      }
+      ATt[i] = baseRGBs[i][0]*targetRGB[0] + baseRGBs[i][1]*targetRGB[1] + baseRGBs[i][2]*targetRGB[2];
+    }
+
+    // Resolver sistema lineal ATA w = ATt (Gauss-Jordan)
+    let w = solveLinearSystem(ATA, ATt);
+    if (!w) {
+      // fallback: pesos uniformes
+      w = Array(n).fill(1/n);
+    }
+
+    // recortar y normalizar
+    w = w.map(x => Math.max(0, x));
+    let sum = w.reduce((a,b)=>a+b,0);
+    if (sum <= 1e-9) w = Array(n).fill(1/n);
+    else w = w.map(x => x/sum);
+
+    // color resultante
+    const mix = [0,0,0];
+    for (let i=0;i<n;i++){
+      mix[0] += w[i]*baseRGBs[i][0];
+      mix[1] += w[i]*baseRGBs[i][1];
+      mix[2] += w[i]*baseRGBs[i][2];
+    }
+    const mixRGB = mix.map(v => Math.round(Math.max(0, Math.min(255, v))));
+    return { weights: w, mixRGB };
+  }
+
+  function solveLinearSystem(A, b){
+    // Gauss-Jordan (n x n)
+    const n = A.length;
+    // copia
+    const M = A.map(row => row.slice());
+    const x = b.slice();
+
+    for (let col=0; col<n; col++){
+      // pivot
+      let pivot = col;
+      for (let r=col+1; r<n; r++){
+        if (Math.abs(M[r][col]) > Math.abs(M[pivot][col])) pivot = r;
+      }
+      if (Math.abs(M[pivot][col]) < 1e-10) return null;
+
+      // swap
+      if (pivot !== col){
+        [M[pivot], M[col]] = [M[col], M[pivot]];
+        [x[pivot], x[col]] = [x[col], x[pivot]];
+      }
+
+      // normalize pivot row
+      const div = M[col][col];
+      for (let c=col; c<n; c++) M[col][c] /= div;
+      x[col] /= div;
+
+      // eliminate others
+      for (let r=0; r<n; r++){
+        if (r === col) continue;
+        const factor = M[r][col];
+        for (let c=col; c<n; c++){
+          M[r][c] -= factor * M[col][c];
+        }
+        x[r] -= factor * x[col];
+      }
+    }
+    return x;
+  }
+
+  function renderResult(weights, mixRGB, targetRGB){
+    const mixHexVal = rgbToHex(mixRGB);
+    mixChip.style.background = mixHexVal;
+    mixRgb.textContent = `RGB: ${mixRGB.join(', ')}`;
+    mixHex.textContent = `HEX: ${mixHexVal}`;
+
+    const d = dist(mixRGB, targetRGB);
+    deltaInfo.textContent = `Δ (error): ${d.toFixed(1)} (0 es perfecto)`;
+
+    // score 0..100 (heurístico)
+    const maxD = Math.sqrt(3*(255*255));
+    const score = Math.round(100 * (1 - (d / maxD)));
+    scoreBar.style.width = `${clamp01(score/100)*100}%`;
+    scoreText.textContent = `Similitud: ${score}%`;
+
+    const rows = weights
+      .map((w,i) => ({ name: baseColors[i].name, w }))
+      .sort((a,b)=>b.w-a.w);
+
+    mixList.innerHTML = `
+      <div style="margin-bottom:8px; font-weight:700;">Mezcla sugerida (aprox.)</div>
+      ${rows.map(r => `
+        <div class="row" style="margin: 8px 0; justify-content: space-between;">
+          <div class="row">
+            <span style="font-weight:700;">${escapeHtml(r.name)}</span>
+          </div>
+          <div class="mono">${Math.round(r.w*100)}%</div>
+        </div>
+        <div class="bar"><div style="width:${Math.round(r.w*100)}%"></div></div>
+      `).join('')}
+      <div class="hint ok" style="margin-top:10px;">
+        Consejo: empieza mezclando en “partes”. Ej: si sale 60% amarillo y 40% rojo, prueba 6 partes de amarillo + 4 de rojo, y luego ajusta.
+      </div>
+    `;
+  }
+
+  addBaseBtn.onclick = async () => {
+    const name = (baseName.value || '').trim() || `Color ${baseColors.length+1}`;
+    const file = baseFile.files?.[0];
+    if (!file) return alert('Selecciona una foto para el color base.');
+
+    try {
+      const { img, url } = await loadImageFromFile(file);
+      const rgb = sampleCenterAverage(img);
+      const hex = rgbToHex(rgb);
+      baseColors.push({ name, rgb, hex, imgUrl: url });
+      baseName.value = '';
+      baseFile.value = '';
+      renderBaseSwatches();
+      updateAnalyzeState();
+    } catch (e) {
+      console.error(e);
+      alert('No pude cargar la imagen. Prueba otra foto.');
+    }
+  };
+
+  clearBaseBtn.onclick = () => {
+    baseColors = [];
+    renderBaseSwatches();
+    updateAnalyzeState();
+    mixList.innerHTML = '';
+  };
+
+  targetFile.onchange = async () => {
+    const file = targetFile.files?.[0];
+    if (!file) return;
+
+    try {
+      const { img, url } = await loadImageFromFile(file);
+      targetPreview.src = url;
+
+      const rgb = sampleCenterAverage(img);
+      const hex = rgbToHex(rgb);
+      targetColor = { rgb, hex, imgUrl: url };
+
+      targetChip.style.background = hex;
+      targetRgb.textContent = `RGB: ${rgb.join(', ')}`;
+      targetHex.textContent = `HEX: ${hex}`;
+
+      updateAnalyzeState();
+    } catch (e) {
+      console.error(e);
+      alert('No pude cargar la imagen objetivo. Prueba otra.');
+    }
+  };
+
+  resetTargetBtn.onclick = () => {
+    targetColor = null;
+    targetFile.value = '';
+    targetPreview.removeAttribute('src');
+    targetChip.style.background = 'transparent';
+    targetRgb.textContent = 'RGB: –';
+    targetHex.textContent = 'HEX: –';
+    updateAnalyzeState();
+  };
+
+  analyzeBtn.onclick = () => {
+    if (baseColors.length < 2 || !targetColor) return;
+
+    const baseRGBs = baseColors.map(c => c.rgb);
+    const targetRGB = targetColor.rgb;
+
+    const { weights, mixRGB } = suggestMix(baseRGBs, targetRGB);
+    renderResult(weights, mixRGB, targetRGB);
+  };
+</script>
+</body>
+</html>
