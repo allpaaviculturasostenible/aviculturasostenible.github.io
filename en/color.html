@@ -218,6 +218,12 @@
                 <option value="0.04">4%</option>
                 <option value="0.05" selected>5%</option>
               </select>
+
+              <label>Escala de mezcla:</label>
+                <select id="partsScale">
+                  <option value="20">20 partes (rápido)</option>
+                  <option value="50">50 partes (preciso)</option>
+                </select>
             </div>
 
             <div class="hint">
@@ -488,6 +494,32 @@
     return [Math.round(rr/count), Math.round(gg/count), Math.round(bb/count)];
   }
 
+  function weightsToParts(weights, totalParts){
+  // weights: [0.68, 0.32]  | totalParts: 20 o 50
+  const raw = weights.map(w => w * totalParts);
+
+  // redondeo inicial
+  let parts = raw.map(v => Math.round(v));
+
+  // corregir suma
+  let diff = totalParts - parts.reduce((a,b)=>a+b,0);
+
+  // ajustar distribuyendo el error
+  while (diff !== 0){
+    for (let i = 0; i < parts.length && diff !== 0; i++){
+      if (diff > 0){
+        parts[i]++;
+        diff--;
+      } else if (diff < 0 && parts[i] > 0){
+        parts[i]--;
+        diff++;
+      }
+    }
+  }
+  return parts;
+}
+
+
   // =========================
   // UI render
   // =========================
@@ -566,65 +598,134 @@
   function gcd(a,b){ while(b){ [a,b]=[b,a%b]; } return Math.abs(a); }
 
   function renderRecipes(list){
-    recipesDiv.innerHTML = '';
-    if (!list.length){
-      recipesDiv.innerHTML = `<div class="hint warn">No se encontró una receta mejor. Prueba cambiar el color objetivo o agregar un color base más cercano.</div>`;
-      return;
+  recipesDiv.innerHTML = '';
+
+  if (!list || !list.length){
+    recipesDiv.innerHTML = `<div class="hint warn">No se encontró una receta mejor. Prueba cambiar el color objetivo o agregar un color base más cercano.</div>`;
+    return;
+  }
+
+  // Lee la escala elegida (20 o 50). Si no existe el selector aún, usa 20.
+  const partsScaleEl = document.getElementById('partsScale');
+  const totalParts = partsScaleEl ? parseInt(partsScaleEl.value, 10) : 20;
+
+  // Convierte pesos (suman 1) a partes enteras (suman totalParts)
+  function weightsToParts(weights, total){
+    const raw = weights.map(w => w * total);
+    let parts = raw.map(v => Math.round(v));
+
+    let diff = total - parts.reduce((a,b)=>a+b,0);
+
+    // Ajuste del error con el método "largest remainder":
+    // si faltan partes, se las damos a los que quedaron con mayor fracción.
+    // si sobran, se las quitamos a los que quedaron con menor fracción (y que tengan >0).
+    const frac = raw.map((v,i)=>({ i, f: v - Math.floor(v) }));
+    if (diff > 0){
+      frac.sort((a,b)=>b.f - a.f);
+      let k = 0;
+      while (diff > 0){
+        parts[frac[k % frac.length].i] += 1;
+        diff--;
+        k++;
+      }
+    } else if (diff < 0){
+      frac.sort((a,b)=>a.f - b.f);
+      let k = 0;
+      while (diff < 0){
+        const idx = frac[k % frac.length].i;
+        if (parts[idx] > 0){
+          parts[idx] -= 1;
+          diff++;
+        }
+        k++;
+        if (k > 1000) break; // protección
+      }
     }
 
-    list.forEach((rec, idx) => {
-      const score = scoreFromDeltaE(rec.de);
-      const mixHexVal = rgbToHex(rec.mixRGB);
-
-      const rows = rec.items
-        .slice()
-        .sort((a,b)=>b.w-a.w)
-        .map(it => ({
-          name: it.color.name,
-          w: it.w
-        }));
-
-      const card = document.createElement('div');
-      card.className = 'recipeCard';
-      card.innerHTML = `
-        <div class="row" style="justify-content: space-between;">
-          <div class="row">
-            <span class="pill"><b>#${idx+1}</b> ${rec.k} colores</span>
-            <span class="pill">Similitud <b>${score}%</b></span>
-            <span class="pill">ΔE <b>${rec.de.toFixed(2)}</b></span>
-          </div>
-          <button class="secondary" data-apply="${idx}">Aplicar</button>
-        </div>
-
-        <div class="row" style="margin-top:10px;">
-          <div class="chip" style="background:${mixHexVal}"></div>
-          <div class="mono">Mezcla: RGB ${rec.mixRGB.join(', ')} · HEX ${mixHexVal}</div>
-        </div>
-
-        <div style="margin-top:10px;">
-          <div style="font-weight:700; margin-bottom:6px;">Proporciones</div>
-          ${rows.map(r => `
-            <div class="row" style="justify-content: space-between; margin: 6px 0;">
-              <div>${escapeHtml(r.name)}</div>
-              <div class="mono">${Math.round(r.w*100)}%</div>
-            </div>
-            <div class="bar"><div style="width:${Math.round(r.w*100)}%"></div></div>
-          `).join('')}
-          <div class="hint ok" style="margin-top:10px;">
-            En “partes”: <span class="mono">${partsText(rows.map(r=>r.w))}</span>
-            · Ej: 7:3 significa 7 partes del primer color + 3 partes del segundo.
-          </div>
-        </div>
-      `;
-
-      card.querySelector('button[data-apply]').onclick = () => {
-        renderTop(list[idx]);
-        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-      };
-
-      recipesDiv.appendChild(card);
-    });
+    // Garantía final
+    const sum = parts.reduce((a,b)=>a+b,0);
+    if (sum !== total){
+      // Corrige a fuerza si algo raro pasó
+      parts[0] += (total - sum);
+    }
+    return parts;
   }
+
+  // Construye un texto tipo: "14 Azul + 5 Amarillo + 1 Blanco"
+  function partsMixText(rows, parts){
+    return rows
+      .map((r,i)=>`${parts[i]} ${escapeHtml(r.name)}`)
+      .join(' + ');
+  }
+
+  list.forEach((rec, idx) => {
+    const score = scoreFromDeltaE(rec.de);
+    const mixHexVal = rgbToHex(rec.mixRGB);
+
+    const rows = rec.items
+      .slice()
+      .sort((a,b)=>b.w-a.w)
+      .map(it => ({
+        name: it.color.name,
+        w: it.w
+      }));
+
+    const weights = rows.map(r => r.w);
+    const parts = weightsToParts(weights, totalParts);
+
+    const card = document.createElement('div');
+    card.className = 'recipeCard';
+    card.innerHTML = `
+      <div class="row" style="justify-content: space-between;">
+        <div class="row">
+          <span class="pill"><b>#${idx+1}</b> ${rec.k} colores</span>
+          <span class="pill">Similitud <b>${score}%</b></span>
+          <span class="pill">ΔE <b>${rec.de.toFixed(2)}</b></span>
+          <span class="pill">Escala <b>${totalParts}</b> partes</span>
+        </div>
+        <button class="secondary" data-apply="${idx}">Aplicar</button>
+      </div>
+
+      <div class="row" style="margin-top:10px;">
+        <div class="chip" style="background:${mixHexVal}"></div>
+        <div class="mono">Mezcla: RGB ${rec.mixRGB.join(', ')} · HEX ${mixHexVal}</div>
+      </div>
+
+      <div style="margin-top:10px;">
+        <div style="font-weight:700; margin-bottom:6px;">Proporciones</div>
+        ${rows.map((r,i) => `
+          <div class="row" style="justify-content: space-between; margin: 6px 0;">
+            <div>${escapeHtml(r.name)}</div>
+            <div class="mono">${Math.round(r.w*100)}% · <b>${parts[i]}</b> parte(s)</div>
+          </div>
+          <div class="bar"><div style="width:${Math.round(r.w*100)}%"></div></div>
+        `).join('')}
+
+        <div class="hint ok" style="margin-top:10px;">
+          <b>Receta en partes:</b>
+          <span class="mono">${partsMixText(rows, parts)}</span>
+          <span class="mono"> (Total: ${totalParts})</span>
+        </div>
+
+        <div class="hint" style="margin-top:10px;">
+          <b>Proceso recomendado:</b><br>
+          1) <b>Mezcla base</b>: prepara exactamente <b>${totalParts}</b> partes con la receta anterior y mezcla 30–60s hasta homogeneizar.<br>
+          2) <b>Prueba</b>: aplica una muestra junto al color objetivo y deja secar 1–3 min.<br>
+          3) <b>Ajuste fino</b>: separa 10 partes de la mezcla base en 2–3 porciones:
+          una sin cambios (control), otra con <b>½ parte</b> de blanco si está oscura, y otra con <b>¼ parte</b> del color que ajuste el tono (azul/amarillo/rojo). Repite con micro-dosis.
+        </div>
+      </div>
+    `;
+
+    card.querySelector('button[data-apply]').onclick = () => {
+      renderTop(list[idx]);
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    };
+
+    recipesDiv.appendChild(card);
+  });
+}
+
 
   // =========================
   // Candidate selection + search
