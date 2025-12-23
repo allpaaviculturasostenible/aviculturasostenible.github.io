@@ -3,17 +3,19 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>MixMatch – Mezcla de Témperas/Vinilos (MVP)</title>
+  <title>MixMatch – Mezcla de Pinturas (Lab + Top recetas)</title>
   <style>
     :root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; }
     body { margin: 0; background: #0b1220; color: #e8eefc; }
     header { padding: 20px 16px; border-bottom: 1px solid rgba(255,255,255,.08); }
     h1 { margin: 0; font-size: 18px; }
-    p { margin: 6px 0 0; opacity: .85; font-size: 13px; line-height: 1.3; }
+    p { margin: 6px 0 0; opacity: .85; font-size: 13px; line-height: 1.35; }
     main { padding: 16px; max-width: 1100px; margin: 0 auto; }
+
     .grid { display: grid; gap: 14px; grid-template-columns: 1fr; }
     @media (min-width: 900px) { .grid { grid-template-columns: 1fr 1fr; } }
     .card { background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); border-radius: 14px; padding: 14px; }
+
     .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
     label { font-size: 13px; opacity: .9; }
     input[type="file"] { color: #cfe0ff; }
@@ -26,6 +28,15 @@
       outline: none;
       width: 220px;
     }
+    select, input[type="number"]{
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 10px;
+      padding: 10px 10px;
+      color: #e8eefc;
+      outline: none;
+    }
+
     button {
       background: #4c7dff;
       border: 0;
@@ -37,7 +48,11 @@
     }
     button.secondary { background: rgba(255,255,255,.10); }
     button:disabled { opacity: .5; cursor: not-allowed; }
+
     .hint { font-size: 12px; opacity: .78; margin-top: 8px; line-height: 1.35; }
+    .small { font-size: 12px; opacity: .82; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono"; font-size: 12px; opacity: .92; }
+
     .swatches { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; margin-top: 12px; }
     .swatch {
       border: 1px solid rgba(255,255,255,.10);
@@ -50,7 +65,6 @@
       border: 1px solid rgba(255,255,255,.22);
       box-shadow: 0 4px 16px rgba(0,0,0,.22);
     }
-    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono"; font-size: 12px; opacity: .9; }
     .preview {
       width: 100%; max-height: 260px; object-fit: contain;
       border-radius: 12px; border: 1px solid rgba(255,255,255,.10);
@@ -58,22 +72,23 @@
       display: block;
       user-select: none;
       -webkit-user-drag: none;
-      touch-action: none; /* importante para mover el dedo sin scroll */
+      touch-action: none;
     }
     .split { display: grid; gap: 10px; grid-template-columns: 1fr; }
     @media (min-width: 900px) { .split { grid-template-columns: 1fr 1fr; } }
+
     .bar {
       height: 10px; border-radius: 999px; overflow: hidden;
       background: rgba(255,255,255,.08);
       border: 1px solid rgba(255,255,255,.10);
     }
     .bar > div { height: 100%; width: 0%; background: #8fb1ff; }
-    .small { font-size: 12px; opacity: .82; }
+
+    .footer { margin-top: 14px; font-size: 12px; opacity: .75; line-height: 1.35; }
     .warn { color: #ffd28f; }
     .ok { color: #97ffb5; }
-    .footer { margin-top: 14px; font-size: 12px; opacity: .75; line-height: 1.35; }
 
-    /* Overlay pipeta */
+    /* Pipeta overlay */
     #targetWrap { position: relative; }
     #pickerDot {
       position: absolute;
@@ -93,68 +108,121 @@
       border: 1px solid rgba(0,0,0,.35);
       background: rgba(255,255,255,.12);
     }
+
+    .recipeCard{
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 14px;
+      padding: 12px;
+      background: rgba(255,255,255,.03);
+      margin-top: 10px;
+    }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.10);
+      font-size: 12px;
+      opacity: .92;
+    }
+    .grid2{ display:grid; grid-template-columns:1fr; gap:10px; }
+    @media (min-width: 900px){ .grid2{ grid-template-columns:1fr 1fr; } }
   </style>
 </head>
 
 <body>
 <header>
-  <h1>MixMatch (MVP) – Mezcla de pinturas desde fotos</h1>
-  <p>Sube tus colores base (muestras) y una foto objetivo. Ahora puedes usar la “pipeta”: mantén presionado sobre la imagen objetivo y arrastra para seleccionar cualquier color.</p>
+  <h1>MixMatch – Mezcla de pinturas (Lab + Top recetas)</h1>
+  <p>
+    Selecciona el color objetivo con pipeta (mantén presionado y arrastra).
+    El algoritmo busca la mejor mezcla usando <b>máx 2 o 3 colores</b> y compara en <b>CIELAB</b> (ΔE).
+  </p>
 </header>
 
 <main>
   <div class="grid">
     <section class="card">
-      <h2 style="margin:0 0 10px; font-size:15px;">1) Colores base (tus pinturas)</h2>
+      <h2 style="margin:0 0 10px; font-size:15px;">1) Colores base (5–10)</h2>
+
       <div class="row">
-        <label>Nombre del color:</label>
-        <input id="baseName" type="text" placeholder="Ej: Amarillo / Rojo / Azul" />
+        <label>Nombre:</label>
+        <input id="baseName" type="text" placeholder="Ej: Amarillo / Rojo / Azul / Blanco" />
         <input id="baseFile" type="file" accept="image/*" />
-        <button id="addBaseBtn">Agregar color</button>
+        <button id="addBaseBtn">Agregar</button>
         <button class="secondary" id="clearBaseBtn">Limpiar</button>
       </div>
+
       <div class="hint">
-        Tip: toma la foto en buena luz, sin sombras fuertes. Ideal: muestra grande de pintura, cámara perpendicular al papel.
+        Recomendación: fotos con buena luz y sin sombras. Para evitar errores de memoria en celular, el análisis se hace en baja resolución.
       </div>
 
       <div id="baseSwatches" class="swatches"></div>
     </section>
 
     <section class="card">
-      <h2 style="margin:0 0 10px; font-size:15px;">2) Color objetivo (foto a igualar)</h2>
+      <h2 style="margin:0 0 10px; font-size:15px;">2) Objetivo + Pipeta</h2>
+
       <div class="row">
         <input id="targetFile" type="file" accept="image/*" />
-        <button id="analyzeBtn" disabled>Calcular mezcla</button>
-        <button class="secondary" id="resetTargetBtn">Quitar objetivo</button>
+        <button id="analyzeBtn" disabled>Buscar mejores recetas</button>
+        <button class="secondary" id="resetTargetBtn">Quitar</button>
       </div>
 
-      <div class="split" style="margin-top: 12px;">
+      <div class="grid2" style="margin-top:12px;">
         <div>
-          <div class="small">Vista previa objetivo (usa pipeta)</div>
-
+          <div class="small">Imagen objetivo</div>
           <div id="targetWrap">
             <img id="targetPreview" class="preview" alt="Vista previa objetivo" />
             <div id="pickerDot"></div>
           </div>
-
           <div class="hint warn">
-            Pipeta: mantén presionado ~0.35s y arrastra. (Doble clic también toma color inmediato).
+            Pipeta: mantén presionado ~0.35s y arrastra. (Doble clic toma color inmediato).
           </div>
         </div>
 
         <div>
-          <div class="small">Color objetivo detectado</div>
+          <div class="small">Color objetivo</div>
           <div class="row" style="margin-top:8px;">
             <div id="targetChip" class="chip"></div>
             <div>
               <div class="mono" id="targetRgb">RGB: –</div>
               <div class="mono" id="targetHex">HEX: –</div>
+              <div class="mono" id="targetDe">ΔE: –</div>
             </div>
           </div>
 
-          <div class="hint">
-            Nota: al cargar la imagen se toma un promedio del centro como valor inicial.
-            Luego puedes elegir el punto exacto con la pipeta.
+          <div style="margin-top:12px; border-top:1px solid rgba(255,255,255,.08); padding-top:12px;">
+            <div class="small">Opciones de búsqueda</div>
+            <div class="row" style="margin-top:8px;">
+              <label>Máx colores:</label>
+              <select id="maxColors">
+                <option value="2">2 colores</option>
+                <option value="3" selected>3 colores</option>
+              </select>
+
+              <label>Top candidatos:</label>
+              <input id="topN" type="number" min="3" max="10" value="6" style="width:92px;" />
+
+              <label>Paso pares:</label>
+              <select id="step2">
+                <option value="0.01">1%</option>
+                <option value="0.02" selected>2%</option>
+                <option value="0.05">5%</option>
+              </select>
+
+              <label>Paso tríos:</label>
+              <select id="step3">
+                <option value="0.02">2%</option>
+                <option value="0.04">4%</option>
+                <option value="0.05" selected>5%</option>
+              </select>
+            </div>
+
+            <div class="hint">
+              Con 5–10 colores base, usar Top 6 + pares 2% + tríos 5% es rápido y evita proporciones iguales.
+            </div>
           </div>
         </div>
       </div>
@@ -162,23 +230,23 @@
   </div>
 
   <section class="card" style="margin-top: 14px;">
-    <h2 style="margin:0 0 10px; font-size:15px;">3) Resultado</h2>
+    <h2 style="margin:0 0 10px; font-size:15px;">3) Top recetas</h2>
 
     <div class="row" style="justify-content: space-between;">
       <div>
-        <div class="small">Color mezcla sugerido</div>
+        <div class="small">Mejor mezcla encontrada</div>
         <div class="row" style="margin-top:8px;">
           <div id="mixChip" class="chip"></div>
           <div>
             <div class="mono" id="mixRgb">RGB: –</div>
             <div class="mono" id="mixHex">HEX: –</div>
-            <div class="mono" id="deltaInfo">Δ (error): –</div>
+            <div class="mono" id="mixDe">ΔE: –</div>
           </div>
         </div>
       </div>
 
       <div style="min-width: 280px;">
-        <div class="small">Similitud aproximada</div>
+        <div class="small">Similitud (Lab)</div>
         <div class="bar" style="margin-top:8px;">
           <div id="scoreBar"></div>
         </div>
@@ -186,11 +254,11 @@
       </div>
     </div>
 
-    <div id="mixList" style="margin-top: 14px;"></div>
+    <div id="recipes"></div>
 
     <div class="footer">
-      Nota: esto es un estimador. En pintura real influyen opacidad, base blanca/negra, humedad, secado y el material (papel, madera, tela).
-      Próximo paso recomendado: añadir “modo blanco/negro” y calibración de luz.
+      Nota: esta app asume mezcla lineal (aprox.). En pintura real influyen opacidad y pigmentos.
+      Aún así, limitar a 2–3 colores suele dar recetas más útiles y evita “mezcla de todo”.
     </div>
   </section>
 
@@ -198,7 +266,9 @@
 </main>
 
 <script>
-  // ----- DOM -----
+  // =========================
+  // DOM
+  // =========================
   const baseName = document.getElementById('baseName');
   const baseFile = document.getElementById('baseFile');
   const addBaseBtn = document.getElementById('addBaseBtn');
@@ -208,44 +278,43 @@
   const analyzeBtn = document.getElementById('analyzeBtn');
   const resetTargetBtn = document.getElementById('resetTargetBtn');
 
-  const targetWrap = document.getElementById('targetWrap');
   const targetPreview = document.getElementById('targetPreview');
   const pickerDot = document.getElementById('pickerDot');
-
   const targetChip = document.getElementById('targetChip');
   const targetRgb = document.getElementById('targetRgb');
   const targetHex = document.getElementById('targetHex');
+  const targetDe = document.getElementById('targetDe');
 
   const mixChip = document.getElementById('mixChip');
   const mixRgb = document.getElementById('mixRgb');
   const mixHex = document.getElementById('mixHex');
-  const deltaInfo = document.getElementById('deltaInfo');
+  const mixDe = document.getElementById('mixDe');
   const scoreBar = document.getElementById('scoreBar');
   const scoreText = document.getElementById('scoreText');
 
   const baseSwatches = document.getElementById('baseSwatches');
-  const mixList = document.getElementById('mixList');
+  const recipesDiv = document.getElementById('recipes');
+
+  const maxColorsSel = document.getElementById('maxColors');
+  const topNInput = document.getElementById('topN');
+  const step2Sel = document.getElementById('step2');
+  const step3Sel = document.getElementById('step3');
 
   const canvas = document.getElementById('hiddenCanvas');
   const ctx = canvas.getContext('2d', { willReadFrequently: true });
 
-  // ----- State -----
-  let baseColors = []; // {name, rgb:[r,g,b], hex, imgUrl}
-  let targetColor = null; // {rgb, hex, imgUrl}
-  let targetImgEl = null; // Image para muestrear píxeles con pipeta
+  // =========================
+  // State
+  // =========================
+  let baseColors = []; // {name, rgb, hex, lab, imgUrl, isWhite, isBlack}
+  let targetColor = null; // {rgb, hex, lab}
+  let targetImgEl = null;
 
-  // ----- Utils -----
-  function clamp01(x){ return Math.max(0, Math.min(1, x)); }
-
-  function rgbToHex([r,g,b]) {
-    const toHex = v => v.toString(16).padStart(2,'0');
-    return '#' + toHex(r) + toHex(g) + toHex(b);
-  }
-
-  function dist(a,b){
-    const dr=a[0]-b[0], dg=a[1]-b[1], db=a[2]-b[2];
-    return Math.sqrt(dr*dr+dg*dg+db*db);
-  }
+  // =========================
+  // Helpers
+  // =========================
+  const clamp01 = x => Math.max(0, Math.min(1, x));
+  const clamp255 = v => Math.max(0, Math.min(255, v));
 
   function escapeHtml(str){
     return (str||'').replace(/[&<>"']/g, m => ({
@@ -253,6 +322,78 @@
     }[m]));
   }
 
+  function rgbToHex([r,g,b]) {
+    const toHex = v => v.toString(16).padStart(2,'0');
+    return '#' + toHex(r) + toHex(g) + toHex(b);
+  }
+
+  function mixRgbWeighted(items){ // items: [{rgb, w}]
+    let r=0,g=0,b=0;
+    for (const it of items){
+      r += it.w * it.rgb[0];
+      g += it.w * it.rgb[1];
+      b += it.w * it.rgb[2];
+    }
+    return [Math.round(clamp255(r)), Math.round(clamp255(g)), Math.round(clamp255(b))];
+  }
+
+  // =========================
+  // Color science (sRGB -> Lab) – D65
+  // =========================
+  function srgbToLinear(c){
+    c /= 255;
+    return (c <= 0.04045) ? (c / 12.92) : Math.pow((c + 0.055) / 1.055, 2.4);
+  }
+
+  function rgbToXyz([r,g,b]){
+    const R = srgbToLinear(r);
+    const G = srgbToLinear(g);
+    const B = srgbToLinear(b);
+
+    // sRGB D65
+    const X = R*0.4124564 + G*0.3575761 + B*0.1804375;
+    const Y = R*0.2126729 + G*0.7151522 + B*0.0721750;
+    const Z = R*0.0193339 + G*0.1191920 + B*0.9503041;
+    return [X, Y, Z];
+  }
+
+  function fLab(t){
+    const d = 6/29;
+    return (t > Math.pow(d,3)) ? Math.cbrt(t) : (t/(3*d*d) + 4/29);
+  }
+
+  function rgbToLab(rgb){
+    const [X,Y,Z] = rgbToXyz(rgb);
+    // Reference white D65
+    const Xn = 0.95047, Yn = 1.00000, Zn = 1.08883;
+
+    const fx = fLab(X / Xn);
+    const fy = fLab(Y / Yn);
+    const fz = fLab(Z / Zn);
+
+    const L = 116*fy - 16;
+    const a = 500*(fx - fy);
+    const b = 200*(fy - fz);
+    return [L, a, b];
+  }
+
+  function deltaE76(lab1, lab2){
+    const dL = lab1[0]-lab2[0];
+    const da = lab1[1]-lab2[1];
+    const db = lab1[2]-lab2[2];
+    return Math.sqrt(dL*dL + da*da + db*db);
+  }
+
+  function scoreFromDeltaE(de){
+    // Heurístico: 0 = perfecto. 2~apenas perceptible. 10 = obvio.
+    // Map a 0..100: score = 100 * exp(-de / 12)
+    const s = 100 * Math.exp(-de / 12);
+    return Math.round(s);
+  }
+
+  // =========================
+  // Image loading + sampling (low-res)
+  // =========================
   async function loadImageFromFile(file){
     const url = URL.createObjectURL(file);
     const img = new Image();
@@ -265,45 +406,89 @@
     return { img, url };
   }
 
-  // MVP: promedio de una ventana centrada
-  function sampleCenterAverage(img, windowRatio = 0.12) {
+  // Downscale draw to avoid memory issues
+  function drawDownscaled(img, maxSide=512){
     const w = img.naturalWidth;
     const h = img.naturalHeight;
-    canvas.width = w;
-    canvas.height = h;
-    ctx.drawImage(img, 0, 0);
+    const scale = Math.min(1, maxSide / Math.max(w,h));
+    const dw = Math.max(1, Math.round(w * scale));
+    const dh = Math.max(1, Math.round(h * scale));
 
-    const winW = Math.max(20, Math.floor(w * windowRatio));
-    const winH = Math.max(20, Math.floor(h * windowRatio));
-    const x0 = Math.floor((w - winW) / 2);
-    const y0 = Math.floor((h - winH) / 2);
+    canvas.width = dw;
+    canvas.height = dh;
+    ctx.clearRect(0,0,dw,dh);
+    ctx.drawImage(img, 0, 0, dw, dh);
+    return {dw, dh};
+  }
 
-    const imageData = ctx.getImageData(x0, y0, winW, winH).data;
+  function sampleCenterAverageDownscaled(img, windowRatio = 0.12, maxSide=512) {
+    const {dw, dh} = drawDownscaled(img, maxSide);
 
-    let r=0,g=0,b=0, count=0;
-    for (let i=0; i<imageData.length; i+=4) {
-      const a = imageData[i+3];
+    const winW = Math.max(10, Math.floor(dw * windowRatio));
+    const winH = Math.max(10, Math.floor(dh * windowRatio));
+    const x0 = Math.floor((dw - winW) / 2);
+    const y0 = Math.floor((dh - winH) / 2);
+
+    const data = ctx.getImageData(x0, y0, winW, winH).data;
+    let r=0,g=0,b=0,count=0;
+    for (let i=0; i<data.length; i+=4){
+      const a = data[i+3];
       if (a < 10) continue;
-      r += imageData[i];
-      g += imageData[i+1];
-      b += imageData[i+2];
+      r += data[i]; g += data[i+1]; b += data[i+2];
       count++;
     }
     if (!count) return [0,0,0];
-    return [Math.round(r / count), Math.round(g / count), Math.round(b / count)];
+    return [Math.round(r/count), Math.round(g/count), Math.round(b/count)];
   }
 
-  function setTargetFromRGB(rgb) {
-    const hex = rgbToHex(rgb);
-    targetColor = { rgb, hex, imgUrl: targetPreview.src || null };
-
-    targetChip.style.background = hex;
-    targetRgb.textContent = `RGB: ${rgb.join(', ')}`;
-    targetHex.textContent = `HEX: ${hex}`;
-
-    updateAnalyzeState();
+  function getRelativePos(evt, element) {
+    const rect = element.getBoundingClientRect();
+    const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
+    const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+    return { nx: x / rect.width, ny: y / rect.height, px: x, py: y };
   }
 
+  // For pipette: sample on a cached downscaled canvas of target image
+  let targetCanvasData = null; // {dw, dh, imgData:Uint8ClampedArray}
+  function cacheTargetDownscaled(maxSide=512){
+    if (!targetImgEl) return;
+    const {dw, dh} = drawDownscaled(targetImgEl, maxSide);
+    const imgData = ctx.getImageData(0,0,dw,dh).data; // copy
+    targetCanvasData = {dw, dh, imgData};
+  }
+
+  function sampleTargetAt(nx, ny, radius=6){
+    if (!targetCanvasData) return [0,0,0];
+    const {dw, dh, imgData} = targetCanvasData;
+
+    const ix = Math.max(0, Math.min(dw-1, Math.round(nx * dw)));
+    const iy = Math.max(0, Math.min(dh-1, Math.round(ny * dh)));
+
+    const r = Math.max(1, radius);
+    const x0 = Math.max(0, ix - r), x1 = Math.min(dw-1, ix + r);
+    const y0 = Math.max(0, iy - r), y1 = Math.min(dh-1, iy + r);
+
+    let rr=0, gg=0, bb=0, count=0;
+    for (let y=y0; y<=y1; y++){
+      for (let x=x0; x<=x1; x++){
+        const idx = (y*dw + x)*4;
+        const a = imgData[idx+3];
+        if (a < 10) continue;
+        rr += imgData[idx];
+        gg += imgData[idx+1];
+        bb += imgData[idx+2];
+        count++;
+      }
+    }
+    if (!count) return [0,0,0];
+    return [Math.round(rr/count), Math.round(gg/count), Math.round(bb/count)];
+  }
+
+  // =========================
+  // UI render
+  // =========================
   function updateAnalyzeState(){
     analyzeBtn.disabled = !(baseColors.length >= 2 && targetColor);
   }
@@ -321,6 +506,7 @@
               <div style="font-weight:700;">${escapeHtml(c.name)}</div>
               <div class="mono">RGB: ${c.rgb.join(', ')}</div>
               <div class="mono">HEX: ${c.hex}</div>
+              <div class="mono">Lab: ${c.lab.map(v=>v.toFixed(1)).join(', ')}</div>
             </div>
           </div>
           <button class="secondary" data-remove="${idx}">Quitar</button>
@@ -331,6 +517,8 @@
       `;
       div.querySelector('button[data-remove]').onclick = (e) => {
         const i = parseInt(e.target.getAttribute('data-remove'), 10);
+        // liberar URL
+        try { URL.revokeObjectURL(baseColors[i].imgUrl); } catch {}
         baseColors.splice(i,1);
         renderBaseSwatches();
         updateAnalyzeState();
@@ -339,68 +527,292 @@
     });
   }
 
-  // ----- Pipeta (long press + drag) -----
-  function getRelativePos(evt, element) {
-    const rect = element.getBoundingClientRect();
-    const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
-    const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
-
-    const x = clientX - rect.left;
-    const y = clientY - rect.top;
-
-    return {
-      nx: x / rect.width,
-      ny: y / rect.height,
-      px: x,
-      py: y
-    };
+  function setTargetFromRGB(rgb){
+    const hex = rgbToHex(rgb);
+    const lab = rgbToLab(rgb);
+    targetColor = { rgb, hex, lab };
+    targetChip.style.background = hex;
+    targetRgb.textContent = `RGB: ${rgb.join(', ')}`;
+    targetHex.textContent = `HEX: ${hex}`;
+    targetDe.textContent = `ΔE: –`;
+    updateAnalyzeState();
   }
 
-  function sampleAtNormalized(img, nx, ny, radiusPx = 10) {
-    const w = img.naturalWidth;
-    const h = img.naturalHeight;
+  function renderTop(rec){
+    const mixHexVal = rgbToHex(rec.mixRGB);
+    mixChip.style.background = mixHexVal;
+    mixRgb.textContent = `RGB: ${rec.mixRGB.join(', ')}`;
+    mixHex.textContent = `HEX: ${mixHexVal}`;
+    mixDe.textContent = `ΔE: ${rec.de.toFixed(2)}`;
 
-    const ix = Math.max(0, Math.min(w - 1, Math.round(nx * w)));
-    const iy = Math.max(0, Math.min(h - 1, Math.round(ny * h)));
+    const score = scoreFromDeltaE(rec.de);
+    scoreBar.style.width = `${clamp01(score/100)*100}%`;
+    scoreText.textContent = `Similitud: ${score}% (ΔE ${rec.de.toFixed(2)})`;
+  }
 
-    canvas.width = w;
-    canvas.height = h;
-    ctx.drawImage(img, 0, 0);
+  function partsText(weights){
+    // convierte % a "partes" simples (máx 10) aproximando por gcd
+    const perc = weights.map(w => Math.round(w*100));
+    const nonZero = perc.filter(p=>p>0);
+    if (!nonZero.length) return "–";
+    const g = nonZero.reduce((a,b)=>gcd(a,b));
+    const parts = perc.map(p => p>0 ? Math.round(p/g) : 0);
+    const total = parts.reduce((a,b)=>a+b,0);
+    if (total > 12) return "Usa % (muchas partes)";
+    return parts.join(' : ');
+  }
+  function gcd(a,b){ while(b){ [a,b]=[b,a%b]; } return Math.abs(a); }
 
-    // Ajuste de radio respecto al tamaño renderizado (para que se sienta estable)
-    const rect = targetPreview.getBoundingClientRect();
-    const scale = rect.width ? (w / rect.width) : 1;
-    const r = Math.max(1, Math.round(radiusPx * scale));
-
-    const x0 = Math.max(0, ix - r);
-    const y0 = Math.max(0, iy - r);
-    const x1 = Math.min(w - 1, ix + r);
-    const y1 = Math.min(h - 1, iy + r);
-    const sw = Math.max(1, x1 - x0 + 1);
-    const sh = Math.max(1, y1 - y0 + 1);
-
-    const data = ctx.getImageData(x0, y0, sw, sh).data;
-
-    let rr=0, gg=0, bb=0, count=0;
-    for (let i=0; i<data.length; i+=4) {
-      const a = data[i+3];
-      if (a < 10) continue;
-      rr += data[i];
-      gg += data[i+1];
-      bb += data[i+2];
-      count++;
+  function renderRecipes(list){
+    recipesDiv.innerHTML = '';
+    if (!list.length){
+      recipesDiv.innerHTML = `<div class="hint warn">No se encontró una receta mejor. Prueba cambiar el color objetivo o agregar un color base más cercano.</div>`;
+      return;
     }
-    if (!count) return [0,0,0];
-    return [Math.round(rr/count), Math.round(gg/count), Math.round(bb/count)];
+
+    list.forEach((rec, idx) => {
+      const score = scoreFromDeltaE(rec.de);
+      const mixHexVal = rgbToHex(rec.mixRGB);
+
+      const rows = rec.items
+        .slice()
+        .sort((a,b)=>b.w-a.w)
+        .map(it => ({
+          name: it.color.name,
+          w: it.w
+        }));
+
+      const card = document.createElement('div');
+      card.className = 'recipeCard';
+      card.innerHTML = `
+        <div class="row" style="justify-content: space-between;">
+          <div class="row">
+            <span class="pill"><b>#${idx+1}</b> ${rec.k} colores</span>
+            <span class="pill">Similitud <b>${score}%</b></span>
+            <span class="pill">ΔE <b>${rec.de.toFixed(2)}</b></span>
+          </div>
+          <button class="secondary" data-apply="${idx}">Aplicar</button>
+        </div>
+
+        <div class="row" style="margin-top:10px;">
+          <div class="chip" style="background:${mixHexVal}"></div>
+          <div class="mono">Mezcla: RGB ${rec.mixRGB.join(', ')} · HEX ${mixHexVal}</div>
+        </div>
+
+        <div style="margin-top:10px;">
+          <div style="font-weight:700; margin-bottom:6px;">Proporciones</div>
+          ${rows.map(r => `
+            <div class="row" style="justify-content: space-between; margin: 6px 0;">
+              <div>${escapeHtml(r.name)}</div>
+              <div class="mono">${Math.round(r.w*100)}%</div>
+            </div>
+            <div class="bar"><div style="width:${Math.round(r.w*100)}%"></div></div>
+          `).join('')}
+          <div class="hint ok" style="margin-top:10px;">
+            En “partes”: <span class="mono">${partsText(rows.map(r=>r.w))}</span>
+            · Ej: 7:3 significa 7 partes del primer color + 3 partes del segundo.
+          </div>
+        </div>
+      `;
+
+      card.querySelector('button[data-apply]').onclick = () => {
+        renderTop(list[idx]);
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+      };
+
+      recipesDiv.appendChild(card);
+    });
   }
 
+  // =========================
+  // Candidate selection + search
+  // =========================
+  function detectWhiteBlack(name, rgb){
+    const n = (name||'').toLowerCase();
+    const isWhiteName = n.includes('blanco') || n.includes('white');
+    const isBlackName = n.includes('negro') || n.includes('black');
+
+    // fallback by brightness
+    const Y = 0.2126*rgb[0] + 0.7152*rgb[1] + 0.0722*rgb[2];
+    const isWhite = isWhiteName || Y > 245;
+    const isBlack = isBlackName || Y < 20;
+    return { isWhite, isBlack };
+  }
+
+  function pickTopCandidates(colors, targetLab, topN){
+    // sort by ΔE
+    const scored = colors.map(c => ({ c, de: deltaE76(c.lab, targetLab) }));
+    scored.sort((a,b)=>a.de-b.de);
+    return scored.slice(0, Math.min(topN, scored.length)).map(x=>x.c);
+  }
+
+  function penaltyWhiteBlackTogether(items){
+    const hasW = items.some(it => it.color.isWhite);
+    const hasB = items.some(it => it.color.isBlack);
+    // Penalización suave para evitar W+B juntos por defecto
+    return (hasW && hasB) ? 2.0 : 0.0; // ΔE extra
+  }
+
+  function evalRecipe(items, targetLab){
+    // items: [{color, w}] with sum=1
+    const mixRGB = mixRgbWeighted(items);
+    const mixLab = rgbToLab(mixRGB);
+    let de = deltaE76(mixLab, targetLab);
+    de += penaltyWhiteBlackTogether(items);
+    return { mixRGB, de };
+  }
+
+  function bestPair(candidates, targetLab, step2){
+    let best = null;
+    for (let i=0; i<candidates.length; i++){
+      for (let j=i+1; j<candidates.length; j++){
+        const c1 = candidates[i], c2 = candidates[j];
+
+        for (let w1=0; w1<=1+1e-9; w1+=step2){
+          const w2 = 1 - w1;
+          const items = [{color:c1, w:w1}, {color:c2, w:w2}];
+          const res = evalRecipe(items, targetLab);
+          const rec = { k:2, items, ...res };
+          if (!best || rec.de < best.de) best = rec;
+        }
+      }
+    }
+
+    // refine around best
+    if (best){
+      const c1 = best.items[0].color, c2 = best.items[1].color;
+      const wCenter = best.items[0].w;
+      const start = Math.max(0, wCenter - 0.06);
+      const end   = Math.min(1, wCenter + 0.06);
+      for (let w1=start; w1<=end+1e-9; w1+=0.01){
+        const items = [{color:c1, w:w1}, {color:c2, w:1-w1}];
+        const res = evalRecipe(items, targetLab);
+        const rec = { k:2, items, ...res };
+        if (rec.de < best.de) best = rec;
+      }
+    }
+    return best;
+  }
+
+  function bestTrio(candidates, targetLab, step3){
+    let best = null;
+
+    for (let i=0; i<candidates.length; i++){
+      for (let j=i+1; j<candidates.length; j++){
+        for (let k=j+1; k<candidates.length; k++){
+          const c1=candidates[i], c2=candidates[j], c3=candidates[k];
+
+          // grid search w1,w2, w3=1-w1-w2
+          for (let w1=0; w1<=1+1e-9; w1+=step3){
+            for (let w2=0; w2<=1-w1+1e-9; w2+=step3){
+              const w3 = 1 - w1 - w2;
+              if (w3 < -1e-9) continue;
+              const items = [
+                {color:c1, w:w1},
+                {color:c2, w:w2},
+                {color:c3, w:Math.max(0,w3)}
+              ];
+              // skip super tiny weights
+              const sum = items.reduce((a,b)=>a+b.w,0);
+              if (sum <= 1e-9) continue;
+              // normalize
+              for (const it of items) it.w /= sum;
+
+              const res = evalRecipe(items, targetLab);
+              const rec = { k:3, items, ...res };
+              if (!best || rec.de < best.de) best = rec;
+            }
+          }
+        }
+      }
+    }
+
+    // refine around best (local 1% jiggle)
+    if (best){
+      const cols = best.items.map(x=>x.color);
+      const w0 = best.items.map(x=>x.w);
+
+      const candidatesW = [];
+      const deltas = [-0.03,-0.02,-0.01,0,0.01,0.02,0.03];
+
+      for (const d1 of deltas){
+        for (const d2 of deltas){
+          let w1 = w0[0] + d1;
+          let w2 = w0[1] + d2;
+          let w3 = 1 - w1 - w2;
+          if (w1 < 0 || w2 < 0 || w3 < 0) continue;
+          candidatesW.push([w1,w2,w3]);
+        }
+      }
+
+      for (const w of candidatesW){
+        const items = [
+          {color:cols[0], w:w[0]},
+          {color:cols[1], w:w[1]},
+          {color:cols[2], w:w[2]},
+        ];
+        const res = evalRecipe(items, targetLab);
+        const rec = { k:3, items, ...res };
+        if (rec.de < best.de) best = rec;
+      }
+    }
+
+    return best;
+  }
+
+  function topKRecipes(allColors, target, opts){
+    const topN = Math.max(3, Math.min(10, opts.topN));
+    const candidates = pickTopCandidates(allColors, target.lab, topN);
+
+    const step2 = opts.step2;
+    const step3 = opts.step3;
+    const maxColors = opts.maxColors;
+
+    const best2 = bestPair(candidates, target.lab, step2);
+    const list = [];
+    if (best2) list.push(best2);
+
+    if (maxColors >= 3){
+      const best3 = bestTrio(candidates, target.lab, step3);
+      if (best3) list.push(best3);
+    }
+
+    // add “variants”: force include white OR black if present and helpful
+    const white = candidates.find(c=>c.isWhite);
+    const black = candidates.find(c=>c.isBlack);
+    if (white){
+      const candNoWhite = candidates.filter(c=>c!==white);
+      const list2 = bestPair([white, ...candNoWhite.slice(0, Math.max(1, topN-1))], target.lab, step2);
+      if (list2) list.push(list2);
+    }
+    if (black){
+      const candNoBlack = candidates.filter(c=>c!==black);
+      const list2 = bestPair([black, ...candNoBlack.slice(0, Math.max(1, topN-1))], target.lab, step2);
+      if (list2) list.push(list2);
+    }
+
+    // dedupe by same set of colors (names)
+    const seen = new Set();
+    const uniq = [];
+    for (const rec of list){
+      const key = rec.items.map(it=>it.color.name).sort().join('|') + `|k${rec.k}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      uniq.push(rec);
+    }
+
+    uniq.sort((a,b)=>a.de-b.de);
+    return uniq.slice(0, 3);
+  }
+
+  // =========================
+  // Pipette events
+  // =========================
   let picking = false;
   let pressTimer = null;
 
   function startPress(e) {
-    if (!targetImgEl) return;
-
-    // long-press para activar muestreo
+    if (!targetCanvasData) return;
     pressTimer = setTimeout(() => {
       picking = true;
       pickerDot.style.display = 'block';
@@ -415,160 +827,61 @@
   }
 
   function handlePick(e) {
-    if (!targetImgEl) return;
+    if (!targetCanvasData) return;
     if (!picking) return;
-
     e.preventDefault();
 
     const pos = getRelativePos(e, targetPreview);
     pickerDot.style.left = `${pos.px}px`;
     pickerDot.style.top  = `${pos.py}px`;
 
-    const rgb = sampleAtNormalized(targetImgEl, pos.nx, pos.ny, 10);
+    const rgb = sampleTargetAt(pos.nx, pos.ny, 6);
     setTargetFromRGB(rgb);
+
+    // update ΔE vs current best if exists
+    if (mixDe.textContent.includes('ΔE:')){
+      // leave; recipes computed on click
+    }
   }
 
-  // Mouse
   targetPreview.addEventListener('mousedown', startPress);
   window.addEventListener('mouseup', endPress);
   targetPreview.addEventListener('mousemove', handlePick);
 
-  // Touch (celular)
   targetPreview.addEventListener('touchstart', startPress, { passive: false });
   targetPreview.addEventListener('touchend', endPress);
   targetPreview.addEventListener('touchcancel', endPress);
   targetPreview.addEventListener('touchmove', handlePick, { passive: false });
 
-  // Doble clic: muestreo inmediato
   targetPreview.addEventListener('dblclick', (e) => {
-    if (!targetImgEl) return;
+    if (!targetCanvasData) return;
     pickerDot.style.display = 'block';
     picking = true;
     handlePick(e);
     setTimeout(()=>{ picking=false; }, 50);
   });
 
-  // ----- Mezcla -----
-  // Aproximación:
-  // 1) least-squares (A^T A w = A^T t)
-  // 2) clamp negativos a 0
-  // 3) renormaliza sum=1
-  function suggestMix(baseRGBs, targetRGB){
-    const n = baseRGBs.length;
-
-    const ATA = Array.from({length:n}, () => Array(n).fill(0));
-    const ATt = Array(n).fill(0);
-
-    for (let i=0;i<n;i++){
-      for (let j=0;j<n;j++){
-        ATA[i][j] =
-          baseRGBs[i][0]*baseRGBs[j][0] +
-          baseRGBs[i][1]*baseRGBs[j][1] +
-          baseRGBs[i][2]*baseRGBs[j][2];
-      }
-      ATt[i] =
-        baseRGBs[i][0]*targetRGB[0] +
-        baseRGBs[i][1]*targetRGB[1] +
-        baseRGBs[i][2]*targetRGB[2];
-    }
-
-    let w = solveLinearSystem(ATA, ATt);
-    if (!w) w = Array(n).fill(1/n);
-
-    w = w.map(x => Math.max(0, x));
-    let sum = w.reduce((a,b)=>a+b,0);
-    if (sum <= 1e-9) w = Array(n).fill(1/n);
-    else w = w.map(x => x/sum);
-
-    const mix = [0,0,0];
-    for (let i=0;i<n;i++){
-      mix[0] += w[i]*baseRGBs[i][0];
-      mix[1] += w[i]*baseRGBs[i][1];
-      mix[2] += w[i]*baseRGBs[i][2];
-    }
-    const mixRGB = mix.map(v => Math.round(Math.max(0, Math.min(255, v))));
-    return { weights: w, mixRGB };
-  }
-
-  function solveLinearSystem(A, b){
-    const n = A.length;
-    const M = A.map(row => row.slice());
-    const x = b.slice();
-
-    for (let col=0; col<n; col++){
-      let pivot = col;
-      for (let r=col+1; r<n; r++){
-        if (Math.abs(M[r][col]) > Math.abs(M[pivot][col])) pivot = r;
-      }
-      if (Math.abs(M[pivot][col]) < 1e-10) return null;
-
-      if (pivot !== col){
-        [M[pivot], M[col]] = [M[col], M[pivot]];
-        [x[pivot], x[col]] = [x[col], x[pivot]];
-      }
-
-      const div = M[col][col];
-      for (let c=col; c<n; c++) M[col][c] /= div;
-      x[col] /= div;
-
-      for (let r=0; r<n; r++){
-        if (r === col) continue;
-        const factor = M[r][col];
-        for (let c=col; c<n; c++){
-          M[r][c] -= factor * M[col][c];
-        }
-        x[r] -= factor * x[col];
-      }
-    }
-    return x;
-  }
-
-  function renderResult(weights, mixRGB, targetRGB){
-    const mixHexVal = rgbToHex(mixRGB);
-    mixChip.style.background = mixHexVal;
-    mixRgb.textContent = `RGB: ${mixRGB.join(', ')}`;
-    mixHex.textContent = `HEX: ${mixHexVal}`;
-
-    const d = dist(mixRGB, targetRGB);
-    deltaInfo.textContent = `Δ (error): ${d.toFixed(1)} (0 es perfecto)`;
-
-    const maxD = Math.sqrt(3*(255*255));
-    const score = Math.round(100 * (1 - (d / maxD)));
-    scoreBar.style.width = `${clamp01(score/100)*100}%`;
-    scoreText.textContent = `Similitud: ${score}%`;
-
-    const rows = weights
-      .map((w,i) => ({ name: baseColors[i].name, w }))
-      .sort((a,b)=>b.w-a.w);
-
-    mixList.innerHTML = `
-      <div style="margin-bottom:8px; font-weight:700;">Mezcla sugerida (aprox.)</div>
-      ${rows.map(r => `
-        <div class="row" style="margin: 8px 0; justify-content: space-between;">
-          <div class="row">
-            <span style="font-weight:700;">${escapeHtml(r.name)}</span>
-          </div>
-          <div class="mono">${Math.round(r.w*100)}%</div>
-        </div>
-        <div class="bar"><div style="width:${Math.round(r.w*100)}%"></div></div>
-      `).join('')}
-      <div class="hint ok" style="margin-top:10px;">
-        Consejo: empieza mezclando en “partes”. Ej: si sale 60% amarillo y 40% rojo, prueba 6 partes + 4 partes y luego ajusta.
-      </div>
-    `;
-  }
-
-  // ----- Handlers -----
+  // =========================
+  // Handlers
+  // =========================
   addBaseBtn.onclick = async () => {
     const name = (baseName.value || '').trim() || `Color ${baseColors.length+1}`;
     const file = baseFile.files?.[0];
     if (!file) return alert('Selecciona una foto para el color base.');
 
+    addBaseBtn.disabled = true;
+    addBaseBtn.textContent = 'Procesando...';
+
     try {
       const { img, url } = await loadImageFromFile(file);
-      const rgb = sampleCenterAverage(img);
+
+      // sample in low-res to prevent memory issues
+      const rgb = sampleCenterAverageDownscaled(img, 0.18, 512);
       const hex = rgbToHex(rgb);
-      baseColors.push({ name, rgb, hex, imgUrl: url });
+      const lab = rgbToLab(rgb);
+      const wb = detectWhiteBlack(name, rgb);
+
+      baseColors.push({ name, rgb, hex, lab, imgUrl: url, isWhite: wb.isWhite, isBlack: wb.isBlack });
 
       baseName.value = '';
       baseFile.value = '';
@@ -576,15 +889,27 @@
       updateAnalyzeState();
     } catch (e) {
       console.error(e);
-      alert('No pude cargar la imagen. Prueba otra foto.');
+      alert('No pude cargar/procesar la imagen. Prueba otra foto (o más pequeña).');
+    } finally {
+      addBaseBtn.disabled = false;
+      addBaseBtn.textContent = 'Agregar';
     }
   };
 
   clearBaseBtn.onclick = () => {
+    for (const c of baseColors){
+      try { URL.revokeObjectURL(c.imgUrl); } catch {}
+    }
     baseColors = [];
     renderBaseSwatches();
     updateAnalyzeState();
-    mixList.innerHTML = '';
+    recipesDiv.innerHTML = '';
+    mixChip.style.background = 'transparent';
+    mixRgb.textContent = 'RGB: –';
+    mixHex.textContent = 'HEX: –';
+    mixDe.textContent = 'ΔE: –';
+    scoreBar.style.width = '0%';
+    scoreText.textContent = '–';
   };
 
   targetFile.onchange = async () => {
@@ -596,20 +921,25 @@
       targetImgEl = img;
       targetPreview.src = url;
 
-      // fallback centro
-      const rgb = sampleCenterAverage(img);
+      // cache downscaled for pipette
+      cacheTargetDownscaled(512);
+
+      // initial: center
+      const rgb = sampleCenterAverageDownscaled(img, 0.12, 512);
       setTargetFromRGB(rgb);
 
       pickerDot.style.display = 'none';
     } catch (e) {
       console.error(e);
-      alert('No pude cargar la imagen objetivo. Prueba otra.');
+      alert('No pude cargar la imagen objetivo.');
     }
   };
 
   resetTargetBtn.onclick = () => {
     targetColor = null;
     targetImgEl = null;
+    targetCanvasData = null;
+
     targetFile.value = '';
     targetPreview.removeAttribute('src');
     pickerDot.style.display = 'none';
@@ -617,6 +947,7 @@
     targetChip.style.background = 'transparent';
     targetRgb.textContent = 'RGB: –';
     targetHex.textContent = 'HEX: –';
+    targetDe.textContent = 'ΔE: –';
 
     updateAnalyzeState();
   };
@@ -624,11 +955,24 @@
   analyzeBtn.onclick = () => {
     if (baseColors.length < 2 || !targetColor) return;
 
-    const baseRGBs = baseColors.map(c => c.rgb);
-    const targetRGB = targetColor.rgb;
+    const opts = {
+      maxColors: parseInt(maxColorsSel.value, 10),
+      topN: parseInt(topNInput.value, 10),
+      step2: parseFloat(step2Sel.value),
+      step3: parseFloat(step3Sel.value),
+    };
 
-    const { weights, mixRGB } = suggestMix(baseRGBs, targetRGB);
-    renderResult(weights, mixRGB, targetRGB);
+    // compute top recipes
+    const list = topKRecipes(baseColors, targetColor, opts);
+
+    // set target ΔE vs best
+    if (list.length){
+      targetDe.textContent = `ΔE: (mejor) ${list[0].de.toFixed(2)}`;
+      renderTop(list[0]);
+    } else {
+      targetDe.textContent = `ΔE: –`;
+    }
+    renderRecipes(list);
   };
 </script>
 </body>
