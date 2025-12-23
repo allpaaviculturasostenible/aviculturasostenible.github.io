@@ -327,12 +327,14 @@
     return '#' + toHex(r) + toHex(g) + toHex(b);
   }
 
-  function mixRgbWeighted(items){ // items: [{rgb, w}]
+  function mixRgbWeighted(items){ // items: [{color, w}]  ó  [{rgb, w}]
     let r=0,g=0,b=0;
     for (const it of items){
-      r += it.w * it.rgb[0];
-      g += it.w * it.rgb[1];
-      b += it.w * it.rgb[2];
+      const rgb = it.rgb || (it.color && it.color.rgb);
+      if (!rgb) continue; // protección extra
+      r += it.w * rgb[0];
+      g += it.w * rgb[1];
+      b += it.w * rgb[2];
     }
     return [Math.round(clamp255(r)), Math.round(clamp255(g)), Math.round(clamp255(b))];
   }
@@ -654,7 +656,12 @@
   }
 
   function evalRecipe(items, targetLab){
-    // items: [{color, w}] with sum=1
+    for (const it of items){
+      if (!it || !it.color || !it.color.rgb){
+        console.warn("Item inválido en receta:", items);
+        return { mixRGB: [0,0,0], de: 1e9 };
+      }
+    }
     const mixRGB = mixRgbWeighted(items);
     const mixLab = rgbToLab(mixRGB);
     let de = deltaE76(mixLab, targetLab);
