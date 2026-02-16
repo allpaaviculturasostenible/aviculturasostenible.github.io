@@ -3,12 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-  <title>Tica vs Shadow – Arcade Matemático (HTML5)</title>
+  <title>Tica vs Shadow – Arcade Matemático (Nivel 1: centenas exactas)</title>
   <style>
     :root{
       --bg:#070a14;
       --panel:rgba(255,255,255,.08);
-      --panel2:rgba(0,0,0,.35);
       --text:#f8fafc;
       --muted:#cbd5e1;
       --ok:#34c759;
@@ -16,17 +15,23 @@
       --purple:#b56bff;
       --border:rgba(255,255,255,.18);
       --shadow: 0 18px 50px rgba(0,0,0,.45);
+      --touchH: 90px;
     }
     *{box-sizing:border-box}
     body{
-      margin:0; background:radial-gradient(1200px 900px at 50% 20%, #10183b 0%, var(--bg) 60%, #04060f 100%);
-      color:var(--text); font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      margin:0;
+      background:radial-gradient(1200px 900px at 50% 20%, #10183b 0%, var(--bg) 60%, #04060f 100%);
+      color:var(--text);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
       overflow:hidden;
+      touch-action:none;
     }
+    canvas{display:block; width:100vw; height:100vh;}
     .hud{
       position:fixed; inset:12px 12px auto 12px;
       display:flex; gap:10px; align-items:center; justify-content:space-between;
       pointer-events:none;
+      z-index:10;
     }
     .hud .left, .hud .right{
       display:flex; gap:10px; align-items:center;
@@ -35,35 +40,45 @@
       backdrop-filter: blur(8px);
       pointer-events:auto;
     }
-    .badge{
-      display:flex; gap:8px; align-items:center; font-weight:700;
-    }
-    .muted{color:var(--muted); font-weight:600}
+    .badge{display:flex; gap:8px; align-items:center; font-weight:800;}
+    .muted{color:var(--muted); font-weight:700}
     .btn{
-      pointer-events:auto;
       cursor:pointer; user-select:none;
       background:rgba(255,255,255,.10);
       border:1px solid var(--border);
       color:var(--text);
-      padding:8px 10px; border-radius:12px; font-weight:800;
+      padding:8px 10px; border-radius:12px; font-weight:900;
     }
     .btn:active{transform:translateY(1px)}
-    canvas{display:block; width:100vw; height:100vh;}
-    /* FX overlay for slow motion */
+
+    /* slow motion overlay */
     .slowmo-vignette{
       position:fixed; inset:0;
       background: radial-gradient(600px 400px at 50% 40%, rgba(0,0,0,0) 0%, rgba(0,0,0,.25) 55%, rgba(0,0,0,.45) 100%);
       opacity:0; pointer-events:none; transition:opacity .12s ease;
       mix-blend-mode:multiply;
+      z-index:6;
     }
     .slowmo-vignette.on{opacity:1;}
-    /* Question modal */
+
+    /* edge flash */
+    .edge-flash{
+      position:fixed; inset:0; pointer-events:none; opacity:0;
+      transition: opacity .10s ease;
+      z-index:7;
+    }
+    .edge-flash.on{opacity:1;}
+    .edge-flash.ok{box-shadow: inset 0 0 0 10px rgba(52,199,89,.70), inset 0 0 40px 10px rgba(52,199,89,.18);}
+    .edge-flash.bad{box-shadow: inset 0 0 0 10px rgba(255,59,48,.72), inset 0 0 40px 10px rgba(255,59,48,.18);}
+
+    /* question modal */
     .modal{
       position:fixed; inset:0; display:none;
       align-items:center; justify-content:center;
       background:rgba(0,0,0,.35);
       backdrop-filter: blur(6px);
       padding:16px;
+      z-index:20;
     }
     .modal.on{display:flex;}
     .card{
@@ -74,17 +89,14 @@
       padding:16px 16px 14px;
       box-shadow:var(--shadow);
     }
-    .title{
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
-      margin-bottom:10px;
-    }
+    .title{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px;}
     .title h2{margin:0; font-size:16px; letter-spacing:.2px}
     .pill{
       display:flex; align-items:center; gap:8px;
       padding:6px 10px; border-radius:999px;
       background:rgba(0,0,0,.25);
       border:1px solid rgba(255,255,255,.14);
-      font-weight:800;
+      font-weight:900;
     }
     .pill .t{color:var(--purple)}
     .q{
@@ -95,21 +107,17 @@
       display:grid; gap:10px;
     }
     .expr{
-      font-size:28px; font-weight:900;
-      letter-spacing:.5px;
+      font-size:28px; font-weight:1000;
       display:flex; align-items:center; justify-content:center;
     }
-    .row{
-      display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:center;
-    }
+    .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:center;}
     input[type="number"]{
-      width:180px; max-width:60vw;
-      padding:10px 12px;
-      border-radius:12px;
+      width:200px; max-width:70vw;
+      padding:10px 12px; border-radius:12px;
       border:1px solid rgba(255,255,255,.18);
       background:rgba(0,0,0,.25);
       color:var(--text);
-      font-size:16px; font-weight:800;
+      font-size:16px; font-weight:900;
       outline:none;
     }
     .submit{
@@ -118,39 +126,80 @@
       color:var(--text);
       padding:10px 14px;
       border-radius:12px;
-      font-weight:900; cursor:pointer;
+      font-weight:1000; cursor:pointer;
     }
     .submit:active{transform:translateY(1px)}
     .hint{
       text-align:center;
-      font-size:13px;
-      color:var(--muted);
-      margin-top:10px;
-      line-height:1.25;
+      font-size:13px; color:var(--muted);
+      margin-top:10px; line-height:1.25;
     }
+
     .toast{
       position:fixed; left:50%; top:50%;
       transform:translate(-50%,-50%);
       padding:14px 16px;
       border-radius:16px;
-      font-weight:900;
+      font-weight:1000;
       border:1px solid rgba(255,255,255,.16);
       background:rgba(0,0,0,.35);
       backdrop-filter: blur(6px);
       display:none;
       box-shadow:var(--shadow);
+      z-index:30;
     }
     .toast.on{display:block;}
     .toast.ok{outline:2px solid rgba(52,199,89,.55)}
     .toast.bad{outline:2px solid rgba(255,59,48,.55)}
-    .edge-flash{
-      position:fixed; inset:0; pointer-events:none; opacity:0;
-      box-shadow: inset 0 0 0 0 rgba(0,0,0,0);
-      transition: opacity .10s ease;
+
+    /* Touch controls (pattern)
+       UUUUUUUU
+       LLLLRRRR
+       DDDDDDDD
+       each row 90px
+    */
+    .touchpad{
+      position:fixed; left:0; right:0; bottom:0;
+      height: calc(var(--touchH) * 3);
+      display:grid;
+      grid-template-rows: var(--touchH) var(--touchH) var(--touchH);
+      gap:0;
+      z-index:9;
+      pointer-events:auto;
     }
-    .edge-flash.on{opacity:1;}
-    .edge-flash.ok{box-shadow: inset 0 0 0 10px rgba(52,199,89,.70), inset 0 0 40px 10px rgba(52,199,89,.18);}
-    .edge-flash.bad{box-shadow: inset 0 0 0 10px rgba(255,59,48,.72), inset 0 0 40px 10px rgba(255,59,48,.18);}
+    .touch-row{display:grid; gap:0;}
+    .touch-u{grid-template-columns: 1fr;}
+    .touch-lr{grid-template-columns: 1fr 1fr;}
+    .touch-d{grid-template-columns: 1fr;}
+    .touch-btn{
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.12);
+      display:flex; align-items:center; justify-content:center;
+      user-select:none;
+      font-weight:1000;
+      color:rgba(248,250,252,.85);
+    }
+    .touch-btn small{font-size:12px; color:rgba(203,213,225,.85); font-weight:900}
+    .touch-btn:active, .touch-btn.on{
+      background:rgba(181,107,255,.14);
+      border-color:rgba(181,107,255,.35);
+      color:#fff;
+    }
+    .touch-hint{
+      position:fixed; left:12px; bottom: calc(var(--touchH)*3 + 12px);
+      background:rgba(0,0,0,.25);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:12px;
+      padding:8px 10px;
+      color:rgba(203,213,225,.95);
+      font-weight:900;
+      z-index:9;
+      backdrop-filter: blur(6px);
+    }
+
+    @media (pointer:fine){
+      /* En PC con mouse, puedes ocultar si quieres; lo dejamos visible por ahora */
+    }
   </style>
 </head>
 <body>
@@ -160,11 +209,11 @@
       <div class="badge">❤️ <span id="lives">3</span></div>
       <div class="badge">⭐ <span id="score">0</span></div>
       <div class="badge">🔥 <span id="streak">0</span><span class="muted">/5</span></div>
-      <div class="badge">🪜 <span id="ladder">1</span><span class="muted">/10</span></div>
+      <div class="badge">🪜 <span id="floor">1</span><span class="muted">/10</span></div>
     </div>
     <div class="right">
       <button class="btn" id="restartBtn">↻ Reiniciar</button>
-      <button class="btn" id="helpBtn">⌨️ Controles</button>
+      <button class="btn" id="helpBtn">⌨️/📱 Controles</button>
     </div>
   </div>
 
@@ -182,25 +231,41 @@
       <div class="q">
         <div class="expr"><span id="expr"></span></div>
         <div class="row">
-          <input id="answer" type="number" inputmode="numeric" placeholder="Escribe la respuesta" />
+          <input id="answer" type="number" inputmode="numeric" placeholder="Respuesta" />
           <button class="submit" id="submitBtn">Enviar</button>
         </div>
       </div>
-      <div class="hint">Suma de centenas. Tienes <b>5 segundos</b>. Si fallas, Tica baja <b>1 escalera</b> (si está en la primera, se queda). ✅ Correcto = +100 puntos.</div>
+      <div class="hint">
+        Nivel 1: <b>sumas de centenas exactas</b> (100, 200, …). Tienes <b>5 segundos</b>.
+        ✅ Correcto = +100. ❌ Incorrecto = bajas 1 piso (si estás en el 1, no bajas).
+      </div>
     </div>
   </div>
 
   <div class="toast" id="toast"></div>
 
+  <div class="touch-hint">📱 Controles táctiles (90px): U=salto, L/R=mov, D=bajar</div>
+  <div class="touchpad" id="touchpad">
+    <div class="touch-row touch-u">
+      <div class="touch-btn" data-key="U">U<br><small>Salto / Subir</small></div>
+    </div>
+    <div class="touch-row touch-lr">
+      <div class="touch-btn" data-key="L">L<br><small>Izquierda</small></div>
+      <div class="touch-btn" data-key="R">R<br><small>Derecha</small></div>
+    </div>
+    <div class="touch-row touch-d">
+      <div class="touch-btn" data-key="D">D<br><small>Bajar</small></div>
+    </div>
+  </div>
+
 <script>
 (() => {
-  // ========= Helpers =========
+  // ================= Helpers =================
   const clamp = (v,min,max)=>Math.max(min,Math.min(max,v));
   const rand = (a,b)=>a+Math.random()*(b-a);
   const randi = (a,b)=>Math.floor(rand(a,b+1));
-  const now = ()=>performance.now();
 
-  // ========= Canvas =========
+  // ================= Canvas =================
   const canvas = document.getElementById('c');
   const ctx = canvas.getContext('2d', { alpha:true });
   function resize(){
@@ -214,11 +279,11 @@
   addEventListener('resize', resize, {passive:true});
   resize();
 
-  // ========= UI =========
+  // ================= UI =================
   const uiLives = document.getElementById('lives');
   const uiScore = document.getElementById('score');
   const uiStreak = document.getElementById('streak');
-  const uiLadder = document.getElementById('ladder');
+  const uiFloor = document.getElementById('floor');
 
   const modal = document.getElementById('modal');
   const slowV = document.getElementById('slowV');
@@ -244,20 +309,27 @@
   document.getElementById('helpBtn').addEventListener('click', ()=>{
     alert(
 `Controles:
-- Flechas: mover a Tica
-- Espacio: saltar (solo en jefe final)
-Objetivo:
-- Subir 10 escaleras
-- Si una Shadow Ball toca a Tica, aparece una suma de centenas con 5s (cámara lenta)
-- Correcto: +100 puntos
-- Incorrecto: baja 1 escalera (si está en la 1, no baja)
-- Racha de 5 correctas: subes más rápido
-- 3 vidas: al perderlas, reinicia`
+Teclado:
+- Flechas ← → para moverse
+- ↑ para subir (si estás en una escalera)
+- ↓ para bajar (si estás en una escalera)
+- Espacio: salto (solo jefe final / también en táctil U)
+
+Táctil (patrón 90px):
+UUUUUUUU
+LLLLRRRR
+DDDDDDDD
+
+Nivel 1:
+- Sumas de centenas exactas (100,200,...)
+- Shadow Ball toca a Tica -> cámara super lenta + 5s para responder
+- Correcto: +100
+- Incorrecto/tiempo: baja 1 piso (si estás en 1 no baja)
+- 3 vidas: reinicia`
     );
   });
 
-  // ========= Audio (sin archivos externos) =========
-  // Pequeños pitidos con WebAudio (para luego reemplazar por sonidos reales)
+  // ================= Audio (placeholder) =================
   let audioCtx = null;
   function beep(freq=660, dur=0.08, type='sine', gain=0.06){
     try{
@@ -273,99 +345,196 @@ Objetivo:
       o.start(t); o.stop(t+dur);
     }catch(e){}
   }
-  function sfxCorrect(){ beep(880,0.07,'triangle',0.08); setTimeout(()=>beep(1320,0.06,'triangle',0.06), 60); }
-  function sfxWrong(){ beep(220,0.10,'sawtooth',0.05); setTimeout(()=>beep(160,0.12,'sawtooth',0.05), 80); }
-  function sfxHit(){ beep(520,0.05,'square',0.05); }
-  function sfxJump(){ beep(740,0.05,'sine',0.04); }
+  const sfxCorrect = ()=>{ beep(880,0.07,'triangle',0.08); setTimeout(()=>beep(1320,0.06,'triangle',0.06), 60); };
+  const sfxWrong   = ()=>{ beep(220,0.10,'sawtooth',0.05); setTimeout(()=>beep(160,0.12,'sawtooth',0.05), 80); };
+  const sfxHit     = ()=>{ beep(520,0.05,'square',0.05); };
+  const sfxJump    = ()=>{ beep(740,0.05,'sine',0.04); };
 
-  // ========= Game constants =========
-  const LADDER_COUNT = 10;
-  const WORLD = {
-    marginX: 54,
-    topY: 92,
-    bottomY: () => innerHeight - 70,
-    laneWidth: () => Math.max(240, Math.min(420, innerWidth * 0.36))
-  };
-
-  function laneX(lane){ // lane 0 left, 1 center, 2 right
-    const mid = innerWidth * 0.5;
-    const w = WORLD.laneWidth();
-    if(lane===0) return mid - w;
-    if(lane===1) return mid;
-    return mid + w;
-  }
-
-  // ========= State =========
-  const keys = new Set();
+  // ================= Input (keyboard + touch) =================
+  const keys = new Set(); // keyboard keys
+  const vkeys = {U:false,L:false,R:false,D:false}; // virtual touch keys
 
   addEventListener('keydown', (e)=>{
     const k = e.key;
     if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown',' '].includes(k)) e.preventDefault();
     keys.add(k);
-    // allow Enter for submit
     if(question.active && k === 'Enter') submitAnswer();
   }, {passive:false});
 
   addEventListener('keyup', (e)=>keys.delete(e.key), {passive:true});
 
+  function isLeft(){  return keys.has('ArrowLeft')  || vkeys.L; }
+  function isRight(){ return keys.has('ArrowRight') || vkeys.R; }
+  function isUp(){    return keys.has('ArrowUp')    || vkeys.U; }
+  function isDown(){  return keys.has('ArrowDown')  || vkeys.D; }
+  function isJump(){  return keys.has(' ')          || vkeys.U; } // U also jump
+
+  // Touch pad events
+  const touchpad = document.getElementById('touchpad');
+  const tbtns = [...touchpad.querySelectorAll('.touch-btn')];
+
+  function setVKey(k, on){
+    vkeys[k] = on;
+    const el = tbtns.find(b=>b.dataset.key===k);
+    if(el) el.classList.toggle('on', on);
+  }
+
+  function clearAllVKeys(){
+    for(const k of Object.keys(vkeys)) setVKey(k,false);
+  }
+
+  // Handle pointer for each button (supports multi-touch)
+  const pointerToKey = new Map();
+  tbtns.forEach(btn=>{
+    btn.addEventListener('pointerdown', (e)=>{
+      e.preventDefault();
+      btn.setPointerCapture(e.pointerId);
+      const k = btn.dataset.key;
+      pointerToKey.set(e.pointerId, k);
+      setVKey(k,true);
+      if(!audioCtx){ try{ audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }catch(_){} }
+    });
+    btn.addEventListener('pointerup', (e)=>{
+      e.preventDefault();
+      const k = pointerToKey.get(e.pointerId);
+      pointerToKey.delete(e.pointerId);
+      if(k) setVKey(k,false);
+    });
+    btn.addEventListener('pointercancel', (e)=>{
+      e.preventDefault();
+      const k = pointerToKey.get(e.pointerId);
+      pointerToKey.delete(e.pointerId);
+      if(k) setVKey(k,false);
+    });
+    btn.addEventListener('pointerleave', (e)=>{
+      // If pointer leaves while captured, pointerup will handle; if not captured, ensure off
+      if(!pointerToKey.has(e.pointerId)){
+        setVKey(btn.dataset.key,false);
+      }
+    });
+  });
+
+  // ================= World layout (distributed ladders + platforms) =================
+  const FLOORS = 10;
+  const WORLD = {
+    marginX: 50,
+    topY: 90,
+    bottomY: () => innerHeight - (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--touchH')) * 3) - 28,
+    floorGap: () => Math.max(62, Math.min(110, (innerHeight*0.62) / (FLOORS-1))),
+  };
+
+  function floorY(i){ // i:1..FLOORS
+    const top = WORLD.topY + 70;
+    const bottom = WORLD.bottomY();
+    const t = (i-1) / (FLOORS-1);
+    return bottom - t*(bottom-top);
+  }
+
+  // Three ladder columns (distributed across map)
+  function ladderXs(){
+    const w = innerWidth - WORLD.marginX*2;
+    return [
+      WORLD.marginX + w*0.22,
+      WORLD.marginX + w*0.50,
+      WORLD.marginX + w*0.78
+    ];
+  }
+
+  // Platforms: on each floor, a horizontal platform segment with a "gap" so ladders matter.
+  // Ladders connect floors. Each floor chooses which ladder(s) are accessible via platform shape.
+  // Simplicity: each floor has a "platform from left to right" but we draw a gap that alternates,
+  // forcing player to move to a ladder column.
+  function platformGapXForFloor(f){
+    const xs = ladderXs();
+    // alternate the gap around different ladder columns to create routing
+    const idx = (f % 3); // 0..2
+    return xs[idx];
+  }
+
+  // Ladder availability per floor: always 3 ladders, but we require proximity to climb.
+  const LADDER_RADIUS = 34; // distance threshold to "be on ladder"
+
+  function nearestLadderIndex(x){
+    const xs = ladderXs();
+    let best = 0, bd = Infinity;
+    for(let i=0;i<xs.length;i++){
+      const d = Math.abs(x - xs[i]);
+      if(d < bd){ bd=d; best=i; }
+    }
+    return best;
+  }
+
+  function isOnLadder(x){
+    const xs = ladderXs();
+    for(const lx of xs){
+      if(Math.abs(x - lx) <= LADDER_RADIUS) return true;
+    }
+    return false;
+  }
+
+  // ================= State =================
   const game = {
-    scene: 'climb', // 'climb' | 'boss' | 'win'
-    score: 0,
-    lives: 3,
-    ladder: 1,
-    streak: 0,
-    streakToBoost: 5,
-    climbBoost: 1, // increases on each streak completion
-    timeScale: 1,
-    slowMoTarget: 1,
-    slowMoEase: 0.08,
-    spawnT: 0,
-    spawnInterval: 1.2,
-    lastT: 0
+    scene:'climb', // 'climb' | 'boss' | 'win'
+    score:0,
+    lives:3,
+    floor:1,
+    streak:0,
+    streakToBoost:5,
+    climbBoost:1,     // increases climb rate
+    timeScale:1,
+    slowMoTarget:1,
+    slowMoEase:0.10,
+    spawnT:0,
+    lastT:0,
   };
 
   const tica = {
-    x: laneX(1),
-    y: WORLD.bottomY(),
-    vx: 0,
-    vy: 0,
+    x: ladderXs()[1],
+    y: floorY(1),
     r: 22,
-    onGround: true,
-    jumpUsed: false,
+    vx:0, vy:0,
+    onGround:true
   };
 
   const shadow = {
-    x: laneX(1),
+    x: ladderXs()[1],
     y: WORLD.topY + 30,
     r: 26,
-    hood: true,
-    bossHits: 0,
+    bossHits:0
   };
 
-  const balls = []; // shadow balls
+  // Shadow balls behave like “barrels” in climb:
+  // Spawn from top corners/center, roll-ish (diagonal + bounce on platform), then can hit Tica.
+  const balls = [];
 
   const question = {
     active:false,
-    a:0,b:0,
-    correct:0,
-    remaining:0,
-    onResolve:null,
+    a:0,b:0,correct:0,
+    remaining:0
   };
 
-  // ========= Game logic =========
-  function resetPositions(){
-    tica.x = laneX(1);
-    tica.y = WORLD.bottomY();
-    tica.vx = 0; tica.vy = 0;
-    tica.onGround = true;
-    tica.jumpUsed = false;
+  // ================= UI sync =================
+  function syncUI(){
+    uiLives.textContent = game.lives;
+    uiScore.textContent = game.score;
+    uiStreak.textContent = game.streak;
+    uiFloor.textContent = game.floor;
+  }
 
-    shadow.x = laneX(1);
+  function resetPositions(){
+    const xs = ladderXs();
+    tica.x = xs[1];
+    tica.y = floorY(game.floor);
+    tica.vx = tica.vy = 0;
+    tica.onGround = true;
+
+    shadow.x = xs[1];
     shadow.y = WORLD.topY + 30;
     shadow.bossHits = 0;
 
     balls.length = 0;
     game.spawnT = 0;
+
     game.timeScale = 1;
     game.slowMoTarget = 1;
     slowV.classList.remove('on');
@@ -375,124 +544,58 @@ Objetivo:
 
   function resetGame(hard=false){
     if(hard){
-      game.score = 0;
-      game.lives = 3;
-      game.ladder = 1;
-      game.streak = 0;
-      game.climbBoost = 1;
-      game.scene = 'climb';
+      game.scene='climb';
+      game.score=0;
+      game.lives=3;
+      game.floor=1;
+      game.streak=0;
+      game.climbBoost=1;
     }
     resetPositions();
     syncUI();
-  }
-
-  function syncUI(){
-    uiLives.textContent = game.lives;
-    uiScore.textContent = game.score;
-    uiStreak.textContent = game.streak;
-    uiLadder.textContent = game.ladder;
   }
 
   function loseLife(){
     game.lives -= 1;
     syncUI();
     if(game.lives <= 0){
-      // full reset
       showToast('bad','💥 0 vidas: reinicio');
       resetGame(true);
-    } else {
+    }else{
       showToast('bad',`💔 Vida perdida (${game.lives})`);
       resetPositions();
     }
   }
 
-  function ladderDown(){
-    if(game.ladder > 1) game.ladder -= 1;
-    // move Tica down visually
-    tica.y = ladderY(game.ladder);
-    syncUI();
+  function floorDown(){
+    if(game.floor > 1){
+      game.floor -= 1;
+      tica.y = floorY(game.floor);
+      syncUI();
+    }else{
+      // stays
+      tica.y = floorY(1);
+    }
   }
 
-  function ladderUp(){
-    if(game.ladder < LADDER_COUNT){
-      game.ladder += 1;
-      tica.y = ladderY(game.ladder);
+  function floorUp(){
+    if(game.floor < FLOORS){
+      game.floor += 1;
+      tica.y = floorY(game.floor);
       syncUI();
-      if(game.ladder === LADDER_COUNT){
-        // transition to boss
+      if(game.floor === FLOORS){
         game.scene = 'boss';
         balls.length = 0;
         showToast('ok','👿 ¡Jefe final: Shadow!');
       }
-    } else {
-      // already at top
-      game.scene = 'boss';
     }
   }
 
-  function ladderY(ladderIndex){
-    // evenly spaced ladders from bottom to top
-    const top = WORLD.topY + 90;
-    const bottom = WORLD.bottomY();
-    const t = (ladderIndex-1) / (LADDER_COUNT-1);
-    return bottom - t*(bottom-top);
-  }
-
-  function spawnBall(){
-    // in climb scene: spawn from top lanes, toward center-ish
-    const lane = randi(0,2);
-    const startX = laneX(lane);
-    const startY = WORLD.topY + 10;
-
-    // balls drift toward center to give chance
-    const targetX = laneX(1) + rand(-90,90);
-    const dirX = (targetX - startX);
-    const base = 160 + (game.ladder-1)*10; // speed grows a bit as you climb
-    const vx = clamp(dirX, -220, 220) * 0.6;
-    const vy = base;
-
-    balls.push({
-      x:startX, y:startY,
-      vx, vy,
-      r: 18,
-      t: 0,
-      phase: rand(0, Math.PI*2),
-      alive:true,
-      fromBoss:false
-    });
-  }
-
-  function spawnBallBoss(){
-    // boss: shadow throws horizontally or diagonally toward Tica
-    const startX = shadow.x + rand(-20,20);
-    const startY = shadow.y + 20;
-    const dx = (tica.x - startX);
-    const dy = (tica.y - startY);
-    const len = Math.max(1, Math.hypot(dx,dy));
-    const speed = 240 + shadow.bossHits*20;
-    balls.push({
-      x:startX, y:startY,
-      vx:(dx/len)*speed,
-      vy:(dy/len)*speed*0.45,
-      r: 18,
-      t:0,
-      phase: rand(0, Math.PI*2),
-      alive:true,
-      fromBoss:true
-    });
-  }
-
-  function ballHitsTica(b){
-    const dx = b.x - tica.x;
-    const dy = b.y - tica.y;
-    const rr = b.r + tica.r;
-    return (dx*dx + dy*dy) <= rr*rr;
-  }
-
+  // ================= Level 1: centenas exactas =================
   function startQuestion(){
-    // hundreds addition
-    question.a = randi(100, 999);
-    question.b = randi(100, 999);
+    // centenas exactas: múltiplos exactos de 100
+    question.a = randi(1,9) * 100;
+    question.b = randi(1,9) * 100;
     question.correct = question.a + question.b;
     question.remaining = 5.0;
     question.active = true;
@@ -502,11 +605,10 @@ Objetivo:
     ansEl.value = '';
     modal.classList.add('on');
 
-    // SUPER SLOW CAMERA MODE (world slows, input to world locked)
+    // slow-mo world, but timer stays REAL 5s
     game.slowMoTarget = 0.12;
     slowV.classList.add('on');
 
-    // focus input
     setTimeout(()=>ansEl.focus(), 0);
   }
 
@@ -535,22 +637,18 @@ Objetivo:
         game.climbBoost = clamp(game.climbBoost + 0.25, 1, 2.4);
         showToast('ok',`🔥 Racha ${game.streak}: ¡subes más rápido!`);
       }
-    } else {
+    }else{
       game.streak = 0;
       sfxWrong();
       flashEdge('bad');
-      showToast('bad','❌ Incorrecto: bajas 1 escalera');
-      ladderDown();
-      // If you want: lose life only on repeated mistakes, but spec says 3 vidas and reinicia.
-      // We'll make a wrong answer also costs a life to add arcade tension:
+      showToast('bad','❌ Incorrecto: bajas 1 piso');
+      floorDown();
       loseLife();
     }
     syncUI();
   }
-
   submitBtn.addEventListener('click', submitAnswer);
 
-  // If timer runs out: treat as wrong
   function tickQuestion(dtReal){
     if(!question.active) return;
     question.remaining -= dtReal;
@@ -560,141 +658,228 @@ Objetivo:
       game.streak = 0;
       sfxWrong();
       flashEdge('bad');
-      showToast('bad','⏱️ Tiempo agotado: bajas 1 escalera');
-      ladderDown();
+      showToast('bad','⏱️ Tiempo: bajas 1 piso');
+      floorDown();
       loseLife();
       syncUI();
     }
   }
 
-  // ========= Movement =========
+  // ================= Shadow balls (barrel-like) =================
+  function spawnBallClimb(){
+    const xs = ladderXs();
+    // three spawns: left, center, right (like you asked previously)
+    const spawnIdx = randi(0,2);
+    const startX = xs[spawnIdx] + rand(-22,22);
+    const startY = WORLD.topY + 30;
+
+    // horizontal drift so they "roll" along floors
+    // pick a direction; if spawned left -> drift right; right -> drift left; center random
+    let dir = 0;
+    if(spawnIdx===0) dir = 1;
+    else if(spawnIdx===2) dir = -1;
+    else dir = (Math.random()<0.5 ? -1 : 1);
+
+    const baseVx = (140 + (game.floor-1)*10) * dir;
+    const baseVy = 260 + (game.floor-1)*18;
+
+    balls.push({
+      x:startX, y:startY,
+      vx:baseVx,
+      vy:baseVy,
+      r:18,
+      phase: rand(0, Math.PI*2),
+      t:0,
+      alive:true,
+      mode:'climb'
+    });
+  }
+
+  function spawnBallBoss(){
+    // in boss: throw toward Tica
+    const startX = shadow.x + rand(-16,16);
+    const startY = shadow.y + 22;
+    const dx = (tica.x - startX);
+    const dy = (tica.y - startY);
+    const len = Math.max(1, Math.hypot(dx,dy));
+    const speed = 260 + shadow.bossHits*30;
+
+    balls.push({
+      x:startX, y:startY,
+      vx:(dx/len)*speed,
+      vy:(dy/len)*speed*0.55,
+      r:18,
+      phase: rand(0, Math.PI*2),
+      t:0,
+      alive:true,
+      mode:'boss'
+    });
+  }
+
+  function ballHitsTica(b){
+    const dx = b.x - tica.x;
+    const dy = b.y - tica.y;
+    const rr = b.r + tica.r;
+    return (dx*dx + dy*dy) <= rr*rr;
+  }
+
+  // ================= Movement & Scenes =================
   function updateClimb(dt){
-    // lock world movement while question active (but keep slow visuals by timeScale)
     const lock = question.active;
 
-    // base speeds (pixel/s)
-    const lateralSpeed = 260;
-    const climbBase = 150; // how fast you advance ladders with Up
-    const climbSpeed = climbBase * game.climbBoost;
+    const lateralSpeed = 300;
+    const climbRate = 1.0 * game.climbBoost; // floors per second when holding Up on ladder
+    const downRate = 1.6;                    // faster down
+    const maxX = innerWidth - WORLD.marginX;
+    const minX = WORLD.marginX;
 
     if(!lock){
+      // lateral
       let vx = 0;
-      if(keys.has('ArrowLeft')) vx -= lateralSpeed;
-      if(keys.has('ArrowRight')) vx += lateralSpeed;
-      tica.x += vx * dt;
-      tica.x = clamp(tica.x, WORLD.marginX, innerWidth - WORLD.marginX);
+      if(isLeft()) vx -= lateralSpeed;
+      if(isRight()) vx += lateralSpeed;
+      tica.x = clamp(tica.x + vx*dt, minX, maxX);
 
-      // Up to climb to next ladder (discrete) with cooldown feeling
-      // We'll treat ladders as discrete levels: holding Up climbs with rate based on climbSpeed.
-      if(keys.has('ArrowUp')){
-        game._climbAcc = (game._climbAcc || 0) + climbSpeed * dt;
-        if(game._climbAcc >= 100){
+      // snap Tica to current floor y (classic DK feel)
+      tica.y = floorY(game.floor);
+
+      // climb only if near a ladder
+      if(isUp() && isOnLadder(tica.x)){
+        game._climbAcc = (game._climbAcc||0) + climbRate*dt;
+        if(game._climbAcc >= 1){
           game._climbAcc = 0;
-          ladderUp();
+          floorUp();
           sfxHit();
         }
-      } else {
+      }else{
         game._climbAcc = 0;
       }
-      if(keys.has('ArrowDown')){
-        game._downAcc = (game._downAcc || 0) + 170 * dt;
-        if(game._downAcc >= 120){
+
+      if(isDown() && isOnLadder(tica.x)){
+        game._downAcc = (game._downAcc||0) + downRate*dt;
+        if(game._downAcc >= 1){
           game._downAcc = 0;
-          ladderDown();
+          floorDown();
           sfxHit();
         }
-      } else {
+      }else{
         game._downAcc = 0;
       }
-
-      // keep Tica snapped to ladder Y
-      tica.y = ladderY(game.ladder);
     }
 
-    // Spawn balls
+    // spawn balls
     game.spawnT += dt;
-    const interval = clamp(game.spawnInterval - (game.ladder-1)*0.06, 0.55, 1.25);
+    const interval = clamp(1.10 - (game.floor-1)*0.05, 0.55, 1.10);
     if(game.spawnT >= interval){
       game.spawnT = 0;
-      spawnBall();
+      spawnBallClimb();
     }
 
-    // Update balls
+    // update balls (roll along floors: bounce their y to nearest floor line)
     for(const b of balls){
       b.t += dt;
-      // wobble + drift
+
+      // move
       b.x += (b.vx * dt) + Math.sin(b.t*6 + b.phase) * 14 * dt;
       b.y += (b.vy * dt);
-      // remove if offscreen
-      if(b.y > innerHeight + 60 || b.x < -80 || b.x > innerWidth + 80) b.alive = false;
 
+      // determine which floor line it's currently near and make it "roll"
+      // after falling, it hits a floor -> set y to that floor and continue with reduced vy
+      const top = WORLD.topY + 70;
+      const bottom = WORLD.bottomY();
+      // if above top, ignore; else find nearest floor under it
+      if(b.y > top){
+        // find floor index whose y is just below b.y
+        let hitFloor = 1;
+        for(let f=1; f<=FLOORS; f++){
+          if(floorY(f) >= b.y) { hitFloor = f; break; }
+          hitFloor = f;
+        }
+        // snap if close to the floor line (simulate landing)
+        const fy = floorY(hitFloor);
+        if(b.y >= fy - 3 && b.y <= fy + 24){
+          b.y = fy;
+          // roll: kill vertical speed and keep moving; add a little gravity-like bump so it can drop gaps
+          b.vy = 40 + rand(0,25);
+          // bounce off walls
+          if(b.x < minX+10){ b.x = minX+10; b.vx = Math.abs(b.vx); }
+          if(b.x > maxX-10){ b.x = maxX-10; b.vx = -Math.abs(b.vx); }
+
+          // “gap” influence: near the platform gap, let it fall faster
+          const gapX = platformGapXForFloor(hitFloor);
+          if(Math.abs(b.x - gapX) < 38){
+            b.vy = 420; // drop through the gap area
+          }
+        }
+      }
+
+      // kill if offscreen
+      if(b.y > innerHeight + 120 || b.x < -120 || b.x > innerWidth + 120) b.alive = false;
+
+      // collision triggers slow-mo question
       if(!question.active && ballHitsTica(b)){
         b.alive = false;
         sfxHit();
         startQuestion();
       }
     }
-    // compact
+
     for(let i=balls.length-1;i>=0;i--) if(!balls[i].alive) balls.splice(i,1);
   }
 
   function updateBoss(dt){
     const lock = question.active;
 
-    // physics for jump
-    const g = 1200;
-    const lateralSpeed = 300;
+    // arena ground above touchpad
+    const groundY = innerHeight - (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--touchH')) * 3) - 80;
+    const lateralSpeed = 320;
+    const g = 1300;
 
     if(!lock){
       let vx = 0;
-      if(keys.has('ArrowLeft')) vx -= lateralSpeed;
-      if(keys.has('ArrowRight')) vx += lateralSpeed;
+      if(isLeft()) vx -= lateralSpeed;
+      if(isRight()) vx += lateralSpeed;
+      tica.x = clamp(tica.x + vx*dt, WORLD.marginX, innerWidth - WORLD.marginX);
 
-      tica.vx = vx;
-      tica.x += tica.vx * dt;
-      tica.x = clamp(tica.x, WORLD.marginX, innerWidth - WORLD.marginX);
-
-      const groundY = innerHeight - 90;
       if(tica.onGround){
         tica.y = groundY;
         tica.vy = 0;
-        tica.jumpUsed = false;
-        if(keys.has(' ')){
+        if(isJump()){
           tica.onGround = false;
-          tica.vy = -520;
+          tica.vy = -560;
           sfxJump();
         }
-      } else {
-        tica.vy += g * dt;
-        tica.y += tica.vy * dt;
+      }else{
+        tica.vy += g*dt;
+        tica.y += tica.vy*dt;
         if(tica.y >= groundY){
           tica.y = groundY;
           tica.onGround = true;
         }
       }
 
-      // Shadow stays near top
-      shadow.x = laneX(1);
-      shadow.y = WORLD.topY + 70;
+      // shadow position
+      shadow.x = innerWidth*0.5;
+      shadow.y = WORLD.topY + 80;
 
-      // Spawn boss balls
+      // spawn boss balls
       game.spawnT += dt;
-      const bossInterval = clamp(1.15 - shadow.bossHits*0.1, 0.45, 1.15);
+      const bossInterval = clamp(1.05 - shadow.bossHits*0.12, 0.45, 1.05);
       if(game.spawnT >= bossInterval){
         game.spawnT = 0;
         spawnBallBoss();
       }
 
-      // Stomp detection: Tica lands on Shadow from above
+      // stomp detection
       const dx = tica.x - shadow.x;
-      const dy = (tica.y - shadow.y);
+      const dy = tica.y - shadow.y;
       const rr = tica.r + shadow.r;
-      const isClose = (dx*dx + dy*dy) <= (rr*rr);
+      const close = (dx*dx + dy*dy) <= rr*rr;
       const falling = tica.vy > 80;
 
-      if(isClose && falling && tica.y < shadow.y + 18){
+      if(close && falling && tica.y < shadow.y + 20){
         shadow.bossHits += 1;
-        tica.vy = -420; // bounce
+        tica.vy = -460;
         tica.onGround = false;
         sfxCorrect();
         flashEdge('ok');
@@ -706,13 +891,12 @@ Objetivo:
         }
       }
 
-      // Balls update + collision -> question
+      // update balls
       for(const b of balls){
         b.t += dt;
-        b.x += (b.vx * dt) + Math.sin(b.t*7 + b.phase) * 18 * dt;
-        b.y += (b.vy * dt) + Math.sin(b.t*5 + b.phase) * 6 * dt;
-        if(b.y > innerHeight + 60 || b.x < -120 || b.x > innerWidth + 120) b.alive = false;
-
+        b.x += (b.vx*dt) + Math.sin(b.t*7 + b.phase)*18*dt;
+        b.y += (b.vy*dt) + Math.sin(b.t*5 + b.phase)*6*dt;
+        if(b.y > innerHeight + 120 || b.x < -160 || b.x > innerWidth + 160) b.alive = false;
         if(!question.active && ballHitsTica(b)){
           b.alive = false;
           sfxHit();
@@ -721,16 +905,13 @@ Objetivo:
       }
       for(let i=balls.length-1;i>=0;i--) if(!balls[i].alive) balls.splice(i,1);
     }
-
-    // Even if locked, keep slight visual drift by timeScale in draw
   }
 
-  // ========= Rendering =========
+  // ================= Rendering =================
   function drawBackground(){
-    // subtle stars
     ctx.save();
     ctx.globalAlpha = 0.75;
-    for(let i=0;i<38;i++){
+    for(let i=0;i<42;i++){
       const x = (i*97 + (Math.sin(i*3.1)*50)) % innerWidth;
       const y = (i*61 + (Math.cos(i*2.7)*50)) % innerHeight;
       ctx.fillStyle = 'rgba(255,255,255,.18)';
@@ -739,17 +920,17 @@ Objetivo:
     ctx.restore();
   }
 
-  function drawClimbScene(){
-    // Platforms / ladders vibe (simple retro)
-    const top = WORLD.topY + 90;
-    const bottom = WORLD.bottomY();
+  function drawPlatformsAndLadders(){
+    const xs = ladderXs();
     const leftX = WORLD.marginX;
     const rightX = innerWidth - WORLD.marginX;
 
-    // Floors at each ladder level
+    // floors
     ctx.save();
-    for(let i=1;i<=LADDER_COUNT;i++){
-      const y = ladderY(i);
+    for(let f=1; f<=FLOORS; f++){
+      const y = floorY(f);
+
+      // platform line
       ctx.globalAlpha = 0.9;
       ctx.strokeStyle = 'rgba(255,255,255,.10)';
       ctx.lineWidth = 10;
@@ -758,8 +939,19 @@ Objetivo:
       ctx.lineTo(rightX, y);
       ctx.stroke();
 
+      // platform gap (visual only; gameplay uses gap influence for balls)
+      const gapX = platformGapXForFloor(f);
+      ctx.globalAlpha = 0.95;
+      ctx.strokeStyle = 'rgba(7,10,20,.95)';
+      ctx.lineWidth = 14;
+      ctx.beginPath();
+      ctx.moveTo(gapX-36, y);
+      ctx.lineTo(gapX+36, y);
+      ctx.stroke();
+
       // tiny pixels
       ctx.globalAlpha = 0.22;
+      ctx.strokeStyle = 'rgba(255,255,255,.16)';
       ctx.lineWidth = 1;
       ctx.beginPath();
       for(let x=leftX; x<rightX; x+=18){
@@ -770,74 +962,150 @@ Objetivo:
     }
     ctx.restore();
 
-    // Ladders (center)
+    // ladders (three columns)
     ctx.save();
-    ctx.strokeStyle = 'rgba(255,255,255,.16)';
-    ctx.lineWidth = 6;
-    const lx = laneX(1);
-    ctx.beginPath();
-    ctx.moveTo(lx-14, top);
-    ctx.lineTo(lx-14, bottom);
-    ctx.moveTo(lx+14, top);
-    ctx.lineTo(lx+14, bottom);
-    ctx.stroke();
-
-    ctx.lineWidth = 4;
-    ctx.strokeStyle = 'rgba(255,255,255,.12)';
-    for(let y=top; y<bottom; y+=26){
+    const top = WORLD.topY + 70;
+    const bottom = floorY(1);
+    for(const lx of xs){
+      ctx.strokeStyle = 'rgba(255,255,255,.16)';
+      ctx.lineWidth = 6;
       ctx.beginPath();
-      ctx.moveTo(lx-14, y);
-      ctx.lineTo(lx+14, y);
+      ctx.moveTo(lx-14, top);
+      ctx.lineTo(lx-14, bottom);
+      ctx.moveTo(lx+14, top);
+      ctx.lineTo(lx+14, bottom);
       ctx.stroke();
+
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = 'rgba(255,255,255,.12)';
+      for(let y=top; y<bottom; y+=26){
+        ctx.beginPath();
+        ctx.moveTo(lx-14, y);
+        ctx.lineTo(lx+14, y);
+        ctx.stroke();
+      }
     }
     ctx.restore();
 
-    // Shadow (top)
-    drawShadow(shadow.x, WORLD.topY + 28, 24);
+    // show ladder “snap radius” lightly at current floor (helps debug)
+    // (Puedes quitar esto luego)
+    ctx.save();
+    ctx.globalAlpha = 0.06;
+    ctx.fillStyle = 'rgba(181,107,255,.35)';
+    for(const lx of xs){
+      ctx.beginPath();
+      ctx.arc(lx, floorY(game.floor), LADDER_RADIUS, 0, Math.PI*2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  function drawTica(x,y,r){
+    ctx.save();
+    ctx.globalAlpha = 0.30;
+    ctx.fillStyle = 'rgba(255,120,200,.25)';
+    ctx.beginPath(); ctx.arc(x,y,r+10,0,Math.PI*2); ctx.fill();
+    ctx.globalAlpha = 1;
+    ctx.font = `${r*2}px system-ui`;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('🐱', x, y);
+    ctx.font = `${r*0.95}px system-ui`;
+    ctx.fillText('🎀', x + r*0.55, y - r*0.65);
+    ctx.restore();
+  }
+
+  function drawShadow(x,y,r){
+    ctx.save();
+    ctx.globalAlpha = 0.35;
+    ctx.fillStyle = 'rgba(181,107,255,.25)';
+    ctx.beginPath(); ctx.arc(x,y,r+14,0,Math.PI*2); ctx.fill();
+    ctx.globalAlpha = 1;
+    ctx.font = `${r*2}px system-ui`;
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText('😼', x, y);
+    ctx.font = `${r*1.2}px system-ui`;
+    ctx.fillText('🧥', x, y + r*0.15);
+    ctx.font = `${r*0.9}px system-ui`;
+    ctx.fillText('💜', x + r*0.55, y - r*0.35);
+    ctx.restore();
+  }
+
+  function drawBall(x,y,r){
+    ctx.save();
+    ctx.globalAlpha = 0.35;
+    ctx.fillStyle = 'rgba(181,107,255,.22)';
+    ctx.beginPath(); ctx.arc(x,y,r+16,0,Math.PI*2); ctx.fill();
+
+    ctx.globalAlpha = 1;
+    ctx.font = `${r*2}px system-ui`;
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText('🟣', x, y);
+
+    ctx.globalAlpha = 0.85;
+    ctx.font = `${r*1.1}px system-ui`;
+    ctx.fillText('⚡', x + r*0.95, y - r*0.25);
+    ctx.fillText('💜', x - r*0.95, y + r*0.25);
+    ctx.restore();
+  }
+
+  function drawClimbScene(){
+    drawPlatformsAndLadders();
+
+    // Shadow at top center
+    const xs = ladderXs();
+    drawShadow(xs[1], WORLD.topY + 30, 24);
+
+    // balls
+    for(const b of balls) drawBall(b.x, b.y, b.r);
 
     // Tica
     drawTica(tica.x, tica.y, tica.r);
 
-    // Balls
-    for(const b of balls) drawBall(b.x, b.y, b.r);
+    // small hint: need ladder to climb
+    ctx.save();
+    ctx.fillStyle = 'rgba(203,213,225,.85)';
+    ctx.font = '900 13px system-ui';
+    const onL = isOnLadder(tica.x);
+    const msg = onL ? '🪜 En escalera: ↑ para subir / D para bajar' : 'Busca una escalera 🪜 (acércate a las 3 columnas)';
+    ctx.fillText(msg, 14, 78);
+    ctx.restore();
   }
 
   function drawBossScene(){
-    // Arena
+    const groundY = innerHeight - (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--touchH')) * 3) - 80;
+
     ctx.save();
     ctx.globalAlpha = 0.9;
     ctx.strokeStyle = 'rgba(255,255,255,.10)';
     ctx.lineWidth = 12;
     ctx.beginPath();
-    ctx.moveTo(WORLD.marginX, innerHeight - 90);
-    ctx.lineTo(innerWidth - WORLD.marginX, innerHeight - 90);
+    ctx.moveTo(WORLD.marginX, groundY);
+    ctx.lineTo(innerWidth - WORLD.marginX, groundY);
     ctx.stroke();
     ctx.restore();
 
-    // Title / objective
     ctx.save();
     ctx.fillStyle = 'rgba(255,255,255,.85)';
-    ctx.font = '900 16px system-ui';
-    ctx.fillText(`Jefe Final: Shadow — salta encima 3 veces (${shadow.bossHits}/3)`, 18, 78);
+    ctx.font = '1000 16px system-ui';
+    ctx.fillText(`Jefe Final: Shadow — salta encima 3 veces (${shadow.bossHits}/3)`, 14, 78);
     ctx.restore();
 
     drawShadow(shadow.x, shadow.y, shadow.r);
-    drawTica(tica.x, tica.y, tica.r);
     for(const b of balls) drawBall(b.x, b.y, b.r);
+    drawTica(tica.x, tica.y, tica.r);
   }
 
   function drawWinScene(){
     ctx.save();
     ctx.fillStyle = 'rgba(255,255,255,.9)';
-    ctx.font = '900 28px system-ui';
+    ctx.font = '1000 28px system-ui';
     ctx.textAlign = 'center';
     ctx.fillText('💎 ¡Tesoro del Multiverso Salvado!', innerWidth/2, innerHeight/2 - 18);
-    ctx.font = '700 16px system-ui';
+    ctx.font = '900 16px system-ui';
     ctx.fillStyle = 'rgba(203,213,225,.95)';
-    ctx.fillText('Presiona ↻ Reiniciar para volver a jugar', innerWidth/2, innerHeight/2 + 18);
+    ctx.fillText('Pulsa ↻ Reiniciar para volver a jugar', innerWidth/2, innerHeight/2 + 18);
     ctx.restore();
 
-    // tiny diamonds
     ctx.save();
     for(let i=0;i<24;i++){
       const x = (innerWidth/2) + Math.sin(i*1.7)*220 + rand(-30,30);
@@ -848,87 +1116,25 @@ Objetivo:
     ctx.restore();
   }
 
-  // Emoji “sprites”
-  function drawTica(x,y,r){
-    ctx.save();
-    // glow
-    ctx.globalAlpha = 0.30;
-    ctx.fillStyle = 'rgba(255,120,200,.25)';
-    ctx.beginPath(); ctx.arc(x,y,r+10,0,Math.PI*2); ctx.fill();
-    ctx.globalAlpha = 1;
-
-    ctx.font = `${r*2}px system-ui`;
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText('🐱', x, y);
-    // bow accent
-    ctx.font = `${r*0.95}px system-ui`;
-    ctx.fillText('🎀', x + r*0.55, y - r*0.65);
-    ctx.restore();
-  }
-
-  function drawShadow(x,y,r){
-    ctx.save();
-    // purple aura
-    ctx.globalAlpha = 0.35;
-    ctx.fillStyle = 'rgba(181,107,255,.25)';
-    ctx.beginPath(); ctx.arc(x,y,r+14,0,Math.PI*2); ctx.fill();
-    ctx.globalAlpha = 1;
-    ctx.font = `${r*2}px system-ui`;
-    ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.fillText('😼', x, y);
-    // hood
-    ctx.font = `${r*1.2}px system-ui`;
-    ctx.fillText('🧥', x, y + r*0.15);
-    // purple eyes hint
-    ctx.font = `${r*0.9}px system-ui`;
-    ctx.fillText('💜', x + r*0.55, y - r*0.35);
-    ctx.restore();
-  }
-
-  function drawBall(x,y,r){
-    ctx.save();
-    // plasma glow
-    ctx.globalAlpha = 0.35;
-    ctx.fillStyle = 'rgba(181,107,255,.22)';
-    ctx.beginPath(); ctx.arc(x,y,r+16,0,Math.PI*2); ctx.fill();
-
-    // core orb (emoji placeholder)
-    ctx.globalAlpha = 1;
-    ctx.font = `${r*2}px system-ui`;
-    ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.fillText('🟣', x, y);
-
-    // lightning rays
-    ctx.globalAlpha = 0.85;
-    ctx.font = `${r*1.1}px system-ui`;
-    ctx.fillText('⚡', x + r*0.95, y - r*0.25);
-    ctx.fillText('💜', x - r*0.95, y + r*0.25);
-    ctx.restore();
-  }
-
-  // ========= Main loop with time control =========
+  // ================= Main loop (time control) =================
   function loop(t){
-    const tms = t;
-    const dtReal = clamp((tms - (game.lastT || tms)) / 1000, 0, 0.05);
-    game.lastT = tms;
+    const dtReal = clamp((t - (game.lastT || t)) / 1000, 0, 0.05);
+    game.lastT = t;
 
-    // Smooth timeScale toward target (camera slow motion)
+    // Smooth timeScale toward target
     game.timeScale += (game.slowMoTarget - game.timeScale) * game.slowMoEase;
     const dt = dtReal * game.timeScale;
 
-    // Question timer uses REAL time (so always 5s exact for the user)
+    // Question timer uses REAL time (5s exact)
     tickQuestion(dtReal);
 
-    // Update
     if(game.scene === 'climb') updateClimb(dt);
     else if(game.scene === 'boss') updateBoss(dt);
-    // win has no update
 
-    // Draw
     ctx.clearRect(0,0,innerWidth,innerHeight);
     drawBackground();
 
-    // subtle slow motion “trail” feel
+    // slow-mo tint
     if(game.timeScale < 0.6){
       ctx.save();
       ctx.globalAlpha = 0.08;
@@ -944,10 +1150,9 @@ Objetivo:
     requestAnimationFrame(loop);
   }
 
-  // ========= Start =========
-  // Initial ladder Y
-  tica.y = ladderY(game.ladder);
-  syncUI();
+  // ================= Start =================
+  ansEl.addEventListener('keydown', (e)=>{ if(e.key==='Enter') submitAnswer(); });
+  resetGame(true);
   requestAnimationFrame(loop);
 
 })();
