@@ -10,12 +10,10 @@
     --panel:rgba(0,0,0,.72);
     --white:#f8fafc;
     --muted:#cbd5e1;
-    --ok:#34c759;
-    --bad:#ff3b30;
     --accent:#60a5fa;
 
-    /* ✅ tamaño dinámico de fruta (slider 40-200) */
-    --fruitSize: 200px;
+    /* ✅ tamaño dinámico (default 90) */
+    --fruitSize: 90px;
   }
 
   html,body{height:100%}
@@ -25,102 +23,145 @@
     color:var(--white);
     font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
     overflow:hidden;
-    touch-action:none; /* clave para trazo en móvil */
+    touch-action:none;
   }
 
+  /* ===== HUD ===== */
   #hud{
     position:fixed;
     left:0; right:0; top:0;
     display:flex;
     align-items:center;
     justify-content:space-between;
-    padding:10px 14px;
-    gap:12px;
+    padding:10px 12px;
+    gap:10px;
+    z-index:50;
     pointer-events:none;
-    z-index:20;
   }
-  #leftHud{
+  #hudLeft{
     display:flex;
     align-items:center;
     gap:10px;
-    pointer-events:auto; /* para controles */
   }
   #target{
-    font-weight:800;
+    font-weight:900;
     font-size:22px;
-    letter-spacing:.2px;
     text-shadow:0 2px 10px rgba(0,0,0,.4);
-    pointer-events:none;
   }
   #timer{
-    font-weight:800;
+    font-weight:900;
     font-size:20px;
     color:var(--muted);
     text-shadow:0 2px 10px rgba(0,0,0,.4);
-    pointer-events:none;
   }
 
-  #controls{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    background:rgba(0,0,0,.30);
-    border:1px solid rgba(255,255,255,.14);
-    padding:8px 10px;
+  /* ✅ Botones HUD (sí reciben clic) */
+  .hudBtn{
+    pointer-events:auto;
     border-radius:14px;
-    box-shadow: 0 10px 30px rgba(0,0,0,.30);
-  }
-  #fsBtn{
-    border-radius:12px;
-    padding:8px 10px;
-    border:1px solid rgba(255,255,255,.18);
-    background:rgba(0,0,0,.28);
+    padding:10px 12px;
+    border:1px solid rgba(255,255,255,.16);
+    background:rgba(0,0,0,.25);
     color:var(--white);
-    cursor:pointer;
     font-weight:900;
-    font-size:14px;
-    white-space:nowrap;
+    cursor:pointer;
   }
-  #fsBtn:active{transform:scale(.98)}
-
-  #sizeWrap{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    color:rgba(255,255,255,.85);
-    font-size:12px;
-    font-weight:800;
-  }
-  #sizeSlider{
-    width:140px;
-  }
-  #sizeVal{
-    min-width:34px;
-    text-align:right;
-    color:rgba(255,255,255,.85);
-  }
+  .hudBtn:active{transform:scale(.98)}
 
   #sub{
     position:fixed;
-    left:0; right:0; top:58px;
+    left:0; right:0; top:54px;
     text-align:center;
     color:var(--muted);
     font-size:14px;
+    z-index:40;
     pointer-events:none;
-    z-index:20;
   }
 
-  /* Objetos (frutas/bombas) */
+  /* ===== Panel configuración (drawer) ===== */
+  #configPanel{
+    position:fixed;
+    top:0; left:0;
+    height:100%;
+    width:min(340px, 86vw);
+    transform:translateX(-110%);
+    transition:transform 220ms ease;
+    z-index:80;
+    background:rgba(0,0,0,.62);
+    backdrop-filter: blur(8px);
+    border-right:1px solid rgba(255,255,255,.14);
+    box-shadow: 18px 0 50px rgba(0,0,0,.55);
+    padding:14px;
+    pointer-events:auto;
+  }
+  #configPanel.open{ transform:translateX(0); }
+
+  #configTitle{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:10px;
+  }
+  #configTitle h3{
+    margin:0;
+    font-size:16px;
+    font-weight:900;
+    letter-spacing:.2px;
+  }
+
+  .row{
+    margin:14px 0;
+    padding:12px;
+    border-radius:16px;
+    background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.12);
+  }
+  .rowTop{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:10px;
+  }
+  .label{
+    font-size:13px;
+    color:rgba(255,255,255,.9);
+    font-weight:900;
+  }
+  .val{
+    font-size:13px;
+    color:rgba(255,255,255,.75);
+    font-weight:900;
+    min-width:64px;
+    text-align:right;
+  }
+  input[type="range"]{ width:100%; }
+
+  #configHint{
+    margin-top:10px;
+    font-size:12px;
+    color:rgba(255,255,255,.65);
+    line-height:1.3;
+  }
+
+  /* capa para cerrar tocando afuera */
+  #shade{
+    position:fixed; inset:0;
+    background:rgba(0,0,0,.30);
+    z-index:70;
+    display:none;
+  }
+  #shade.on{ display:block; }
+
+  /* ===== Items ===== */
   .item{
     position:absolute;
     will-change: transform;
     user-select:none;
     -webkit-user-select:none;
-    pointer-events:none; /* el corte es por trazo */
+    pointer-events:none;
     filter: drop-shadow(0 14px 18px rgba(0,0,0,.55));
   }
   .emoji{
-    font-size: var(--fruitSize); /* ✅ ahora depende del slider */
+    font-size: var(--fruitSize);
     line-height:1;
   }
   .badge{
@@ -128,16 +169,16 @@
     left:50%;
     top:10%;
     transform:translate(-50%,-50%);
-    width:44px;height:44px;
+    width:40px;height:40px;
     border-radius:999px;
     display:grid;place-items:center;
-    font-size:24px;
+    font-size:22px;
     background:rgba(0,0,0,.35);
     border:3px solid rgba(255,255,255,.35);
     filter: drop-shadow(0 6px 10px rgba(0,0,0,.45));
   }
 
-  /* Overlay pregunta */
+  /* ===== Overlay pregunta ===== */
   #overlay{
     position:fixed;
     inset:0;
@@ -146,8 +187,8 @@
     justify-content:center;
     flex-direction:column;
     gap:14px;
-    background:var(--panel);
-    z-index:30;
+    background:rgba(0,0,0,.72);
+    z-index:90;
     padding:18px;
   }
   #card{
@@ -158,11 +199,7 @@
     background:rgba(255,255,255,.06);
     box-shadow: 0 20px 60px rgba(0,0,0,.55);
   }
-  #question{
-    margin:0 0 10px 0;
-    font-size:22px;
-    font-weight:900;
-  }
+  #question{ margin:0 0 10px 0; font-size:22px; font-weight:900; }
   #options{
     display:flex;
     gap:10px;
@@ -182,25 +219,14 @@
     min-width:86px;
   }
   button.opt:active{transform:scale(.98)}
-  #feedback{
-    margin:12px 0 0 0;
-    font-size:16px;
-    color:var(--muted);
-    min-height:22px;
-    text-align:center;
-  }
-  #lock{
-    margin-top:10px;
-    text-align:center;
-    color:rgba(255,255,255,.65);
-    font-size:14px;
-  }
+  #feedback{ margin:12px 0 0 0; font-size:16px; min-height:22px; text-align:center; color:rgba(255,255,255,.8); }
+  #lock{ margin-top:10px; text-align:center; color:rgba(255,255,255,.65); font-size:14px; }
 
   /* Canvas del trazo */
   #trail{
     position:fixed;
     inset:0;
-    z-index:25;
+    z-index:60;
     pointer-events:none;
   }
 </style>
@@ -209,23 +235,59 @@
 
 <canvas id="trail"></canvas>
 
-<div id="hud">
-  <div id="leftHud">
-    <div id="controls">
-      <button id="fsBtn" type="button">⛶ Pantalla completa</button>
-      <div id="sizeWrap">
-        <span>🍉 Tamaño</span>
-        <input id="sizeSlider" type="range" min="40" max="200" value="200" />
-        <span id="sizeVal">200</span>
-      </div>
+<!-- sombra para cerrar panel -->
+<div id="shade"></div>
+
+<!-- Panel de configuración -->
+<aside id="configPanel" aria-label="Configuración">
+  <div id="configTitle">
+    <h3>⚙️ Configuración</h3>
+    <button class="hudBtn" id="closeCfg" type="button">Cerrar</button>
+  </div>
+
+  <div class="row">
+    <div class="rowTop">
+      <span class="label">🍉 Tamaño fruta</span>
+      <span class="val" id="sizeVal">90px</span>
     </div>
+    <input id="sizeSlider" type="range" min="40" max="200" value="90" />
+  </div>
+
+  <div class="row">
+    <div class="rowTop">
+      <span class="label">🚀 Fuerza de lanzamiento</span>
+      <span class="val" id="launchVal">1.00×</span>
+    </div>
+    <input id="launchSlider" type="range" min="60" max="140" value="100" />
+  </div>
+
+  <div class="row">
+    <div class="rowTop">
+      <span class="label">🌍 Gravedad</span>
+      <span class="val" id="gravVal">1.00×</span>
+    </div>
+    <input id="gravSlider" type="range" min="60" max="160" value="100" />
+  </div>
+
+  <div id="configHint">
+    • Tamaño pequeño = más reto motriz.<br>
+    • Más lanzamiento = suben más.<br>
+    • Más gravedad = caen más rápido.
+  </div>
+</aside>
+
+<!-- HUD -->
+<div id="hud">
+  <div id="hudLeft">
+    <button class="hudBtn" id="cfgBtn" type="button">⚙️</button>
+    <button class="hudBtn" id="fsBtn" type="button">⛶</button>
     <div id="target">🎯 …</div>
   </div>
   <div id="timer">⏱ 20</div>
 </div>
-
 <div id="sub">Traza una línea para cortar. Evita la bomba del mismo color.</div>
 
+<!-- Overlay de pregunta -->
 <div id="overlay">
   <div id="card">
     <h2 id="question"></h2>
@@ -237,20 +299,20 @@
 
 <script>
 /* =========================
-   Config pedagógica
+   Config general
 ========================= */
 const FRUITS = [
-  { name:"Piña",    emoji:"🍍", color:"yellow", bombRing:"#ffd54a" },
-  { name:"Mango",   emoji:"🥭", color:"orange", bombRing:"#ffb020" },
-  { name:"Naranja", emoji:"🍊", color:"orange", bombRing:"#ffb020" }
+  { name:"Piña",    emoji:"🍍", bombRing:"#ffd54a" },
+  { name:"Mango",   emoji:"🥭", bombRing:"#ffb020" },
+  { name:"Naranja", emoji:"🍊", bombRing:"#ffb020" }
 ];
 
-const ROUND_MS = 20000;         // 20 s
-const LOCK_MS  = 10000;         // ✅ 10 s bloqueo (antes 15)
-const MAX_TARGETS = 10;         // máximo 10 frutas objetivo por intento
-const MAX_ACTIVE  = 10;         // límite de objetos simultáneos en pantalla
-const SPAWN_EVERY_MS = 900;     // frecuencia de lanzamiento
-const BOMB_RATE = 0.22;         // probabilidad de bomba
+const ROUND_MS = 20000;
+const LOCK_MS  = 10000;        // 10s
+const MAX_TARGETS = 10;
+const MAX_ACTIVE  = 10;
+const SPAWN_EVERY_MS = 900;
+const BOMB_RATE = 0.22;
 
 let round = 0;
 let targetFruit = null;
@@ -264,11 +326,10 @@ let tickTimer = null;
 let cutCount = 0;
 let targetSpawned = 0;
 
-// elementos activos
-const items = []; // {el, x,y, vx, vy, ax, ay, alive, isBomb, isObjective, radius}
+const items = [];
 
 /* =========================
-   HUD + TTS + Controles
+   DOM refs
 ========================= */
 const $target = document.getElementById("target");
 const $timer  = document.getElementById("timer");
@@ -279,9 +340,22 @@ const $feedback = document.getElementById("feedback");
 const $lock = document.getElementById("lock");
 
 const $fsBtn = document.getElementById("fsBtn");
-const $sizeSlider = document.getElementById("sizeSlider");
-const $sizeVal = document.getElementById("sizeVal");
+const $cfgBtn = document.getElementById("cfgBtn");
+const $cfgPanel = document.getElementById("configPanel");
+const $shade = document.getElementById("shade");
+const $closeCfg = document.getElementById("closeCfg");
 
+const $sizeSlider = document.getElementById("sizeSlider");
+const $launchSlider = document.getElementById("launchSlider");
+const $gravSlider = document.getElementById("gravSlider");
+
+const $sizeVal = document.getElementById("sizeVal");
+const $launchVal = document.getElementById("launchVal");
+const $gravVal = document.getElementById("gravVal");
+
+/* =========================
+   Helpers: TTS
+========================= */
 function speak(text){
   try{
     speechSynthesis.cancel();
@@ -291,38 +365,67 @@ function speak(text){
   }catch(e){}
 }
 
-function isFullscreen(){
-  return !!document.fullscreenElement;
-}
-
-$fsBtn.addEventListener("click", async ()=>{
+/* =========================
+   Fullscreen
+========================= */
+function isFullscreen(){ return !!document.fullscreenElement; }
+async function toggleFullscreen(){
   try{
-    if(!isFullscreen()){
-      await document.documentElement.requestFullscreen();
-    }else{
-      await document.exitFullscreen();
-    }
+    if(!isFullscreen()) await document.documentElement.requestFullscreen();
+    else await document.exitFullscreen();
   }catch(e){}
-  updateFsBtn();
+  $fsBtn.textContent = isFullscreen() ? "⤫" : "⛶";
+}
+$fsBtn.addEventListener("click", toggleFullscreen);
+document.addEventListener("fullscreenchange", ()=> {
+  $fsBtn.textContent = isFullscreen() ? "⤫" : "⛶";
 });
 
-document.addEventListener("fullscreenchange", updateFsBtn);
-
-function updateFsBtn(){
-  $fsBtn.textContent = isFullscreen() ? "⤫ Salir" : "⛶ Pantalla completa";
+/* =========================
+   Panel configuración
+========================= */
+function openCfg(){
+  $cfgPanel.classList.add("open");
+  $shade.classList.add("on");
 }
+function closeCfg(){
+  $cfgPanel.classList.remove("open");
+  $shade.classList.remove("on");
+}
+$cfgBtn.addEventListener("click", ()=>{
+  if($cfgPanel.classList.contains("open")) closeCfg();
+  else openCfg();
+});
+$closeCfg.addEventListener("click", closeCfg);
+$shade.addEventListener("click", closeCfg);
+
+/* =========================
+   Sliders -> variables
+========================= */
+let launchMul = 1.0; // 0.60 .. 1.40
+let gravMul   = 1.0; // 0.60 .. 1.60
 
 function setFruitSize(px){
   document.documentElement.style.setProperty("--fruitSize", px + "px");
-  $sizeVal.textContent = px;
+  $sizeVal.textContent = px + "px";
 }
-$sizeSlider.addEventListener("input", ()=>{
-  setFruitSize(parseInt($sizeSlider.value,10));
-});
+function setLaunchMul(){
+  launchMul = parseInt($launchSlider.value,10)/100;
+  $launchVal.textContent = launchMul.toFixed(2) + "×";
+}
+function setGravMul(){
+  gravMul = parseInt($gravSlider.value,10)/100;
+  $gravVal.textContent = gravMul.toFixed(2) + "×";
+}
 
-// tamaño inicial
-setFruitSize(parseInt($sizeSlider.value,10));
-updateFsBtn();
+$sizeSlider.addEventListener("input", ()=> setFruitSize(parseInt($sizeSlider.value,10)));
+$launchSlider.addEventListener("input", setLaunchMul);
+$gravSlider.addEventListener("input", setGravMul);
+
+// defaults
+setFruitSize(90);
+setLaunchMul();
+setGravMul();
 
 /* =========================
    Canvas trazo
@@ -340,105 +443,95 @@ function resizeCanvas(){
 window.addEventListener("resize", resizeCanvas);
 resizeCanvas();
 
-let drawing = false;
-let lastPoint = null;
-let trailPoints = [];
-let trailFade = 0;
+let drawing=false;
+let lastPoint=null;
+let trailPoints=[];
+let trailFade=0;
 
 function drawTrail(){
   ctx.clearRect(0,0,window.innerWidth,window.innerHeight);
-  if(trailPoints.length < 2) return;
+  if(trailPoints.length<2) return;
 
-  ctx.lineCap = "round";
-  ctx.lineJoin = "round";
+  ctx.lineCap="round";
+  ctx.lineJoin="round";
 
-  ctx.globalAlpha = Math.min(1, trailFade);
-  ctx.lineWidth = 16;
-  ctx.strokeStyle = "rgba(96,165,250,0.35)";
+  ctx.globalAlpha=Math.min(1,trailFade);
+  ctx.lineWidth=16;
+  ctx.strokeStyle="rgba(96,165,250,0.35)";
   ctx.beginPath();
-  ctx.moveTo(trailPoints[0].x, trailPoints[0].y);
-  for(let i=1;i<trailPoints.length;i++) ctx.lineTo(trailPoints[i].x, trailPoints[i].y);
+  ctx.moveTo(trailPoints[0].x,trailPoints[0].y);
+  for(let i=1;i<trailPoints.length;i++) ctx.lineTo(trailPoints[i].x,trailPoints[i].y);
   ctx.stroke();
 
-  ctx.lineWidth = 6;
-  ctx.strokeStyle = "rgba(255,255,255,0.85)";
+  ctx.lineWidth=6;
+  ctx.strokeStyle="rgba(255,255,255,0.85)";
   ctx.beginPath();
-  ctx.moveTo(trailPoints[0].x, trailPoints[0].y);
-  for(let i=1;i<trailPoints.length;i++) ctx.lineTo(trailPoints[i].x, trailPoints[i].y);
+  ctx.moveTo(trailPoints[0].x,trailPoints[0].y);
+  for(let i=1;i<trailPoints.length;i++) ctx.lineTo(trailPoints[i].x,trailPoints[i].y);
   ctx.stroke();
 
-  ctx.globalAlpha = 1;
+  ctx.globalAlpha=1;
 }
-
 function addTrailPoint(p){
   trailPoints.push(p);
-  if(trailPoints.length > 14) trailPoints.shift();
-  trailFade = 1;
+  if(trailPoints.length>14) trailPoints.shift();
+  trailFade=1;
   drawTrail();
 }
-
 function decayTrail(){
-  if(trailPoints.length === 0) return;
-  trailFade *= 0.86;
-  if(trailFade < 0.05){
-    trailPoints = [];
-    lastPoint = null;
+  if(trailPoints.length===0) return;
+  trailFade*=0.86;
+  if(trailFade<0.05){
+    trailPoints=[];
+    lastPoint=null;
   }
   drawTrail();
 }
 
-/* =========================
-   Geometría: colisión trazo (segmento) con círculo
-========================= */
-function segCircleHit(ax, ay, bx, by, cx, cy, r){
-  const abx = bx - ax, aby = by - ay;
-  const acx = cx - ax, acy = cy - ay;
-  const ab2 = abx*abx + aby*aby;
-  let t = ab2 ? (acx*abx + acy*aby)/ab2 : 0;
-  t = Math.max(0, Math.min(1, t));
-  const hx = ax + abx*t, hy = ay + aby*t;
-  const dx = cx - hx, dy = cy - hy;
-  return (dx*dx + dy*dy) <= r*r;
+/* colisión segmento-círculo */
+function segCircleHit(ax,ay,bx,by,cx,cy,r){
+  const abx=bx-ax, aby=by-ay;
+  const acx=cx-ax, acy=cy-ay;
+  const ab2=abx*abx+aby*aby;
+  let t=ab2 ? (acx*abx+acy*aby)/ab2 : 0;
+  t=Math.max(0,Math.min(1,t));
+  const hx=ax+abx*t, hy=ay+aby*t;
+  const dx=cx-hx, dy=cy-hy;
+  return (dx*dx+dy*dy) <= r*r;
 }
 
-/* =========================
-   Input por Pointer Events
-========================= */
-window.addEventListener("pointerdown", (e)=>{
-  drawing = true;
-  lastPoint = {x:e.clientX, y:e.clientY};
-  trailPoints = [lastPoint];
+/* input por pointer */
+window.addEventListener("pointerdown",(e)=>{
+  drawing=true;
+  lastPoint={x:e.clientX,y:e.clientY};
+  trailPoints=[lastPoint];
   drawTrail();
 });
-
-window.addEventListener("pointermove", (e)=>{
+window.addEventListener("pointermove",(e)=>{
   if(!drawing) return;
-  const p = {x:e.clientX, y:e.clientY};
+  const p={x:e.clientX,y:e.clientY};
 
   if(gameActive && lastPoint){
     for(const it of items){
       if(!it.alive) continue;
-      if(segCircleHit(lastPoint.x, lastPoint.y, p.x, p.y, it.x, it.y, it.radius)){
+      if(segCircleHit(lastPoint.x,lastPoint.y,p.x,p.y,it.x,it.y,it.radius)){
         sliceItem(it);
       }
     }
   }
 
   addTrailPoint(p);
-  lastPoint = p;
+  lastPoint=p;
 });
-
-window.addEventListener("pointerup", ()=>{ drawing=false; });
-window.addEventListener("pointercancel", ()=>{ drawing=false; });
+window.addEventListener("pointerup",()=> drawing=false);
+window.addEventListener("pointercancel",()=> drawing=false);
 
 /* =========================
    Motor del juego
 ========================= */
 function clearItems(){
-  for(const it of items){
-    try{ it.el.remove(); }catch(e){}
-  }
-  items.length = 0;
+  for(const it of items){ try{it.el.remove();}catch(e){} }
+  items.length=0;
 }
 
 function setTarget(){
@@ -447,42 +540,39 @@ function setTarget(){
 }
 
 function getFruitSizePx(){
-  return parseInt(getComputedStyle(document.documentElement).getPropertyValue("--fruitSize"),10) || 200;
+  return parseInt(getComputedStyle(document.documentElement).getPropertyValue("--fruitSize"),10) || 90;
 }
-
-// Radio de colisión proporcional al tamaño (ajusta “facilidad” al cortar)
 function getCollisionRadius(){
-  const s = getFruitSizePx();
-  return Math.max(14, Math.round(s * 0.38)); // 200->76, 40->15
+  const s=getFruitSizePx();
+  return Math.max(14, Math.round(s*0.38)); // coherente con tamaño
 }
 
 function startRound(){
   clearItems();
-  cutCount = 0;
-  targetSpawned = 0;
+  cutCount=0;
+  targetSpawned=0;
 
   setTarget();
-
-  gameActive = true;
-  roundStart = performance.now();
+  gameActive=true;
+  roundStart=performance.now();
 
   if(tickTimer) clearInterval(tickTimer);
-  tickTimer = setInterval(()=>{
+  tickTimer=setInterval(()=>{
     if(!gameActive) return;
-    const elapsed = performance.now() - roundStart;
-    const remaining = Math.max(0, Math.ceil((ROUND_MS - elapsed)/1000));
-    $timer.textContent = `⏱ ${remaining}`;
-  }, 120);
+    const elapsed=performance.now()-roundStart;
+    const remaining=Math.max(0, Math.ceil((ROUND_MS-elapsed)/1000));
+    $timer.textContent=`⏱ ${remaining}`;
+  },120);
 
   if(spawnTimer) clearInterval(spawnTimer);
-  spawnTimer = setInterval(()=>{
+  spawnTimer=setInterval(()=>{
     if(!gameActive) return;
-    if(items.filter(i=>i.alive).length >= MAX_ACTIVE) return;
+    if(items.filter(i=>i.alive).length>=MAX_ACTIVE) return;
     spawnOne();
-  }, SPAWN_EVERY_MS);
+  },SPAWN_EVERY_MS);
 
   if(roundEndTimer) clearTimeout(roundEndTimer);
-  roundEndTimer = setTimeout(endRound, ROUND_MS);
+  roundEndTimer=setTimeout(endRound,ROUND_MS);
 
   requestAnimationFrame(step);
 }
@@ -493,79 +583,68 @@ function spawnOne(){
   const isBomb = Math.random() < BOMB_RATE;
 
   const fruit = targetFruit;
-
-  let shown;
-  let isObjective = spawnTarget && !isBomb;
+  let shown, isObjective = spawnTarget && !isBomb;
 
   if(isBomb){
-    shown = "💣";
-    isObjective = false;
+    shown="💣";
+    isObjective=false;
   }else if(spawnTarget){
-    shown = fruit.emoji;
+    shown=fruit.emoji;
     targetSpawned++;
   }else{
-    const other = FRUITS.filter(f=>f.name!==fruit.name);
-    const pick = other[Math.floor(Math.random()*other.length)];
-    shown = pick.emoji;
+    const other=FRUITS.filter(f=>f.name!==fruit.name);
+    const pick=other[Math.floor(Math.random()*other.length)];
+    shown=pick.emoji;
   }
 
-  const el = document.createElement("div");
-  el.className = "item";
-  el.innerHTML = `
+  const el=document.createElement("div");
+  el.className="item";
+  el.innerHTML=`
     <div class="emoji">${shown}</div>
-    ${isBomb ? `<div class="badge" title="Bomba" style="border-color:${fruit.bombRing};">⚠️</div>` : ``}
+    ${isBomb ? `<div class="badge" style="border-color:${fruit.bombRing};">⚠️</div>` : ``}
   `;
   document.body.appendChild(el);
 
-  const w = window.innerWidth;
-  const h = window.innerHeight;
+  const w=window.innerWidth, h=window.innerHeight;
+  const s=getFruitSizePx();
 
   const startX = Math.random()*(w*0.8) + w*0.1;
-  const startY = h + 140;
+  const startY = h + s;
 
-  const vy0 = -(Math.random()*7 + 18);
-  const vx0 = (Math.random()*10 - 5);
-  const ay  = (Math.random()*0.08 + 0.22);
-  const ax  = (Math.random()*0.02 - 0.01);
+  // ✅ lanzamiento y gravedad escalados por sliders
+  const vy0 = -(Math.random()*7 + 18) * launchMul;         // más lanzamiento => suben más
+  const vx0 = (Math.random()*10 - 5) * (0.9 + 0.3*launchMul);
+  const ay  = (Math.random()*0.08 + 0.22) * gravMul;       // más gravedad => caen más rápido
+  const ax  = (Math.random()*0.02 - 0.01) * (0.7 + 0.3*launchMul);
 
-  const it = {
-    el,
-    x:startX,
-    y:startY,
-    vx:vx0,
-    vy:vy0,
-    ax,
-    ay,
+  const it={
+    el, x:startX, y:startY,
+    vx:vx0, vy:vy0, ax, ay,
     alive:true,
     isBomb,
     isObjective,
-    radius: getCollisionRadius(),
+    radius:getCollisionRadius(),
   };
   items.push(it);
 
-  // centrar aproximadamente el emoji según tamaño actual
-  const s = getFruitSizePx();
-  el.style.transform = `translate(${it.x - (s/2)}px, ${it.y - (s/2)}px)`;
+  el.style.transform=`translate(${it.x-(s/2)}px, ${it.y-(s/2)}px)`;
 }
 
 function sliceItem(it){
   if(!it.alive) return;
-  it.alive = false;
+  it.alive=false;
 
-  it.el.style.transition = "transform 120ms ease, opacity 120ms ease";
-  it.el.style.opacity = "0";
+  it.el.style.transition="transform 120ms ease, opacity 120ms ease";
+  it.el.style.opacity="0";
   it.el.style.transform += " scale(0.9)";
-  setTimeout(()=>{ try{it.el.remove();}catch(e){} }, 180);
+  setTimeout(()=>{ try{it.el.remove();}catch(e){} },180);
 
   if(it.isBomb){
-    gameActive = false;
+    gameActive=false;
     endRound(true);
     return;
   }
-
-  if(it.isObjective){
-    cutCount++;
-  }
+  if(it.isObjective) cutCount++;
 }
 
 function step(){
@@ -579,15 +658,15 @@ function step(){
       it.x += it.vx;
       it.y += it.vy;
 
-      // actualiza radio si cambió el tamaño (para coherencia)
-      it.radius = getCollisionRadius();
+      // coherencia con cambios de tamaño en vivo
+      const s=getFruitSizePx();
+      it.radius=getCollisionRadius();
 
-      const s = getFruitSizePx();
       if(it.y > window.innerHeight + s + 80 || it.x < -s-80 || it.x > window.innerWidth + s+80){
-        it.alive = false;
+        it.alive=false;
         try{it.el.remove();}catch(e){}
       }else{
-        it.el.style.transform = `translate(${it.x - (s/2)}px, ${it.y - (s/2)}px)`;
+        it.el.style.transform=`translate(${it.x-(s/2)}px, ${it.y-(s/2)}px)`;
       }
     }
   }
@@ -604,7 +683,7 @@ function endRound(byBomb=false){
   if(spawnTimer){ clearInterval(spawnTimer); spawnTimer=null; }
   if(tickTimer){ clearInterval(tickTimer); tickTimer=null; }
 
-  gameActive = false;
+  gameActive=false;
   clearItems();
   showQuestion(byBomb);
 }
@@ -613,33 +692,33 @@ function endRound(byBomb=false){
    Pregunta + feedback + TTS + bloqueo 10s
 ========================= */
 function showQuestion(byBomb){
-  $overlay.style.display = "flex";
-  $feedback.textContent = "";
-  $lock.textContent = "";
+  $overlay.style.display="flex";
+  $feedback.textContent="";
+  $lock.textContent="";
 
-  const correct = cutCount;
+  const correct=cutCount;
 
-  const d1 = Math.max(0, correct + 1);
-  const d2 = Math.max(0, correct - 1);
+  const d1=Math.max(0, correct+1);
+  const d2=Math.max(0, correct-1);
 
-  let options = [correct, d1, d2];
-  options = Array.from(new Set(options));
-  while(options.length < 3){
-    const extra = Math.max(0, correct + (Math.random()<.5 ? 2 : -2));
+  let options=[correct,d1,d2];
+  options=Array.from(new Set(options));
+  while(options.length<3){
+    const extra=Math.max(0, correct + (Math.random()<.5 ? 2 : -2));
     if(!options.includes(extra)) options.push(extra);
   }
-  options.sort(()=>Math.random() - 0.5);
+  options.sort(()=>Math.random()-0.5);
 
   $question.textContent = byBomb
     ? `💥 ¡Cortaste una bomba! ¿Cuántas ${targetFruit.name}s alcanzaste a cortar?`
     : `¿Cuántas ${targetFruit.name}s cortaste en 20 segundos?`;
 
-  $options.innerHTML = "";
+  $options.innerHTML="";
   options.forEach(n=>{
-    const b = document.createElement("button");
-    b.className = "opt";
-    b.textContent = n;
-    b.onclick = ()=>checkAnswer(n, correct);
+    const b=document.createElement("button");
+    b.className="opt";
+    b.textContent=n;
+    b.onclick=()=>checkAnswer(n,correct);
     $options.appendChild(b);
   });
 }
@@ -647,33 +726,33 @@ function showQuestion(byBomb){
 function checkAnswer(ans, correct){
   [...$options.querySelectorAll("button")].forEach(b=>b.disabled=true);
 
-  if(ans === correct){
-    $feedback.style.color = "rgba(52,199,89,.95)";
-    $feedback.textContent = `✅ Excelente: cortaste ${correct}.`;
+  if(ans===correct){
+    $feedback.style.color="rgba(52,199,89,.95)";
+    $feedback.textContent=`✅ Excelente: cortaste ${correct}.`;
     speak(`Excelente. Cortaste ${correct}.`);
   }else{
-    $feedback.style.color = "rgba(255,59,48,.95)";
-    $feedback.textContent = `❌ Casi. La respuesta correcta era ${correct}.`;
+    $feedback.style.color="rgba(255,59,48,.95)";
+    $feedback.textContent=`❌ Casi. La respuesta correcta era ${correct}.`;
     speak(`Casi. La respuesta correcta era ${correct}.`);
   }
 
-  let remaining = Math.ceil(LOCK_MS/1000);
-  $lock.textContent = `Siguiente intento disponible en ${remaining} s…`;
+  let remaining=Math.ceil(LOCK_MS/1000);
+  $lock.textContent=`Siguiente intento disponible en ${remaining} s…`;
 
-  const lockInterval = setInterval(()=>{
+  const lockInterval=setInterval(()=>{
     remaining--;
-    if(remaining <= 0){
+    if(remaining<=0){
       clearInterval(lockInterval);
-      $lock.textContent = "✅ Puedes continuar.";
+      $lock.textContent="✅ Puedes continuar.";
       setTimeout(()=>{
-        $overlay.style.display = "none";
+        $overlay.style.display="none";
         round++;
         startRound();
-      }, 250);
+      },250);
     }else{
-      $lock.textContent = `Siguiente intento disponible en ${remaining} s…`;
+      $lock.textContent=`Siguiente intento disponible en ${remaining} s…`;
     }
-  }, 1000);
+  },1000);
 }
 
 /* =========================
