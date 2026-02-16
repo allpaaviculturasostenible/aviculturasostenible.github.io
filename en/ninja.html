@@ -52,7 +52,6 @@
     }
     .btn:active{transform:translateY(1px)}
 
-    /* slow motion overlay */
     .slowmo-vignette{
       position:fixed; inset:0;
       background: radial-gradient(600px 400px at 50% 40%, rgba(0,0,0,0) 0%, rgba(0,0,0,.25) 55%, rgba(0,0,0,.45) 100%);
@@ -62,7 +61,6 @@
     }
     .slowmo-vignette.on{opacity:1;}
 
-    /* edge flash */
     .edge-flash{
       position:fixed; inset:0; pointer-events:none; opacity:0;
       transition: opacity .10s ease;
@@ -72,7 +70,6 @@
     .edge-flash.ok{box-shadow: inset 0 0 0 10px rgba(52,199,89,.70), inset 0 0 40px 10px rgba(52,199,89,.18);}
     .edge-flash.bad{box-shadow: inset 0 0 0 10px rgba(255,59,48,.72), inset 0 0 40px 10px rgba(255,59,48,.18);}
 
-    /* question modal */
     .modal{
       position:fixed; inset:0; display:none;
       align-items:center; justify-content:center;
@@ -153,9 +150,7 @@
     .toast.ok{outline:2px solid rgba(52,199,89,.55)}
     .toast.bad{outline:2px solid rgba(255,59,48,.55)}
 
-    /* =========================
-       TOUCH FLOATING (NO TAPA)
-       ========================= */
+    /* TOUCH FLOATING (NO TAPA) */
     .touchpad{
       position:fixed;
       left:12px;
@@ -277,9 +272,9 @@
     canvas.style.width = innerWidth+'px';
     canvas.style.height = innerHeight+'px';
     ctx.setTransform(dpr,0,0,dpr,0,0);
+    rebuildLadders(); // ✅ recalcula escaleras cortas al cambiar tamaño
   }
   addEventListener('resize', resize, {passive:true});
-  resize();
 
   // ================= UI =================
   const uiLives = document.getElementById('lives');
@@ -313,20 +308,17 @@
 `Controles:
 Teclado:
 - Flechas ← → para moverse
-- ↑ para subir (si estás cerca de una escalera)
-- ↓ para bajar (si estás cerca de una escalera)
+- ↑ para subir (si estás cerca de UNA escalera del piso)
+- ↓ para bajar (si estás cerca de la escalera del piso)
 
-Táctil (flotante, 90px):
-UUUUUUUU
-LLLLRRRR
-DDDDDDDD
+Táctil:
+U = subir
+L/R = mover
+D = bajar
 
 Nivel 1:
 - Sumas de centenas exactas
-- Shadow Ball toca a Tica -> cámara super lenta + 5s para responder
-- Correcto: +100
-- Incorrecto/tiempo: baja 1 piso (si estás en 1 no baja)
-- 3 vidas: reinicia`
+- Shadow Ball toca a Tica -> cámara super lenta + 5s para responder`
     );
   });
 
@@ -400,9 +392,9 @@ Nivel 1:
   // ================= World layout =================
   const FLOORS = 10;
   const WORLD = {
-    marginX: 50,
+    marginX: 70,      // más DK (espacio en bordes)
     topY: 90,
-    bottomY: () => innerHeight - 40,
+    bottomY: () => innerHeight - 46,
   };
 
   function floorY(i){
@@ -412,29 +404,47 @@ Nivel 1:
     return bottom - t*(bottom-top);
   }
 
-  function ladderXs(){
-    const w = innerWidth - WORLD.marginX*2;
-    return [
-      WORLD.marginX + w*0.22,
-      WORLD.marginX + w*0.50,
-      WORLD.marginX + w*0.78
-    ];
+  // ======== ✅ Escaleras cortas: 9 (una por piso / conecta 1 piso) ========
+  // Ladder i conecta (i) <-> (i+1), i=1..9
+  const ladders = []; // {i, x, yTop, yBot}
+  const LADDER_RADIUS = 44; // área para enganchar
+
+  function ladderXFromPattern(i){
+    // patrón DK-like (izq/der/centro alternando)
+    const fracs = [0.78, 0.24, 0.66, 0.34, 0.74, 0.28, 0.60, 0.40, 0.52]; // 9 valores
+    const f = fracs[(i-1) % fracs.length];
+    const left = WORLD.marginX;
+    const right = innerWidth - WORLD.marginX;
+    return left + (right-left)*f;
   }
 
-  function platformGapXForFloor(f){
-    const xs = ladderXs();
-    const idx = (f % 3);
-    return xs[idx];
-  }
-
-  const LADDER_RADIUS = 60;
-
-  function isOnLadder(x){
-    const xs = ladderXs();
-    for(const lx of xs){
-      if(Math.abs(x - lx) <= LADDER_RADIUS) return true;
+  function rebuildLadders(){
+    ladders.length = 0;
+    for(let i=1;i<=FLOORS-1;i++){
+      const x = ladderXFromPattern(i);
+      const yBot = floorY(i);     // piso i (más abajo)
+      const yTop = floorY(i+1);   // piso i+1 (más arriba)
+      ladders.push({ i, x, yTop, yBot });
     }
-    return false;
+  }
+
+  function ladderForUp(floor){
+    // subir desde "floor" a "floor+1" => ladder index = floor
+    if(floor >= 1 && floor <= FLOORS-1) return ladders[floor-1];
+    return null;
+  }
+  function ladderForDown(floor){
+    // bajar desde "floor" a "floor-1" => ladder index = floor-1
+    if(floor >= 2 && floor <= FLOORS) return ladders[floor-2];
+    return null;
+  }
+  function onLadderForUp(x,floor){
+    const L = ladderForUp(floor);
+    return L ? (Math.abs(x - L.x) <= LADDER_RADIUS) : false;
+  }
+  function onLadderForDown(x,floor){
+    const L = ladderForDown(floor);
+    return L ? (Math.abs(x - L.x) <= LADDER_RADIUS) : false;
   }
 
   // ================= State =================
@@ -454,10 +464,10 @@ Nivel 1:
     ladderCooldown:0
   };
 
-  const tica = { x: ladderXs()[1], y: floorY(1), r:22 };
-  const shadow = { x: ladderXs()[1], y: WORLD.topY + 30, r:26, bossHits:0 };
-  const balls = [];
+  const tica = { x: 0, y: 0, r:22 };
+  const shadow = { x: 0, y: 0, r:26 };
 
+  const balls = []; // DK barrels style
   const question = { active:false, a:0,b:0,correct:0, remaining:0 };
 
   // ================= UI sync =================
@@ -469,13 +479,12 @@ Nivel 1:
   }
 
   function resetPositions(){
-    const xs = ladderXs();
-    tica.x = xs[1];
+    const cx = (WORLD.marginX + (innerWidth - WORLD.marginX))/2;
+    tica.x = cx;
     tica.y = floorY(game.floor);
 
-    shadow.x = xs[1];
+    shadow.x = cx;
     shadow.y = WORLD.topY + 30;
-    shadow.bossHits = 0;
 
     balls.length = 0;
     game.spawnT = 0;
@@ -497,6 +506,7 @@ Nivel 1:
       game.streak=0;
       game.climbBoost=1;
     }
+    rebuildLadders();
     resetPositions();
     syncUI();
   }
@@ -603,32 +613,26 @@ Nivel 1:
     }
   }
 
-  // ================= Shadow balls (DK style: piso + escaleras) =================
+  // ================= Shadow balls (DK-like: ruedan + bajan por UNA escalera/piso) =================
   function spawnBallClimb(){
-    const xs = ladderXs();
-
-    // empieza en el piso superior (cerca de Shadow)
+    // nace arriba cerca de Shadow, en el piso superior
     const startFloor = FLOORS;
     const startY = floorY(startFloor);
-    const startX = xs[1] + rand(-18,18);
+    const startX = shadow.x + rand(-18,18);
+    const dir = (Math.random()<0.5) ? -1 : 1;
 
-    const dir = (Math.random() < 0.5) ? -1 : 1;
-
-    // velocidad suave para primaria
-    const speed = 120 + (game.floor-1)*6;
+    const speed = 120; // suave para primaria
 
     balls.push({
-      x: startX,
-      y: startY,
-      r: 18,
-      dir,
-      speed,
-      floor: startFloor,
-      state: 'roll',   // 'roll' | 'downLadder'
-      ladderX: null,
-      alive: true,
+      x:startX, y:startY, r:18,
+      floor:startFloor,
+      dir, speed,
+      state:'roll',      // roll | downLadder | fallOut | bottomWait
+      ladderX:null,
+      alive:true,
+      t:0,
       phase: rand(0, Math.PI*2),
-      t: 0
+      bottomT: 0
     });
   }
 
@@ -639,55 +643,51 @@ Nivel 1:
     return (dx*dx + dy*dy) <= rr*rr;
   }
 
-  // ================= Movement =================
   function updateClimb(dt){
     const lock = question.active;
-    const lateralSpeed = 300;
     const maxX = innerWidth - WORLD.marginX;
     const minX = WORLD.marginX;
 
+    // ===== Tica =====
     if(!lock){
-      // lateral
       let vx = 0;
-      if(isLeft()) vx -= lateralSpeed;
-      if(isRight()) vx += lateralSpeed;
+      if(isLeft()) vx -= 300;
+      if(isRight()) vx += 300;
       tica.x = clamp(tica.x + vx*dt, minX, maxX);
-
-      // snap to current floor
       tica.y = floorY(game.floor);
 
-      // subir/bajar con cooldown
+      // subir/bajar: UNA escalera por piso
       game.ladderCooldown = Math.max(0, game.ladderCooldown - dt);
-      const onLadder = isOnLadder(tica.x);
 
-      if(onLadder && game.ladderCooldown <= 0){
-        if(isUp()){
+      if(game.ladderCooldown <= 0){
+        if(isUp() && onLadderForUp(tica.x, game.floor)){
           floorUp();
           sfxHit();
-          game.ladderCooldown = 0.22;
-        } else if(isDown()){
+          game.ladderCooldown = 0.24;
+        } else if(isDown() && onLadderForDown(tica.x, game.floor)){
           floorDown();
           sfxHit();
-          game.ladderCooldown = 0.18;
+          game.ladderCooldown = 0.20;
         }
       }
     }
 
-    // spawn balls (más lento para niños)
+    // ===== Spawn balls (más controlado) =====
     game.spawnT += dt;
-    const interval = clamp(1.55 - (game.floor-1)*0.06, 0.95, 1.55);
+    const interval = 1.35; // fijo y amigable
     if(game.spawnT >= interval){
       game.spawnT = 0;
       spawnBallClimb();
     }
 
-    // === DK balls update ===
-    const xs = ladderXs();
+    // ===== DK balls update =====
     const leftBound = minX + 10;
     const rightBound = maxX - 10;
 
-    const BALL_LADDER_CHANCE = 0.45; // prob de bajar cuando coincide
-    const LADDER_ALIGN = 10;         // tolerancia para enganchar
+    // Prob de bajar por la escalera del piso (obliga a esperar)
+    const BALL_LADDER_CHANCE = 0.80; // alto: casi siempre bajan por la única escalera
+    const LADDER_ALIGN = 12;
+    const LADDER_DOWN_SPEED = 185;
 
     for(const b of balls){
       b.t += dt;
@@ -695,46 +695,82 @@ Nivel 1:
       if(b.state === 'roll'){
         b.y = floorY(b.floor);
 
-        b.x += b.dir * b.speed * dt + Math.sin(b.t*6 + b.phase) * 6 * dt;
+        // ruedan con pequeño “plasma wobble”
+        b.x += b.dir * b.speed * dt + Math.sin(b.t*6 + b.phase) * 4 * dt;
 
-        if(b.x <= leftBound){ b.x = leftBound; b.dir = 1; }
-        if(b.x >= rightBound){ b.x = rightBound; b.dir = -1; }
-
-        // bajar por escalera (solo si no está en el piso 1)
-        if(b.floor > 1){
-          for(const lx of xs){
-            if(Math.abs(b.x - lx) <= LADDER_ALIGN){
+        // en bordes: caen al siguiente piso (como DK)
+        if(b.x <= leftBound){
+          b.x = leftBound;
+          b.state = 'fallOut';
+          b.vy = 280;
+          b.vx = -70;
+        } else if(b.x >= rightBound){
+          b.x = rightBound;
+          b.state = 'fallOut';
+          b.vy = 280;
+          b.vx = 70;
+        } else {
+          // decidir bajar por la única escalera del tramo (piso f -> f-1)
+          if(b.floor > 1){
+            const Ldown = ladders[b.floor-2]; // ladder index = floor-1
+            if(Ldown && Math.abs(b.x - Ldown.x) <= LADDER_ALIGN){
               if(Math.random() < BALL_LADDER_CHANCE){
                 b.state = 'downLadder';
-                b.ladderX = lx;
-                b.x = lx; // alinea
+                b.ladderX = Ldown.x;
+                b.x = Ldown.x;
               }
-              break;
+            }
+          } else {
+            // piso 1: si llega al fondo, NO se amontona: espera un momento y desaparece
+            b.bottomT += dt;
+            if(b.bottomT >= 1.2){
+              b.alive = false;
             }
           }
         }
+
       } else if(b.state === 'downLadder'){
         b.x = b.ladderX;
-        b.y += (170 * dt);
+        b.y += LADDER_DOWN_SPEED * dt;
 
         const nextY = floorY(b.floor - 1);
         if(b.y >= nextY){
           b.floor -= 1;
           b.y = nextY;
           b.state = 'roll';
+          b.bottomT = 0;
+          // al bajar, cambia de dirección para variar
           if(Math.random() < 0.6) b.dir *= -1;
+        }
+
+      } else if(b.state === 'fallOut'){
+        // caída por el borde: si hay pisos abajo, baja 1 piso y sigue; si no, se va del mapa
+        b.x += (b.vx||0) * dt;
+        b.y += (b.vy||0) * dt;
+
+        if(b.floor > 1 && b.y >= floorY(b.floor - 1)){
+          b.floor -= 1;
+          b.y = floorY(b.floor);
+          b.state = 'roll';
+          b.bottomT = 0;
+
+          // vuelve desde el borde con dirección hacia adentro
+          if(b.x <= leftBound) b.dir = 1;
+          if(b.x >= rightBound) b.dir = -1;
+        } else if(b.floor === 1){
+          // fondo final: que “se caiga” y desaparezca
+          if(b.y > innerHeight + 120) b.alive = false;
         }
       }
 
-      // se “pierde” cuando rueda por el piso 1 y sale de los bordes (igual DK)
-      if(b.x < -140 || b.x > innerWidth + 140) b.alive = false;
-
-      if(!question.active && ballHitsTica(b)){
+      // colisión -> pregunta slow-mo
+      if(!question.active && b.alive && ballHitsTica(b)){
         b.alive = false;
         sfxHit();
         startQuestion();
       }
     }
+
     for(let i=balls.length-1;i>=0;i--) if(!balls[i].alive) balls.splice(i,1);
   }
 
@@ -752,65 +788,62 @@ Nivel 1:
   }
 
   function drawPlatformsAndLadders(){
-    const xs = ladderXs();
     const leftX = WORLD.marginX;
     const rightX = innerWidth - WORLD.marginX;
 
+    // pisos (estilo DK: líneas más gruesas)
     ctx.save();
     for(let f=1; f<=FLOORS; f++){
       const y = floorY(f);
 
-      ctx.globalAlpha = 0.9;
+      ctx.globalAlpha = 0.95;
       ctx.strokeStyle = 'rgba(255,255,255,.10)';
-      ctx.lineWidth = 10;
+      ctx.lineWidth = 12;
       ctx.beginPath();
       ctx.moveTo(leftX, y);
       ctx.lineTo(rightX, y);
       ctx.stroke();
 
-      const gapX = platformGapXForFloor(f);
-      ctx.globalAlpha = 0.95;
-      ctx.strokeStyle = 'rgba(7,10,20,.95)';
-      ctx.lineWidth = 14;
-      ctx.beginPath();
-      ctx.moveTo(gapX-36, y);
-      ctx.lineTo(gapX+36, y);
-      ctx.stroke();
+      // “end caps” para que se vea DK
+      ctx.globalAlpha = 0.25;
+      ctx.fillStyle = 'rgba(255,255,255,.18)';
+      ctx.fillRect(leftX-6, y-7, 10, 14);
+      ctx.fillRect(rightX-4, y-7, 10, 14);
     }
     ctx.restore();
 
+    // ✅ 9 escaleras cortas (solo 1 piso)
     ctx.save();
-    const top = WORLD.topY + 70;
-    const bottom = floorY(1);
-    for(const lx of xs){
-      ctx.strokeStyle = 'rgba(255,255,255,.16)';
+    for(const L of ladders){
+      const x = L.x;
+      const top = L.yTop;
+      const bot = L.yBot;
+
+      ctx.strokeStyle = 'rgba(255,255,255,.20)';
       ctx.lineWidth = 6;
       ctx.beginPath();
-      ctx.moveTo(lx-14, top);
-      ctx.lineTo(lx-14, bottom);
-      ctx.moveTo(lx+14, top);
-      ctx.lineTo(lx+14, bottom);
+      ctx.moveTo(x-14, top);
+      ctx.lineTo(x-14, bot);
+      ctx.moveTo(x+14, top);
+      ctx.lineTo(x+14, bot);
       ctx.stroke();
 
       ctx.lineWidth = 4;
-      ctx.strokeStyle = 'rgba(255,255,255,.12)';
-      for(let y=top; y<bottom; y+=26){
+      ctx.strokeStyle = 'rgba(255,255,255,.13)';
+      for(let y=top; y<bot; y+=24){
         ctx.beginPath();
-        ctx.moveTo(lx-14, y);
-        ctx.lineTo(lx+14, y);
+        ctx.moveTo(x-14, y);
+        ctx.lineTo(x+14, y);
         ctx.stroke();
       }
-    }
-    ctx.restore();
 
-    // debug radius (quitar luego)
-    ctx.save();
-    ctx.globalAlpha = 0.05;
-    ctx.fillStyle = 'rgba(181,107,255,.35)';
-    for(const lx of xs){
+      // leve halo de escalera
+      ctx.globalAlpha = 0.08;
+      ctx.fillStyle = 'rgba(181,107,255,.35)';
       ctx.beginPath();
-      ctx.arc(lx, floorY(game.floor), LADDER_RADIUS, 0, Math.PI*2);
+      ctx.arc(x, (top+bot)/2, LADDER_RADIUS, 0, Math.PI*2);
       ctx.fill();
+      ctx.globalAlpha = 1;
     }
     ctx.restore();
   }
@@ -847,7 +880,7 @@ Nivel 1:
 
   function drawBall(x,y,r){
     ctx.save();
-    ctx.globalAlpha = 0.35;
+    ctx.globalAlpha = 0.30;
     ctx.fillStyle = 'rgba(181,107,255,.22)';
     ctx.beginPath(); ctx.arc(x,y,r+16,0,Math.PI*2); ctx.fill();
 
@@ -866,17 +899,25 @@ Nivel 1:
   function drawClimbScene(){
     drawPlatformsAndLadders();
 
-    const xs = ladderXs();
-    drawShadow(xs[1], WORLD.topY + 30, 24);
+    // Shadow arriba (piso 10)
+    drawShadow(shadow.x, shadow.y, 24);
 
     for(const b of balls) drawBall(b.x, b.y, b.r);
     drawTica(tica.x, tica.y, tica.r);
 
+    // hint
     ctx.save();
-    ctx.fillStyle = 'rgba(203,213,225,.85)';
+    ctx.fillStyle = 'rgba(203,213,225,.90)';
     ctx.font = '900 13px system-ui';
-    const onL = isOnLadder(tica.x);
-    const msg = onL ? '🪜 En escalera: ↑/U sube, ↓/D baja' : 'Busca una escalera 🪜 (3 columnas)';
+
+    const upL = ladderForUp(game.floor);
+    const downL = ladderForDown(game.floor);
+    const nearUp = upL && Math.abs(tica.x - upL.x) <= LADDER_RADIUS;
+    const nearDown = downL && Math.abs(tica.x - downL.x) <= LADDER_RADIUS;
+
+    let msg = 'Busca la escalera 🪜 (1 por piso)';
+    if(nearUp) msg = '🪜 Aquí puedes subir (↑/U)';
+    else if(nearDown) msg = '🪜 Aquí puedes bajar (↓/D)';
     ctx.fillText(msg, 14, 78);
     ctx.restore();
   }
@@ -890,8 +931,7 @@ Nivel 1:
     const dt = dtReal * game.timeScale;
 
     tickQuestion(dtReal);
-
-    if(game.scene === 'climb') updateClimb(dt);
+    updateClimb(dt);
 
     ctx.clearRect(0,0,innerWidth,innerHeight);
     drawBackground();
@@ -910,6 +950,10 @@ Nivel 1:
 
   // ================= Start =================
   ansEl.addEventListener('keydown', (e)=>{ if(e.key==='Enter') submitAnswer(); });
+
+  // init
+  rebuildLadders();
+  resize(); // sets up ladders too
   resetGame(true);
   requestAnimationFrame(loop);
 })();
