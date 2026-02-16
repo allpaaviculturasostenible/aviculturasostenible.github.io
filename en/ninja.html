@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Fruit Learning Ninja</title>
+<style>
+body{margin:0;font-family:Arial;background:#0f172a;color:white;text-align:center;overflow:hidden}
+#target{font-size:26px;margin:10px}
+.fruit{position:absolute;font-size:40px;cursor:pointer}
+.bomb{font-size:40px}
+#overlay{
+position:fixed;inset:0;
+background:rgba(0,0,0,.85);
+display:none;align-items:center;justify-content:center;flex-direction:column;
+}
+button{font-size:22px;margin:10px;padding:10px 20px}
+</style>
+</head>
+<body>
+
+<div id="target"></div>
+
+<div id="overlay">
+<h2 id="question"></h2>
+<div id="options"></div>
+<p id="feedback"></p>
+</div>
+
+<script>
+const fruits = [
+ {name:"Piña", emoji:"🍍", color:"yellow"},
+ {name:"Mango", emoji:"🥭", color:"orange"},
+ {name:"Naranja", emoji:"🍊", color:"orange"}
+];
+
+let round=0;
+let targetFruit;
+let cutCount=0;
+let totalTargets=0;
+let gameActive=false;
+
+function speak(text){
+  speechSynthesis.speak(new SpeechSynthesisUtterance(text));
+}
+
+function startRound(){
+  document.querySelectorAll('.fruit').forEach(e=>e.remove());
+  cutCount=0;
+  targetFruit=fruits[round%fruits.length];
+  totalTargets=Math.floor(Math.random()*6)+4; // 4 a 10
+
+  document.getElementById("target").textContent=
+  `🎯 Corta solo ${targetFruit.name}`;
+
+  gameActive=true;
+
+  for(let i=0;i<totalTargets;i++) spawn(targetFruit,false);
+  for(let i=0;i<6;i++) spawn(targetFruit,true);
+
+  setTimeout(endRound,20000);
+}
+
+function spawn(fruit,isBomb){
+  const el=document.createElement("div");
+  el.className="fruit";
+  el.textContent=isBomb?"💣":fruit.emoji;
+  if(isBomb) el.classList.add("bomb");
+
+  el.style.left=Math.random()*90+"%";
+  el.style.top="100%";
+
+  document.body.appendChild(el);
+
+  let y=window.innerHeight;
+
+  const speed=Math.random()*2+1;
+
+  const fall=setInterval(()=>{
+    if(!gameActive){clearInterval(fall);el.remove();return;}
+    y-=speed;
+    el.style.top=y+"px";
+    if(y< -50){clearInterval(fall);el.remove();}
+  },16);
+
+  el.onclick=()=>{
+    if(!gameActive) return;
+    if(isBomb){
+      gameActive=false;
+      endRound();
+    }else{
+      cutCount++;
+      el.remove();
+    }
+  };
+}
+
+function endRound(){
+  gameActive=false;
+  document.querySelectorAll('.fruit').forEach(e=>e.remove());
+  showQuestion();
+}
+
+function showQuestion(){
+  const overlay=document.getElementById("overlay");
+  overlay.style.display="flex";
+
+  document.getElementById("question").textContent=
+  `¿Cuántas ${targetFruit.name}s cortaste?`;
+
+  let correct=cutCount;
+
+  let options=[correct,
+    correct+1,
+    Math.max(0,correct-1)
+  ].sort(()=>Math.random()-.5);
+
+  const optDiv=document.getElementById("options");
+  optDiv.innerHTML="";
+
+  options.forEach(n=>{
+    const b=document.createElement("button");
+    b.textContent=n;
+    b.onclick=()=>checkAnswer(n,correct);
+    optDiv.appendChild(b);
+  });
+}
+
+function checkAnswer(ans,correct){
+  const fb=document.getElementById("feedback");
+
+  if(ans===correct){
+    fb.textContent="✅ Excelente conteo";
+    speak("Excelente, contaste muy bien");
+  }else{
+    fb.textContent=`❌ Cortaste ${correct}`;
+    speak(`Cortaste ${correct}, sigue intentando`);
+  }
+
+  setTimeout(()=>{
+    document.getElementById("overlay").style.display="none";
+    document.getElementById("feedback").textContent="";
+    round++;
+    startRound();
+  },15000);
+}
+
+startRound();
+</script>
+</body>
+</html>
