@@ -162,7 +162,7 @@
       right:12px;
       bottom:12px;
 
-      height: calc(var(--touchH) * 2); /* compacto: 2 filas */
+      height: calc(var(--touchH) * 2);
       display:grid;
       grid-template-rows: var(--touchH) var(--touchH);
       gap:10px;
@@ -397,12 +397,12 @@ Nivel 1:
     btn.addEventListener('pointercancel', end);
   });
 
-  // ================= World layout (FIX: no depende del touchpad) =================
+  // ================= World layout =================
   const FLOORS = 10;
   const WORLD = {
     marginX: 50,
     topY: 90,
-    bottomY: () => innerHeight - 40, // ✅ antes restaba 3*90px y rompía el mapa
+    bottomY: () => innerHeight - 40,
   };
 
   function floorY(i){
@@ -427,7 +427,6 @@ Nivel 1:
     return xs[idx];
   }
 
-  // ✅ FIX: radio más grande + subida con cooldown (muy estable en móvil)
   const LADDER_RADIUS = 60;
 
   function isOnLadder(x){
@@ -529,7 +528,6 @@ Nivel 1:
       game.floor += 1;
       tica.y = floorY(game.floor);
       syncUI();
-      // (boss lo dejaremos para después; aquí está el FIX principal)
     }
   }
 
@@ -605,22 +603,33 @@ Nivel 1:
     }
   }
 
-  // ================= Shadow balls =================
+  // ================= Shadow balls (DK style: piso + escaleras) =================
   function spawnBallClimb(){
     const xs = ladderXs();
-    const spawnIdx = randi(0,2);
-    const startX = xs[spawnIdx] + rand(-22,22);
-    const startY = WORLD.topY + 30;
 
-    let dir = 0;
-    if(spawnIdx===0) dir = 1;
-    else if(spawnIdx===2) dir = -1;
-    else dir = (Math.random()<0.5 ? -1 : 1);
+    // empieza en el piso superior (cerca de Shadow)
+    const startFloor = FLOORS;
+    const startY = floorY(startFloor);
+    const startX = xs[1] + rand(-18,18);
 
-    const baseVx = (140 + (game.floor-1)*10) * dir;
-    const baseVy = 260 + (game.floor-1)*18;
+    const dir = (Math.random() < 0.5) ? -1 : 1;
 
-    balls.push({ x:startX, y:startY, vx:baseVx, vy:baseVy, r:18, phase: rand(0, Math.PI*2), t:0, alive:true });
+    // velocidad suave para primaria
+    const speed = 120 + (game.floor-1)*6;
+
+    balls.push({
+      x: startX,
+      y: startY,
+      r: 18,
+      dir,
+      speed,
+      floor: startFloor,
+      state: 'roll',   // 'roll' | 'downLadder'
+      ladderX: null,
+      alive: true,
+      phase: rand(0, Math.PI*2),
+      t: 0
+    });
   }
 
   function ballHitsTica(b){
@@ -647,7 +656,7 @@ Nivel 1:
       // snap to current floor
       tica.y = floorY(game.floor);
 
-      // ✅ FIX: subir/bajar con cooldown (no falla al sostener)
+      // subir/bajar con cooldown
       game.ladderCooldown = Math.max(0, game.ladderCooldown - dt);
       const onLadder = isOnLadder(tica.x);
 
@@ -655,7 +664,7 @@ Nivel 1:
         if(isUp()){
           floorUp();
           sfxHit();
-          game.ladderCooldown = 0.22; // paso estable
+          game.ladderCooldown = 0.22;
         } else if(isDown()){
           floorDown();
           sfxHit();
@@ -664,44 +673,61 @@ Nivel 1:
       }
     }
 
-    // spawn balls
+    // spawn balls (más lento para niños)
     game.spawnT += dt;
-    const interval = clamp(1.10 - (game.floor-1)*0.05, 0.55, 1.10);
+    const interval = clamp(1.55 - (game.floor-1)*0.06, 0.95, 1.55);
     if(game.spawnT >= interval){
       game.spawnT = 0;
       spawnBallClimb();
     }
 
-    // update balls (simplificado igual que tu versión)
+    // === DK balls update ===
+    const xs = ladderXs();
+    const leftBound = minX + 10;
+    const rightBound = maxX - 10;
+
+    const BALL_LADDER_CHANCE = 0.45; // prob de bajar cuando coincide
+    const LADDER_ALIGN = 10;         // tolerancia para enganchar
+
     for(const b of balls){
       b.t += dt;
-      b.x += (b.vx * dt) + Math.sin(b.t*6 + b.phase) * 14 * dt;
-      b.y += (b.vy * dt);
 
-      const top = WORLD.topY + 70;
-      const minX2 = minX, maxX2 = maxX;
+      if(b.state === 'roll'){
+        b.y = floorY(b.floor);
 
-      if(b.y > top){
-        let hitFloor = 1;
-        for(let f=1; f<=FLOORS; f++){
-          if(floorY(f) >= b.y) { hitFloor = f; break; }
-          hitFloor = f;
-        }
-        const fy = floorY(hitFloor);
-        if(b.y >= fy - 3 && b.y <= fy + 24){
-          b.y = fy;
-          b.vy = 40 + rand(0,25);
-          if(b.x < minX2+10){ b.x = minX2+10; b.vx = Math.abs(b.vx); }
-          if(b.x > maxX2-10){ b.x = maxX2-10; b.vx = -Math.abs(b.vx); }
+        b.x += b.dir * b.speed * dt + Math.sin(b.t*6 + b.phase) * 6 * dt;
 
-          const gapX = platformGapXForFloor(hitFloor);
-          if(Math.abs(b.x - gapX) < 38){
-            b.vy = 420;
+        if(b.x <= leftBound){ b.x = leftBound; b.dir = 1; }
+        if(b.x >= rightBound){ b.x = rightBound; b.dir = -1; }
+
+        // bajar por escalera (solo si no está en el piso 1)
+        if(b.floor > 1){
+          for(const lx of xs){
+            if(Math.abs(b.x - lx) <= LADDER_ALIGN){
+              if(Math.random() < BALL_LADDER_CHANCE){
+                b.state = 'downLadder';
+                b.ladderX = lx;
+                b.x = lx; // alinea
+              }
+              break;
+            }
           }
+        }
+      } else if(b.state === 'downLadder'){
+        b.x = b.ladderX;
+        b.y += (170 * dt);
+
+        const nextY = floorY(b.floor - 1);
+        if(b.y >= nextY){
+          b.floor -= 1;
+          b.y = nextY;
+          b.state = 'roll';
+          if(Math.random() < 0.6) b.dir *= -1;
         }
       }
 
-      if(b.y > innerHeight + 120 || b.x < -120 || b.x > innerWidth + 120) b.alive = false;
+      // se “pierde” cuando rueda por el piso 1 y sale de los bordes (igual DK)
+      if(b.x < -140 || b.x > innerWidth + 140) b.alive = false;
 
       if(!question.active && ballHitsTica(b)){
         b.alive = false;
