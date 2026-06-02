@@ -1,78 +1,65 @@
-# ALLPA · Navegador de 100 videos para TikTok
+# ALLPA · 100 guiones TikTok
 
-Página estática para GitHub Pages orientada a posicionar a Stiven Morales como referente de la pequeña avicultura colombiana.
+Versión 2 lista para GitHub Pages.
 
-## Estructura
+## Qué incluye
+
+- 100 ideas de video.
+- 100 guiones editables.
+- Campos de grabación:
+  - Hook
+  - Guion corto
+  - Texto hablado completo
+  - Tomas sugeridas
+  - Texto en pantalla
+  - CTA
+  - Duración objetivo
+- Tracking:
+  - Guion listo
+  - Grabado
+  - Editado
+  - Publicado
+  - Analizado
+- Métricas:
+  - URL TikTok
+  - Vistas
+  - Retención
+  - Likes
+  - Comentarios
+  - Guardados
+  - Compartidos
+  - Leads WhatsApp
+  - Señal de venta
+
+## Publicar en GitHub Pages
+
+Subir esta carpeta al repositorio en una subcarpeta, por ejemplo:
 
 ```text
-allpa-video-strategy-github/
-├── index.html
-├── assets/
-│   ├── css/styles.css
-│   └── js/app.js
-├── data/
-│   ├── categorias.json
-│   ├── ideas-videos.json
-│   ├── metricas-videos.json
-│   └── aprendizajes.json
-└── README.md
+/tiktok/
 ```
 
-## Cómo usar en GitHub
+La URL sería:
 
-1. Crear un repositorio en GitHub, por ejemplo: `allpa-video-strategy`.
-2. Subir todos los archivos de esta carpeta.
-3. Entrar a **Settings → Pages**.
-4. En **Build and deployment**, seleccionar:
-   - Source: `Deploy from a branch`
-   - Branch: `main`
-   - Folder: `/root`
-5. Guardar. GitHub publicará la página.
-
-## Cómo alimentar la estrategia
-
-### Categorías
-Editar `data/categorias.json` para agregar:
-- Dream Outcomes.
-- Productos Allpa.
-- Capítulos de historia.
-- Principios de persuasión.
-- Estados.
-- Formatos.
-
-### Ideas de video
-Editar `data/ideas-videos.json`.
-
-Cada video debe tener:
-- `dream_outcome_id`
-- `historia_id`
-- `persuasion_id`
-- `producto_id`
-- `estado`
-- `guion`
-- `relacionados`
-
-### Métricas
-Editar `data/metricas-videos.json` después de publicar cada video.
-
-Campos clave:
-- `url_tiktok`
-- `vistas`
-- `retencion_porcentaje`
-- `likes`
-- `comentarios`
-- `guardados`
-- `compartidos`
-- `leads_whatsapp`
-- `senal_venta`
+```text
+https://TU-USUARIO.github.io/TU-REPOSITORIO/tiktok/
+```
 
 ## Importante
 
-La página permite cambios locales usando `localStorage`. Para conservarlos:
-1. Usar el botón **Exportar datos**.
-2. Guardar el JSON.
-3. Luego copiar los cambios importantes en los archivos `data/*.json` del repositorio.
+La página guarda los cambios en el navegador mediante localStorage.
+Para conservarlos fuera del computador:
 
-## Próxima mejora recomendada
+1. Hacer clic en Exportar datos.
+2. Guardar el archivo JSON.
+3. Reemplazar los datos del repositorio cuando sea necesario.
 
-Conectar la página a Google Sheets o usar GitHub Issues/Actions para subir métricas sin editar JSON manualmente.
+## Recomendación para grabar mañana
+
+Empezar por la vista **Modo grabación** y grabar en bloques de 10 videos:
+
+1. Dolor físico: pelado manual.
+2. Planta Emprendedor.
+3. Crecer sin endeudarse.
+4. Temperatura e IoT.
+5. Programa Allpa Crece.

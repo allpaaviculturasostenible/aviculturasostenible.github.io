@@ -3,19 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ALLPA · Estrategia TikTok</title>
+<title>ALLPA · 100 guiones TikTok</title>
 <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
 <header>
-<h1>ALLPA · Navegador de 100 videos</h1>
-<p>Calendario estratégico para posicionar a Stiven Morales como referente de la pequeña avicultura colombiana. La página lee datos desde archivos JSON y permite registrar avances y métricas localmente para luego exportarlos.</p>
+<h1>ALLPA · 100 guiones para TikTok</h1>
+<p>Banco editable de ideas, guiones y métricas para posicionar a Stiven Morales como referente de la pequeña avicultura colombiana. Diseñado para iniciar grabaciones mañana y alimentar datos después de publicar.</p>
 </header>
 
 <div class="wrap">
 <aside class="panel">
   <h2>Filtros</h2>
-  <label>Buscar idea</label>
+  <label>Buscar idea o guion</label>
   <input id="search" placeholder="Ej: pelar, temperatura, planta...">
   <label>Dream Outcome</label>
   <select id="dream"><option value="">Todos</option></select>
@@ -35,19 +35,21 @@
   </div>
   <hr>
   <h3>Flujo</h3>
-  <p class="small">Idea → Guion → Grabado → Editado → Publicado → Analizado.</p>
+  <p class="small">Guion listo → Grabado → Editado → Publicado → Analizado.</p>
+  <p class="small">Los cambios se guardan en el navegador. Usa Exportar para respaldar y luego actualizar los JSON del repositorio.</p>
 </aside>
 
 <main class="maincard">
   <section class="kpis">
     <div class="kpi"><b id="kpiTotal">0</b>Total ideas</div>
+    <div class="kpi"><b id="kpiReady">0</b>Guiones listos</div>
     <div class="kpi"><b id="kpiPublished">0</b>Publicados</div>
     <div class="kpi"><b id="kpiLeads">0</b>Leads</div>
-    <div class="kpi"><b id="kpiHigh">0</b>Señales altas</div>
     <div class="kpi"><b id="kpiAnalyzed">0</b>Analizados</div>
   </section>
   <div class="tabs">
     <button class="tab active" onclick="setView('cards',this)">Tarjetas</button>
+    <button class="tab" onclick="setView('recording',this)">Modo grabación</button>
     <button class="tab" onclick="setView('calendar',this)">Calendario</button>
     <button class="tab" onclick="setView('strategy',this)">Mapa estratégico</button>
     <button class="tab" onclick="setView('learning',this)">Aprendizajes</button>

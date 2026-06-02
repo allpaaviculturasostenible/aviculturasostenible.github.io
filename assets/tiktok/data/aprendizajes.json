@@ -2,10 +2,10 @@
   {
     "id": 1,
     "fecha": "",
-    "hallazgo": "Ejemplo: los videos que muestran el dolor físico del pelado generan más comentarios.",
-    "dream_outcome_id": "salud",
-    "producto_id": "peladora_taladro",
-    "accion_recomendada": "Crear más videos comparando pelado manual vs peladora Allpa.",
+    "hallazgo": "Registrar aquí qué Dream Outcome genera más comentarios, leads o señales de venta.",
+    "dream_outcome_id": "libertad",
+    "producto_id": "planta_emprendedor",
+    "accion_recomendada": "Después de publicar 10 videos, revisar cuáles tuvieron mayor retención y repetir la estructura ganadora.",
     "estado": "Pendiente"
   }
 ]

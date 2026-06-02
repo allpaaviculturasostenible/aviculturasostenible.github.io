@@ -185,7 +185,7 @@
   ],
   "estados": [
     "Idea",
-    "Guion",
+    "Guion listo",
     "Grabado",
     "Editado",
     "Publicado",
@@ -197,5 +197,11 @@
     "Demostración de máquina",
     "Comparación antes/después",
     "Respuesta a objeción"
+  ],
+  "duraciones": [
+    "30 segundos",
+    "45 segundos",
+    "60 segundos",
+    "90 segundos"
   ]
 }
