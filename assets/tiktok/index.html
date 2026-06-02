@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ALLPA · Estrategia TikTok</title>
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+<header>
+<h1>ALLPA · Navegador de 100 videos</h1>
+<p>Calendario estratégico para posicionar a Stiven Morales como referente de la pequeña avicultura colombiana. La página lee datos desde archivos JSON y permite registrar avances y métricas localmente para luego exportarlos.</p>
+</header>
+
+<div class="wrap">
+<aside class="panel">
+  <h2>Filtros</h2>
+  <label>Buscar idea</label>
+  <input id="search" placeholder="Ej: pelar, temperatura, planta...">
+  <label>Dream Outcome</label>
+  <select id="dream"><option value="">Todos</option></select>
+  <label>Historia Allpa</label>
+  <select id="story"><option value="">Todas</option></select>
+  <label>Persuasión</label>
+  <select id="persuasion"><option value="">Todas</option></select>
+  <label>Producto Allpa</label>
+  <select id="product"><option value="">Todos</option></select>
+  <label>Estado</label>
+  <select id="status"><option value="">Todos</option></select>
+  <div class="footer-actions">
+    <button onclick="exportData()">Exportar datos</button>
+    <button class="secondary" onclick="document.getElementById('importFile').click()">Importar</button>
+    <button class="red" onclick="resetLocal()">Reiniciar local</button>
+    <input type="file" id="importFile" hidden accept="application/json">
+  </div>
+  <hr>
+  <h3>Flujo</h3>
+  <p class="small">Idea → Guion → Grabado → Editado → Publicado → Analizado.</p>
+</aside>
+
+<main class="maincard">
+  <section class="kpis">
+    <div class="kpi"><b id="kpiTotal">0</b>Total ideas</div>
+    <div class="kpi"><b id="kpiPublished">0</b>Publicados</div>
+    <div class="kpi"><b id="kpiLeads">0</b>Leads</div>
+    <div class="kpi"><b id="kpiHigh">0</b>Señales altas</div>
+    <div class="kpi"><b id="kpiAnalyzed">0</b>Analizados</div>
+  </section>
+  <div class="tabs">
+    <button class="tab active" onclick="setView('cards',this)">Tarjetas</button>
+    <button class="tab" onclick="setView('calendar',this)">Calendario</button>
+    <button class="tab" onclick="setView('strategy',this)">Mapa estratégico</button>
+    <button class="tab" onclick="setView('learning',this)">Aprendizajes</button>
+  </div>
+  <div id="content"></div>
+</main>
+</div>
+<script src="assets/js/app.js"></script>
+</body>
+</html>

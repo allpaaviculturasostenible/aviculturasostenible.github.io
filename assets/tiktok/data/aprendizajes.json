@@ -1,0 +1,11 @@
+[
+  {
+    "id": 1,
+    "fecha": "",
+    "hallazgo": "Ejemplo: los videos que muestran el dolor físico del pelado generan más comentarios.",
+    "dream_outcome_id": "salud",
+    "producto_id": "peladora_taladro",
+    "accion_recomendada": "Crear más videos comparando pelado manual vs peladora Allpa.",
+    "estado": "Pendiente"
+  }
+]

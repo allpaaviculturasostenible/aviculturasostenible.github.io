@@ -1,0 +1,2782 @@
+[
+  {
+    "id": 1,
+    "semana": 1,
+    "dia": "Lunes",
+    "titulo": "¿Todavía pelas pollos a mano?",
+    "hook_base": "¿Todavía pelas pollos a mano?",
+    "dream_outcome_id": "salud",
+    "historia_id": "dolor",
+    "persuasion_id": "empatia",
+    "producto_id": "peladora_taladro",
+    "formato": "Hook educativo",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      11
+    ],
+    "notas": ""
+  },
+  {
+    "id": 2,
+    "semana": 1,
+    "dia": "Martes",
+    "titulo": "El pequeño avicultor no necesita una planta de 100 millones",
+    "hook_base": "El pequeño avicultor no necesita una planta de 100 millones",
+    "dream_outcome_id": "sin_deuda",
+    "historia_id": "planta_emprendedor",
+    "persuasion_id": "oferta",
+    "producto_id": "planta_emprendedor",
+    "formato": "Historia de Stiven",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      12
+    ],
+    "notas": ""
+  },
+  {
+    "id": 3,
+    "semana": 1,
+    "dia": "Miércoles",
+    "titulo": "Así se empieza una planta avícola con pocos equipos",
+    "hook_base": "Así se empieza una planta avícola con pocos equipos",
+    "dream_outcome_id": "empresa",
+    "historia_id": "planta_emprendedor",
+    "persuasion_id": "mecanismo",
+    "producto_id": "planta_emprendedor",
+    "formato": "Demostración de máquina",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      13
+    ],
+    "notas": ""
+  },
+  {
+    "id": 4,
+    "semana": 1,
+    "dia": "Jueves",
+    "titulo": "Lo que nadie te dice de procesar pollos a mano",
+    "hook_base": "Lo que nadie te dice de procesar pollos a mano",
+    "dream_outcome_id": "libertad",
+    "historia_id": "dolor",
+    "persuasion_id": "menos_esfuerzo",
+    "producto_id": "conos",
+    "formato": "Comparación antes/después",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      14
+    ],
+    "notas": ""
+  },
+  {
+    "id": 5,
+    "semana": 1,
+    "dia": "Viernes",
+    "titulo": "Una noche sin control de temperatura puede costarte el lote",
+    "hook_base": "Una noche sin control de temperatura puede costarte el lote",
+    "dream_outcome_id": "tranquilidad",
+    "historia_id": "iot",
+    "persuasion_id": "probabilidad",
+    "producto_id": "cuna",
+    "formato": "Respuesta a objeción",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      15
+    ],
+    "notas": ""
+  },
+  {
+    "id": 6,
+    "semana": 2,
+    "dia": "Lunes",
+    "titulo": "El error que hace que tu pollo pierda presentación",
+    "hook_base": "El error que hace que tu pollo pierda presentación",
+    "dream_outcome_id": "profesional",
+    "historia_id": "procesamiento",
+    "persuasion_id": "prueba",
+    "producto_id": "escaldador_1",
+    "formato": "Hook educativo",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      16
+    ],
+    "notas": ""
+  },
+  {
+    "id": 7,
+    "semana": 2,
+    "dia": "Martes",
+    "titulo": "Del lote pequeño a la planta organizada",
+    "hook_base": "Del lote pequeño a la planta organizada",
+    "dream_outcome_id": "empresa",
+    "historia_id": "vision",
+    "persuasion_id": "dream",
+    "producto_id": "planta_inicial",
+    "formato": "Historia de Stiven",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      17
+    ],
+    "notas": ""
+  },
+  {
+    "id": 8,
+    "semana": 2,
+    "dia": "Miércoles",
+    "titulo": "Por qué Allpa no vende máquinas, vende crecimiento",
+    "hook_base": "Por qué Allpa no vende máquinas, vende crecimiento",
+    "dream_outcome_id": "sin_deuda",
+    "historia_id": "allpa_crece",
+    "persuasion_id": "mecanismo",
+    "producto_id": "allpa_crece",
+    "formato": "Demostración de máquina",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      18
+    ],
+    "notas": ""
+  },
+  {
+    "id": 9,
+    "semana": 2,
+    "dia": "Jueves",
+    "titulo": "Cómo procesar más pollos sin destruir tu cuerpo",
+    "hook_base": "Cómo procesar más pollos sin destruir tu cuerpo",
+    "dream_outcome_id": "salud",
+    "historia_id": "procesamiento",
+    "persuasion_id": "menos_esfuerzo",
+    "producto_id": "peladora_motor",
+    "formato": "Comparación antes/después",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      19
+    ],
+    "notas": ""
+  },
+  {
+    "id": 10,
+    "semana": 2,
+    "dia": "Viernes",
+    "titulo": "La diferencia entre productor artesanal y empresa avícola",
+    "hook_base": "La diferencia entre productor artesanal y empresa avícola",
+    "dream_outcome_id": "respeto",
+    "historia_id": "vision",
+    "persuasion_id": "autoridad",
+    "producto_id": "planta_inicial",
+    "formato": "Respuesta a objeción",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      20
+    ],
+    "notas": ""
+  },
+  {
+    "id": 11,
+    "semana": 3,
+    "dia": "Lunes",
+    "titulo": "¿Todavía pelas pollos a mano? · Parte 2",
+    "hook_base": "¿Todavía pelas pollos a mano?",
+    "dream_outcome_id": "salud",
+    "historia_id": "dolor",
+    "persuasion_id": "empatia",
+    "producto_id": "peladora_taladro",
+    "formato": "Hook educativo",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      1,
+      21
+    ],
+    "notas": ""
+  },
+  {
+    "id": 12,
+    "semana": 3,
+    "dia": "Martes",
+    "titulo": "El pequeño avicultor no necesita una planta de 100 millones · Parte 2",
+    "hook_base": "El pequeño avicultor no necesita una planta de 100 millones",
+    "dream_outcome_id": "sin_deuda",
+    "historia_id": "planta_emprendedor",
+    "persuasion_id": "oferta",
+    "producto_id": "planta_emprendedor",
+    "formato": "Historia de Stiven",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      2,
+      22
+    ],
+    "notas": ""
+  },
+  {
+    "id": 13,
+    "semana": 3,
+    "dia": "Miércoles",
+    "titulo": "Así se empieza una planta avícola con pocos equipos · Parte 2",
+    "hook_base": "Así se empieza una planta avícola con pocos equipos",
+    "dream_outcome_id": "empresa",
+    "historia_id": "planta_emprendedor",
+    "persuasion_id": "mecanismo",
+    "producto_id": "planta_emprendedor",
+    "formato": "Demostración de máquina",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      3,
+      23
+    ],
+    "notas": ""
+  },
+  {
+    "id": 14,
+    "semana": 3,
+    "dia": "Jueves",
+    "titulo": "Lo que nadie te dice de procesar pollos a mano · Parte 2",
+    "hook_base": "Lo que nadie te dice de procesar pollos a mano",
+    "dream_outcome_id": "libertad",
+    "historia_id": "dolor",
+    "persuasion_id": "menos_esfuerzo",
+    "producto_id": "conos",
+    "formato": "Comparación antes/después",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      4,
+      24
+    ],
+    "notas": ""
+  },
+  {
+    "id": 15,
+    "semana": 3,
+    "dia": "Viernes",
+    "titulo": "Una noche sin control de temperatura puede costarte el lote · Parte 2",
+    "hook_base": "Una noche sin control de temperatura puede costarte el lote",
+    "dream_outcome_id": "tranquilidad",
+    "historia_id": "iot",
+    "persuasion_id": "probabilidad",
+    "producto_id": "cuna",
+    "formato": "Respuesta a objeción",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      5,
+      25
+    ],
+    "notas": ""
+  },
+  {
+    "id": 16,
+    "semana": 4,
+    "dia": "Lunes",
+    "titulo": "El error que hace que tu pollo pierda presentación · Parte 2",
+    "hook_base": "El error que hace que tu pollo pierda presentación",
+    "dream_outcome_id": "profesional",
+    "historia_id": "procesamiento",
+    "persuasion_id": "prueba",
+    "producto_id": "escaldador_1",
+    "formato": "Hook educativo",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      6,
+      26
+    ],
+    "notas": ""
+  },
+  {
+    "id": 17,
+    "semana": 4,
+    "dia": "Martes",
+    "titulo": "Del lote pequeño a la planta organizada · Parte 2",
+    "hook_base": "Del lote pequeño a la planta organizada",
+    "dream_outcome_id": "empresa",
+    "historia_id": "vision",
+    "persuasion_id": "dream",
+    "producto_id": "planta_inicial",
+    "formato": "Historia de Stiven",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      7,
+      27
+    ],
+    "notas": ""
+  },
+  {
+    "id": 18,
+    "semana": 4,
+    "dia": "Miércoles",
+    "titulo": "Por qué Allpa no vende máquinas, vende crecimiento · Parte 2",
+    "hook_base": "Por qué Allpa no vende máquinas, vende crecimiento",
+    "dream_outcome_id": "sin_deuda",
+    "historia_id": "allpa_crece",
+    "persuasion_id": "mecanismo",
+    "producto_id": "allpa_crece",
+    "formato": "Demostración de máquina",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      8,
+      28
+    ],
+    "notas": ""
+  },
+  {
+    "id": 19,
+    "semana": 4,
+    "dia": "Jueves",
+    "titulo": "Cómo procesar más pollos sin destruir tu cuerpo · Parte 2",
+    "hook_base": "Cómo procesar más pollos sin destruir tu cuerpo",
+    "dream_outcome_id": "salud",
+    "historia_id": "procesamiento",
+    "persuasion_id": "menos_esfuerzo",
+    "producto_id": "peladora_motor",
+    "formato": "Comparación antes/después",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      9,
+      29
+    ],
+    "notas": ""
+  },
+  {
+    "id": 20,
+    "semana": 4,
+    "dia": "Viernes",
+    "titulo": "La diferencia entre productor artesanal y empresa avícola · Parte 2",
+    "hook_base": "La diferencia entre productor artesanal y empresa avícola",
+    "dream_outcome_id": "respeto",
+    "historia_id": "vision",
+    "persuasion_id": "autoridad",
+    "producto_id": "planta_inicial",
+    "formato": "Respuesta a objeción",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      10,
+      30
+    ],
+    "notas": ""
+  },
+  {
+    "id": 21,
+    "semana": 5,
+    "dia": "Lunes",
+    "titulo": "¿Todavía pelas pollos a mano? · Parte 3",
+    "hook_base": "¿Todavía pelas pollos a mano?",
+    "dream_outcome_id": "salud",
+    "historia_id": "dolor",
+    "persuasion_id": "empatia",
+    "producto_id": "peladora_taladro",
+    "formato": "Hook educativo",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      11,
+      31
+    ],
+    "notas": ""
+  },
+  {
+    "id": 22,
+    "semana": 5,
+    "dia": "Martes",
+    "titulo": "El pequeño avicultor no necesita una planta de 100 millones · Parte 3",
+    "hook_base": "El pequeño avicultor no necesita una planta de 100 millones",
+    "dream_outcome_id": "sin_deuda",
+    "historia_id": "planta_emprendedor",
+    "persuasion_id": "oferta",
+    "producto_id": "planta_emprendedor",
+    "formato": "Historia de Stiven",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      12,
+      32
+    ],
+    "notas": ""
+  },
+  {
+    "id": 23,
+    "semana": 5,
+    "dia": "Miércoles",
+    "titulo": "Así se empieza una planta avícola con pocos equipos · Parte 3",
+    "hook_base": "Así se empieza una planta avícola con pocos equipos",
+    "dream_outcome_id": "empresa",
+    "historia_id": "planta_emprendedor",
+    "persuasion_id": "mecanismo",
+    "producto_id": "planta_emprendedor",
+    "formato": "Demostración de máquina",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      13,
+      33
+    ],
+    "notas": ""
+  },
+  {
+    "id": 24,
+    "semana": 5,
+    "dia": "Jueves",
+    "titulo": "Lo que nadie te dice de procesar pollos a mano · Parte 3",
+    "hook_base": "Lo que nadie te dice de procesar pollos a mano",
+    "dream_outcome_id": "libertad",
+    "historia_id": "dolor",
+    "persuasion_id": "menos_esfuerzo",
+    "producto_id": "conos",
+    "formato": "Comparación antes/después",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      14,
+      34
+    ],
+    "notas": ""
+  },
+  {
+    "id": 25,
+    "semana": 5,
+    "dia": "Viernes",
+    "titulo": "Una noche sin control de temperatura puede costarte el lote · Parte 3",
+    "hook_base": "Una noche sin control de temperatura puede costarte el lote",
+    "dream_outcome_id": "tranquilidad",
+    "historia_id": "iot",
+    "persuasion_id": "probabilidad",
+    "producto_id": "cuna",
+    "formato": "Respuesta a objeción",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      15,
+      35
+    ],
+    "notas": ""
+  },
+  {
+    "id": 26,
+    "semana": 6,
+    "dia": "Lunes",
+    "titulo": "El error que hace que tu pollo pierda presentación · Parte 3",
+    "hook_base": "El error que hace que tu pollo pierda presentación",
+    "dream_outcome_id": "profesional",
+    "historia_id": "procesamiento",
+    "persuasion_id": "prueba",
+    "producto_id": "escaldador_1",
+    "formato": "Hook educativo",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      16,
+      36
+    ],
+    "notas": ""
+  },
+  {
+    "id": 27,
+    "semana": 6,
+    "dia": "Martes",
+    "titulo": "Del lote pequeño a la planta organizada · Parte 3",
+    "hook_base": "Del lote pequeño a la planta organizada",
+    "dream_outcome_id": "empresa",
+    "historia_id": "vision",
+    "persuasion_id": "dream",
+    "producto_id": "planta_inicial",
+    "formato": "Historia de Stiven",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      17,
+      37
+    ],
+    "notas": ""
+  },
+  {
+    "id": 28,
+    "semana": 6,
+    "dia": "Miércoles",
+    "titulo": "Por qué Allpa no vende máquinas, vende crecimiento · Parte 3",
+    "hook_base": "Por qué Allpa no vende máquinas, vende crecimiento",
+    "dream_outcome_id": "sin_deuda",
+    "historia_id": "allpa_crece",
+    "persuasion_id": "mecanismo",
+    "producto_id": "allpa_crece",
+    "formato": "Demostración de máquina",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      18,
+      38
+    ],
+    "notas": ""
+  },
+  {
+    "id": 29,
+    "semana": 6,
+    "dia": "Jueves",
+    "titulo": "Cómo procesar más pollos sin destruir tu cuerpo · Parte 3",
+    "hook_base": "Cómo procesar más pollos sin destruir tu cuerpo",
+    "dream_outcome_id": "salud",
+    "historia_id": "procesamiento",
+    "persuasion_id": "menos_esfuerzo",
+    "producto_id": "peladora_motor",
+    "formato": "Comparación antes/después",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      19,
+      39
+    ],
+    "notas": ""
+  },
+  {
+    "id": 30,
+    "semana": 6,
+    "dia": "Viernes",
+    "titulo": "La diferencia entre productor artesanal y empresa avícola · Parte 3",
+    "hook_base": "La diferencia entre productor artesanal y empresa avícola",
+    "dream_outcome_id": "respeto",
+    "historia_id": "vision",
+    "persuasion_id": "autoridad",
+    "producto_id": "planta_inicial",
+    "formato": "Respuesta a objeción",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      20,
+      40
+    ],
+    "notas": ""
+  },
+  {
+    "id": 31,
+    "semana": 7,
+    "dia": "Lunes",
+    "titulo": "¿Todavía pelas pollos a mano? · Parte 4",
+    "hook_base": "¿Todavía pelas pollos a mano?",
+    "dream_outcome_id": "salud",
+    "historia_id": "dolor",
+    "persuasion_id": "empatia",
+    "producto_id": "peladora_taladro",
+    "formato": "Hook educativo",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      21,
+      41
+    ],
+    "notas": ""
+  },
+  {
+    "id": 32,
+    "semana": 7,
+    "dia": "Martes",
+    "titulo": "El pequeño avicultor no necesita una planta de 100 millones · Parte 4",
+    "hook_base": "El pequeño avicultor no necesita una planta de 100 millones",
+    "dream_outcome_id": "sin_deuda",
+    "historia_id": "planta_emprendedor",
+    "persuasion_id": "oferta",
+    "producto_id": "planta_emprendedor",
+    "formato": "Historia de Stiven",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      22,
+      42
+    ],
+    "notas": ""
+  },
+  {
+    "id": 33,
+    "semana": 7,
+    "dia": "Miércoles",
+    "titulo": "Así se empieza una planta avícola con pocos equipos · Parte 4",
+    "hook_base": "Así se empieza una planta avícola con pocos equipos",
+    "dream_outcome_id": "empresa",
+    "historia_id": "planta_emprendedor",
+    "persuasion_id": "mecanismo",
+    "producto_id": "planta_emprendedor",
+    "formato": "Demostración de máquina",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      23,
+      43
+    ],
+    "notas": ""
+  },
+  {
+    "id": 34,
+    "semana": 7,
+    "dia": "Jueves",
+    "titulo": "Lo que nadie te dice de procesar pollos a mano · Parte 4",
+    "hook_base": "Lo que nadie te dice de procesar pollos a mano",
+    "dream_outcome_id": "libertad",
+    "historia_id": "dolor",
+    "persuasion_id": "menos_esfuerzo",
+    "producto_id": "conos",
+    "formato": "Comparación antes/después",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      24,
+      44
+    ],
+    "notas": ""
+  },
+  {
+    "id": 35,
+    "semana": 7,
+    "dia": "Viernes",
+    "titulo": "Una noche sin control de temperatura puede costarte el lote · Parte 4",
+    "hook_base": "Una noche sin control de temperatura puede costarte el lote",
+    "dream_outcome_id": "tranquilidad",
+    "historia_id": "iot",
+    "persuasion_id": "probabilidad",
+    "producto_id": "cuna",
+    "formato": "Respuesta a objeción",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      25,
+      45
+    ],
+    "notas": ""
+  },
+  {
+    "id": 36,
+    "semana": 8,
+    "dia": "Lunes",
+    "titulo": "El error que hace que tu pollo pierda presentación · Parte 4",
+    "hook_base": "El error que hace que tu pollo pierda presentación",
+    "dream_outcome_id": "profesional",
+    "historia_id": "procesamiento",
+    "persuasion_id": "prueba",
+    "producto_id": "escaldador_1",
+    "formato": "Hook educativo",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      26,
+      46
+    ],
+    "notas": ""
+  },
+  {
+    "id": 37,
+    "semana": 8,
+    "dia": "Martes",
+    "titulo": "Del lote pequeño a la planta organizada · Parte 4",
+    "hook_base": "Del lote pequeño a la planta organizada",
+    "dream_outcome_id": "empresa",
+    "historia_id": "vision",
+    "persuasion_id": "dream",
+    "producto_id": "planta_inicial",
+    "formato": "Historia de Stiven",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      27,
+      47
+    ],
+    "notas": ""
+  },
+  {
+    "id": 38,
+    "semana": 8,
+    "dia": "Miércoles",
+    "titulo": "Por qué Allpa no vende máquinas, vende crecimiento · Parte 4",
+    "hook_base": "Por qué Allpa no vende máquinas, vende crecimiento",
+    "dream_outcome_id": "sin_deuda",
+    "historia_id": "allpa_crece",
+    "persuasion_id": "mecanismo",
+    "producto_id": "allpa_crece",
+    "formato": "Demostración de máquina",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      28,
+      48
+    ],
+    "notas": ""
+  },
+  {
+    "id": 39,
+    "semana": 8,
+    "dia": "Jueves",
+    "titulo": "Cómo procesar más pollos sin destruir tu cuerpo · Parte 4",
+    "hook_base": "Cómo procesar más pollos sin destruir tu cuerpo",
+    "dream_outcome_id": "salud",
+    "historia_id": "procesamiento",
+    "persuasion_id": "menos_esfuerzo",
+    "producto_id": "peladora_motor",
+    "formato": "Comparación antes/después",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      29,
+      49
+    ],
+    "notas": ""
+  },
+  {
+    "id": 40,
+    "semana": 8,
+    "dia": "Viernes",
+    "titulo": "La diferencia entre productor artesanal y empresa avícola · Parte 4",
+    "hook_base": "La diferencia entre productor artesanal y empresa avícola",
+    "dream_outcome_id": "respeto",
+    "historia_id": "vision",
+    "persuasion_id": "autoridad",
+    "producto_id": "planta_inicial",
+    "formato": "Respuesta a objeción",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      30,
+      50
+    ],
+    "notas": ""
+  },
+  {
+    "id": 41,
+    "semana": 9,
+    "dia": "Lunes",
+    "titulo": "¿Todavía pelas pollos a mano? · Parte 5",
+    "hook_base": "¿Todavía pelas pollos a mano?",
+    "dream_outcome_id": "salud",
+    "historia_id": "dolor",
+    "persuasion_id": "empatia",
+    "producto_id": "peladora_taladro",
+    "formato": "Hook educativo",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      31,
+      51
+    ],
+    "notas": ""
+  },
+  {
+    "id": 42,
+    "semana": 9,
+    "dia": "Martes",
+    "titulo": "El pequeño avicultor no necesita una planta de 100 millones · Parte 5",
+    "hook_base": "El pequeño avicultor no necesita una planta de 100 millones",
+    "dream_outcome_id": "sin_deuda",
+    "historia_id": "planta_emprendedor",
+    "persuasion_id": "oferta",
+    "producto_id": "planta_emprendedor",
+    "formato": "Historia de Stiven",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      32,
+      52
+    ],
+    "notas": ""
+  },
+  {
+    "id": 43,
+    "semana": 9,
+    "dia": "Miércoles",
+    "titulo": "Así se empieza una planta avícola con pocos equipos · Parte 5",
+    "hook_base": "Así se empieza una planta avícola con pocos equipos",
+    "dream_outcome_id": "empresa",
+    "historia_id": "planta_emprendedor",
+    "persuasion_id": "mecanismo",
+    "producto_id": "planta_emprendedor",
+    "formato": "Demostración de máquina",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      33,
+      53
+    ],
+    "notas": ""
+  },
+  {
+    "id": 44,
+    "semana": 9,
+    "dia": "Jueves",
+    "titulo": "Lo que nadie te dice de procesar pollos a mano · Parte 5",
+    "hook_base": "Lo que nadie te dice de procesar pollos a mano",
+    "dream_outcome_id": "libertad",
+    "historia_id": "dolor",
+    "persuasion_id": "menos_esfuerzo",
+    "producto_id": "conos",
+    "formato": "Comparación antes/después",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      34,
+      54
+    ],
+    "notas": ""
+  },
+  {
+    "id": 45,
+    "semana": 9,
+    "dia": "Viernes",
+    "titulo": "Una noche sin control de temperatura puede costarte el lote · Parte 5",
+    "hook_base": "Una noche sin control de temperatura puede costarte el lote",
+    "dream_outcome_id": "tranquilidad",
+    "historia_id": "iot",
+    "persuasion_id": "probabilidad",
+    "producto_id": "cuna",
+    "formato": "Respuesta a objeción",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      35,
+      55
+    ],
+    "notas": ""
+  },
+  {
+    "id": 46,
+    "semana": 10,
+    "dia": "Lunes",
+    "titulo": "El error que hace que tu pollo pierda presentación · Parte 5",
+    "hook_base": "El error que hace que tu pollo pierda presentación",
+    "dream_outcome_id": "profesional",
+    "historia_id": "procesamiento",
+    "persuasion_id": "prueba",
+    "producto_id": "escaldador_1",
+    "formato": "Hook educativo",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      36,
+      56
+    ],
+    "notas": ""
+  },
+  {
+    "id": 47,
+    "semana": 10,
+    "dia": "Martes",
+    "titulo": "Del lote pequeño a la planta organizada · Parte 5",
+    "hook_base": "Del lote pequeño a la planta organizada",
+    "dream_outcome_id": "empresa",
+    "historia_id": "vision",
+    "persuasion_id": "dream",
+    "producto_id": "planta_inicial",
+    "formato": "Historia de Stiven",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      37,
+      57
+    ],
+    "notas": ""
+  },
+  {
+    "id": 48,
+    "semana": 10,
+    "dia": "Miércoles",
+    "titulo": "Por qué Allpa no vende máquinas, vende crecimiento · Parte 5",
+    "hook_base": "Por qué Allpa no vende máquinas, vende crecimiento",
+    "dream_outcome_id": "sin_deuda",
+    "historia_id": "allpa_crece",
+    "persuasion_id": "mecanismo",
+    "producto_id": "allpa_crece",
+    "formato": "Demostración de máquina",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      38,
+      58
+    ],
+    "notas": ""
+  },
+  {
+    "id": 49,
+    "semana": 10,
+    "dia": "Jueves",
+    "titulo": "Cómo procesar más pollos sin destruir tu cuerpo · Parte 5",
+    "hook_base": "Cómo procesar más pollos sin destruir tu cuerpo",
+    "dream_outcome_id": "salud",
+    "historia_id": "procesamiento",
+    "persuasion_id": "menos_esfuerzo",
+    "producto_id": "peladora_motor",
+    "formato": "Comparación antes/después",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      39,
+      59
+    ],
+    "notas": ""
+  },
+  {
+    "id": 50,
+    "semana": 10,
+    "dia": "Viernes",
+    "titulo": "La diferencia entre productor artesanal y empresa avícola · Parte 5",
+    "hook_base": "La diferencia entre productor artesanal y empresa avícola",
+    "dream_outcome_id": "respeto",
+    "historia_id": "vision",
+    "persuasion_id": "autoridad",
+    "producto_id": "planta_inicial",
+    "formato": "Respuesta a objeción",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      40,
+      60
+    ],
+    "notas": ""
+  },
+  {
+    "id": 51,
+    "semana": 11,
+    "dia": "Lunes",
+    "titulo": "¿Todavía pelas pollos a mano? · Parte 6",
+    "hook_base": "¿Todavía pelas pollos a mano?",
+    "dream_outcome_id": "salud",
+    "historia_id": "dolor",
+    "persuasion_id": "empatia",
+    "producto_id": "peladora_taladro",
+    "formato": "Hook educativo",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      41,
+      61
+    ],
+    "notas": ""
+  },
+  {
+    "id": 52,
+    "semana": 11,
+    "dia": "Martes",
+    "titulo": "El pequeño avicultor no necesita una planta de 100 millones · Parte 6",
+    "hook_base": "El pequeño avicultor no necesita una planta de 100 millones",
+    "dream_outcome_id": "sin_deuda",
+    "historia_id": "planta_emprendedor",
+    "persuasion_id": "oferta",
+    "producto_id": "planta_emprendedor",
+    "formato": "Historia de Stiven",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      42,
+      62
+    ],
+    "notas": ""
+  },
+  {
+    "id": 53,
+    "semana": 11,
+    "dia": "Miércoles",
+    "titulo": "Así se empieza una planta avícola con pocos equipos · Parte 6",
+    "hook_base": "Así se empieza una planta avícola con pocos equipos",
+    "dream_outcome_id": "empresa",
+    "historia_id": "planta_emprendedor",
+    "persuasion_id": "mecanismo",
+    "producto_id": "planta_emprendedor",
+    "formato": "Demostración de máquina",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      43,
+      63
+    ],
+    "notas": ""
+  },
+  {
+    "id": 54,
+    "semana": 11,
+    "dia": "Jueves",
+    "titulo": "Lo que nadie te dice de procesar pollos a mano · Parte 6",
+    "hook_base": "Lo que nadie te dice de procesar pollos a mano",
+    "dream_outcome_id": "libertad",
+    "historia_id": "dolor",
+    "persuasion_id": "menos_esfuerzo",
+    "producto_id": "conos",
+    "formato": "Comparación antes/después",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      44,
+      64
+    ],
+    "notas": ""
+  },
+  {
+    "id": 55,
+    "semana": 11,
+    "dia": "Viernes",
+    "titulo": "Una noche sin control de temperatura puede costarte el lote · Parte 6",
+    "hook_base": "Una noche sin control de temperatura puede costarte el lote",
+    "dream_outcome_id": "tranquilidad",
+    "historia_id": "iot",
+    "persuasion_id": "probabilidad",
+    "producto_id": "cuna",
+    "formato": "Respuesta a objeción",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      45,
+      65
+    ],
+    "notas": ""
+  },
+  {
+    "id": 56,
+    "semana": 12,
+    "dia": "Lunes",
+    "titulo": "El error que hace que tu pollo pierda presentación · Parte 6",
+    "hook_base": "El error que hace que tu pollo pierda presentación",
+    "dream_outcome_id": "profesional",
+    "historia_id": "procesamiento",
+    "persuasion_id": "prueba",
+    "producto_id": "escaldador_1",
+    "formato": "Hook educativo",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      46,
+      66
+    ],
+    "notas": ""
+  },
+  {
+    "id": 57,
+    "semana": 12,
+    "dia": "Martes",
+    "titulo": "Del lote pequeño a la planta organizada · Parte 6",
+    "hook_base": "Del lote pequeño a la planta organizada",
+    "dream_outcome_id": "empresa",
+    "historia_id": "vision",
+    "persuasion_id": "dream",
+    "producto_id": "planta_inicial",
+    "formato": "Historia de Stiven",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      47,
+      67
+    ],
+    "notas": ""
+  },
+  {
+    "id": 58,
+    "semana": 12,
+    "dia": "Miércoles",
+    "titulo": "Por qué Allpa no vende máquinas, vende crecimiento · Parte 6",
+    "hook_base": "Por qué Allpa no vende máquinas, vende crecimiento",
+    "dream_outcome_id": "sin_deuda",
+    "historia_id": "allpa_crece",
+    "persuasion_id": "mecanismo",
+    "producto_id": "allpa_crece",
+    "formato": "Demostración de máquina",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      48,
+      68
+    ],
+    "notas": ""
+  },
+  {
+    "id": 59,
+    "semana": 12,
+    "dia": "Jueves",
+    "titulo": "Cómo procesar más pollos sin destruir tu cuerpo · Parte 6",
+    "hook_base": "Cómo procesar más pollos sin destruir tu cuerpo",
+    "dream_outcome_id": "salud",
+    "historia_id": "procesamiento",
+    "persuasion_id": "menos_esfuerzo",
+    "producto_id": "peladora_motor",
+    "formato": "Comparación antes/después",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      49,
+      69
+    ],
+    "notas": ""
+  },
+  {
+    "id": 60,
+    "semana": 12,
+    "dia": "Viernes",
+    "titulo": "La diferencia entre productor artesanal y empresa avícola · Parte 6",
+    "hook_base": "La diferencia entre productor artesanal y empresa avícola",
+    "dream_outcome_id": "respeto",
+    "historia_id": "vision",
+    "persuasion_id": "autoridad",
+    "producto_id": "planta_inicial",
+    "formato": "Respuesta a objeción",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      50,
+      70
+    ],
+    "notas": ""
+  },
+  {
+    "id": 61,
+    "semana": 13,
+    "dia": "Lunes",
+    "titulo": "¿Todavía pelas pollos a mano? · Parte 7",
+    "hook_base": "¿Todavía pelas pollos a mano?",
+    "dream_outcome_id": "salud",
+    "historia_id": "dolor",
+    "persuasion_id": "empatia",
+    "producto_id": "peladora_taladro",
+    "formato": "Hook educativo",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      51,
+      71
+    ],
+    "notas": ""
+  },
+  {
+    "id": 62,
+    "semana": 13,
+    "dia": "Martes",
+    "titulo": "El pequeño avicultor no necesita una planta de 100 millones · Parte 7",
+    "hook_base": "El pequeño avicultor no necesita una planta de 100 millones",
+    "dream_outcome_id": "sin_deuda",
+    "historia_id": "planta_emprendedor",
+    "persuasion_id": "oferta",
+    "producto_id": "planta_emprendedor",
+    "formato": "Historia de Stiven",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      52,
+      72
+    ],
+    "notas": ""
+  },
+  {
+    "id": 63,
+    "semana": 13,
+    "dia": "Miércoles",
+    "titulo": "Así se empieza una planta avícola con pocos equipos · Parte 7",
+    "hook_base": "Así se empieza una planta avícola con pocos equipos",
+    "dream_outcome_id": "empresa",
+    "historia_id": "planta_emprendedor",
+    "persuasion_id": "mecanismo",
+    "producto_id": "planta_emprendedor",
+    "formato": "Demostración de máquina",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      53,
+      73
+    ],
+    "notas": ""
+  },
+  {
+    "id": 64,
+    "semana": 13,
+    "dia": "Jueves",
+    "titulo": "Lo que nadie te dice de procesar pollos a mano · Parte 7",
+    "hook_base": "Lo que nadie te dice de procesar pollos a mano",
+    "dream_outcome_id": "libertad",
+    "historia_id": "dolor",
+    "persuasion_id": "menos_esfuerzo",
+    "producto_id": "conos",
+    "formato": "Comparación antes/después",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      54,
+      74
+    ],
+    "notas": ""
+  },
+  {
+    "id": 65,
+    "semana": 13,
+    "dia": "Viernes",
+    "titulo": "Una noche sin control de temperatura puede costarte el lote · Parte 7",
+    "hook_base": "Una noche sin control de temperatura puede costarte el lote",
+    "dream_outcome_id": "tranquilidad",
+    "historia_id": "iot",
+    "persuasion_id": "probabilidad",
+    "producto_id": "cuna",
+    "formato": "Respuesta a objeción",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      55,
+      75
+    ],
+    "notas": ""
+  },
+  {
+    "id": 66,
+    "semana": 14,
+    "dia": "Lunes",
+    "titulo": "El error que hace que tu pollo pierda presentación · Parte 7",
+    "hook_base": "El error que hace que tu pollo pierda presentación",
+    "dream_outcome_id": "profesional",
+    "historia_id": "procesamiento",
+    "persuasion_id": "prueba",
+    "producto_id": "escaldador_1",
+    "formato": "Hook educativo",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      56,
+      76
+    ],
+    "notas": ""
+  },
+  {
+    "id": 67,
+    "semana": 14,
+    "dia": "Martes",
+    "titulo": "Del lote pequeño a la planta organizada · Parte 7",
+    "hook_base": "Del lote pequeño a la planta organizada",
+    "dream_outcome_id": "empresa",
+    "historia_id": "vision",
+    "persuasion_id": "dream",
+    "producto_id": "planta_inicial",
+    "formato": "Historia de Stiven",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      57,
+      77
+    ],
+    "notas": ""
+  },
+  {
+    "id": 68,
+    "semana": 14,
+    "dia": "Miércoles",
+    "titulo": "Por qué Allpa no vende máquinas, vende crecimiento · Parte 7",
+    "hook_base": "Por qué Allpa no vende máquinas, vende crecimiento",
+    "dream_outcome_id": "sin_deuda",
+    "historia_id": "allpa_crece",
+    "persuasion_id": "mecanismo",
+    "producto_id": "allpa_crece",
+    "formato": "Demostración de máquina",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      58,
+      78
+    ],
+    "notas": ""
+  },
+  {
+    "id": 69,
+    "semana": 14,
+    "dia": "Jueves",
+    "titulo": "Cómo procesar más pollos sin destruir tu cuerpo · Parte 7",
+    "hook_base": "Cómo procesar más pollos sin destruir tu cuerpo",
+    "dream_outcome_id": "salud",
+    "historia_id": "procesamiento",
+    "persuasion_id": "menos_esfuerzo",
+    "producto_id": "peladora_motor",
+    "formato": "Comparación antes/después",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      59,
+      79
+    ],
+    "notas": ""
+  },
+  {
+    "id": 70,
+    "semana": 14,
+    "dia": "Viernes",
+    "titulo": "La diferencia entre productor artesanal y empresa avícola · Parte 7",
+    "hook_base": "La diferencia entre productor artesanal y empresa avícola",
+    "dream_outcome_id": "respeto",
+    "historia_id": "vision",
+    "persuasion_id": "autoridad",
+    "producto_id": "planta_inicial",
+    "formato": "Respuesta a objeción",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      60,
+      80
+    ],
+    "notas": ""
+  },
+  {
+    "id": 71,
+    "semana": 15,
+    "dia": "Lunes",
+    "titulo": "¿Todavía pelas pollos a mano? · Parte 8",
+    "hook_base": "¿Todavía pelas pollos a mano?",
+    "dream_outcome_id": "salud",
+    "historia_id": "dolor",
+    "persuasion_id": "empatia",
+    "producto_id": "peladora_taladro",
+    "formato": "Hook educativo",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      61,
+      81
+    ],
+    "notas": ""
+  },
+  {
+    "id": 72,
+    "semana": 15,
+    "dia": "Martes",
+    "titulo": "El pequeño avicultor no necesita una planta de 100 millones · Parte 8",
+    "hook_base": "El pequeño avicultor no necesita una planta de 100 millones",
+    "dream_outcome_id": "sin_deuda",
+    "historia_id": "planta_emprendedor",
+    "persuasion_id": "oferta",
+    "producto_id": "planta_emprendedor",
+    "formato": "Historia de Stiven",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      62,
+      82
+    ],
+    "notas": ""
+  },
+  {
+    "id": 73,
+    "semana": 15,
+    "dia": "Miércoles",
+    "titulo": "Así se empieza una planta avícola con pocos equipos · Parte 8",
+    "hook_base": "Así se empieza una planta avícola con pocos equipos",
+    "dream_outcome_id": "empresa",
+    "historia_id": "planta_emprendedor",
+    "persuasion_id": "mecanismo",
+    "producto_id": "planta_emprendedor",
+    "formato": "Demostración de máquina",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      63,
+      83
+    ],
+    "notas": ""
+  },
+  {
+    "id": 74,
+    "semana": 15,
+    "dia": "Jueves",
+    "titulo": "Lo que nadie te dice de procesar pollos a mano · Parte 8",
+    "hook_base": "Lo que nadie te dice de procesar pollos a mano",
+    "dream_outcome_id": "libertad",
+    "historia_id": "dolor",
+    "persuasion_id": "menos_esfuerzo",
+    "producto_id": "conos",
+    "formato": "Comparación antes/después",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      64,
+      84
+    ],
+    "notas": ""
+  },
+  {
+    "id": 75,
+    "semana": 15,
+    "dia": "Viernes",
+    "titulo": "Una noche sin control de temperatura puede costarte el lote · Parte 8",
+    "hook_base": "Una noche sin control de temperatura puede costarte el lote",
+    "dream_outcome_id": "tranquilidad",
+    "historia_id": "iot",
+    "persuasion_id": "probabilidad",
+    "producto_id": "cuna",
+    "formato": "Respuesta a objeción",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      65,
+      85
+    ],
+    "notas": ""
+  },
+  {
+    "id": 76,
+    "semana": 16,
+    "dia": "Lunes",
+    "titulo": "El error que hace que tu pollo pierda presentación · Parte 8",
+    "hook_base": "El error que hace que tu pollo pierda presentación",
+    "dream_outcome_id": "profesional",
+    "historia_id": "procesamiento",
+    "persuasion_id": "prueba",
+    "producto_id": "escaldador_1",
+    "formato": "Hook educativo",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      66,
+      86
+    ],
+    "notas": ""
+  },
+  {
+    "id": 77,
+    "semana": 16,
+    "dia": "Martes",
+    "titulo": "Del lote pequeño a la planta organizada · Parte 8",
+    "hook_base": "Del lote pequeño a la planta organizada",
+    "dream_outcome_id": "empresa",
+    "historia_id": "vision",
+    "persuasion_id": "dream",
+    "producto_id": "planta_inicial",
+    "formato": "Historia de Stiven",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      67,
+      87
+    ],
+    "notas": ""
+  },
+  {
+    "id": 78,
+    "semana": 16,
+    "dia": "Miércoles",
+    "titulo": "Por qué Allpa no vende máquinas, vende crecimiento · Parte 8",
+    "hook_base": "Por qué Allpa no vende máquinas, vende crecimiento",
+    "dream_outcome_id": "sin_deuda",
+    "historia_id": "allpa_crece",
+    "persuasion_id": "mecanismo",
+    "producto_id": "allpa_crece",
+    "formato": "Demostración de máquina",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      68,
+      88
+    ],
+    "notas": ""
+  },
+  {
+    "id": 79,
+    "semana": 16,
+    "dia": "Jueves",
+    "titulo": "Cómo procesar más pollos sin destruir tu cuerpo · Parte 8",
+    "hook_base": "Cómo procesar más pollos sin destruir tu cuerpo",
+    "dream_outcome_id": "salud",
+    "historia_id": "procesamiento",
+    "persuasion_id": "menos_esfuerzo",
+    "producto_id": "peladora_motor",
+    "formato": "Comparación antes/después",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      69,
+      89
+    ],
+    "notas": ""
+  },
+  {
+    "id": 80,
+    "semana": 16,
+    "dia": "Viernes",
+    "titulo": "La diferencia entre productor artesanal y empresa avícola · Parte 8",
+    "hook_base": "La diferencia entre productor artesanal y empresa avícola",
+    "dream_outcome_id": "respeto",
+    "historia_id": "vision",
+    "persuasion_id": "autoridad",
+    "producto_id": "planta_inicial",
+    "formato": "Respuesta a objeción",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      70,
+      90
+    ],
+    "notas": ""
+  },
+  {
+    "id": 81,
+    "semana": 17,
+    "dia": "Lunes",
+    "titulo": "¿Todavía pelas pollos a mano? · Parte 9",
+    "hook_base": "¿Todavía pelas pollos a mano?",
+    "dream_outcome_id": "salud",
+    "historia_id": "dolor",
+    "persuasion_id": "empatia",
+    "producto_id": "peladora_taladro",
+    "formato": "Hook educativo",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      71,
+      91
+    ],
+    "notas": ""
+  },
+  {
+    "id": 82,
+    "semana": 17,
+    "dia": "Martes",
+    "titulo": "El pequeño avicultor no necesita una planta de 100 millones · Parte 9",
+    "hook_base": "El pequeño avicultor no necesita una planta de 100 millones",
+    "dream_outcome_id": "sin_deuda",
+    "historia_id": "planta_emprendedor",
+    "persuasion_id": "oferta",
+    "producto_id": "planta_emprendedor",
+    "formato": "Historia de Stiven",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      72,
+      92
+    ],
+    "notas": ""
+  },
+  {
+    "id": 83,
+    "semana": 17,
+    "dia": "Miércoles",
+    "titulo": "Así se empieza una planta avícola con pocos equipos · Parte 9",
+    "hook_base": "Así se empieza una planta avícola con pocos equipos",
+    "dream_outcome_id": "empresa",
+    "historia_id": "planta_emprendedor",
+    "persuasion_id": "mecanismo",
+    "producto_id": "planta_emprendedor",
+    "formato": "Demostración de máquina",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      73,
+      93
+    ],
+    "notas": ""
+  },
+  {
+    "id": 84,
+    "semana": 17,
+    "dia": "Jueves",
+    "titulo": "Lo que nadie te dice de procesar pollos a mano · Parte 9",
+    "hook_base": "Lo que nadie te dice de procesar pollos a mano",
+    "dream_outcome_id": "libertad",
+    "historia_id": "dolor",
+    "persuasion_id": "menos_esfuerzo",
+    "producto_id": "conos",
+    "formato": "Comparación antes/después",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      74,
+      94
+    ],
+    "notas": ""
+  },
+  {
+    "id": 85,
+    "semana": 17,
+    "dia": "Viernes",
+    "titulo": "Una noche sin control de temperatura puede costarte el lote · Parte 9",
+    "hook_base": "Una noche sin control de temperatura puede costarte el lote",
+    "dream_outcome_id": "tranquilidad",
+    "historia_id": "iot",
+    "persuasion_id": "probabilidad",
+    "producto_id": "cuna",
+    "formato": "Respuesta a objeción",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      75,
+      95
+    ],
+    "notas": ""
+  },
+  {
+    "id": 86,
+    "semana": 18,
+    "dia": "Lunes",
+    "titulo": "El error que hace que tu pollo pierda presentación · Parte 9",
+    "hook_base": "El error que hace que tu pollo pierda presentación",
+    "dream_outcome_id": "profesional",
+    "historia_id": "procesamiento",
+    "persuasion_id": "prueba",
+    "producto_id": "escaldador_1",
+    "formato": "Hook educativo",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      76,
+      96
+    ],
+    "notas": ""
+  },
+  {
+    "id": 87,
+    "semana": 18,
+    "dia": "Martes",
+    "titulo": "Del lote pequeño a la planta organizada · Parte 9",
+    "hook_base": "Del lote pequeño a la planta organizada",
+    "dream_outcome_id": "empresa",
+    "historia_id": "vision",
+    "persuasion_id": "dream",
+    "producto_id": "planta_inicial",
+    "formato": "Historia de Stiven",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      77,
+      97
+    ],
+    "notas": ""
+  },
+  {
+    "id": 88,
+    "semana": 18,
+    "dia": "Miércoles",
+    "titulo": "Por qué Allpa no vende máquinas, vende crecimiento · Parte 9",
+    "hook_base": "Por qué Allpa no vende máquinas, vende crecimiento",
+    "dream_outcome_id": "sin_deuda",
+    "historia_id": "allpa_crece",
+    "persuasion_id": "mecanismo",
+    "producto_id": "allpa_crece",
+    "formato": "Demostración de máquina",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      78,
+      98
+    ],
+    "notas": ""
+  },
+  {
+    "id": 89,
+    "semana": 18,
+    "dia": "Jueves",
+    "titulo": "Cómo procesar más pollos sin destruir tu cuerpo · Parte 9",
+    "hook_base": "Cómo procesar más pollos sin destruir tu cuerpo",
+    "dream_outcome_id": "salud",
+    "historia_id": "procesamiento",
+    "persuasion_id": "menos_esfuerzo",
+    "producto_id": "peladora_motor",
+    "formato": "Comparación antes/después",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      79,
+      99
+    ],
+    "notas": ""
+  },
+  {
+    "id": 90,
+    "semana": 18,
+    "dia": "Viernes",
+    "titulo": "La diferencia entre productor artesanal y empresa avícola · Parte 9",
+    "hook_base": "La diferencia entre productor artesanal y empresa avícola",
+    "dream_outcome_id": "respeto",
+    "historia_id": "vision",
+    "persuasion_id": "autoridad",
+    "producto_id": "planta_inicial",
+    "formato": "Respuesta a objeción",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      80,
+      100
+    ],
+    "notas": ""
+  },
+  {
+    "id": 91,
+    "semana": 19,
+    "dia": "Lunes",
+    "titulo": "¿Todavía pelas pollos a mano? · Parte 10",
+    "hook_base": "¿Todavía pelas pollos a mano?",
+    "dream_outcome_id": "salud",
+    "historia_id": "dolor",
+    "persuasion_id": "empatia",
+    "producto_id": "peladora_taladro",
+    "formato": "Hook educativo",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      81
+    ],
+    "notas": ""
+  },
+  {
+    "id": 92,
+    "semana": 19,
+    "dia": "Martes",
+    "titulo": "El pequeño avicultor no necesita una planta de 100 millones · Parte 10",
+    "hook_base": "El pequeño avicultor no necesita una planta de 100 millones",
+    "dream_outcome_id": "sin_deuda",
+    "historia_id": "planta_emprendedor",
+    "persuasion_id": "oferta",
+    "producto_id": "planta_emprendedor",
+    "formato": "Historia de Stiven",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      82
+    ],
+    "notas": ""
+  },
+  {
+    "id": 93,
+    "semana": 19,
+    "dia": "Miércoles",
+    "titulo": "Así se empieza una planta avícola con pocos equipos · Parte 10",
+    "hook_base": "Así se empieza una planta avícola con pocos equipos",
+    "dream_outcome_id": "empresa",
+    "historia_id": "planta_emprendedor",
+    "persuasion_id": "mecanismo",
+    "producto_id": "planta_emprendedor",
+    "formato": "Demostración de máquina",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      83
+    ],
+    "notas": ""
+  },
+  {
+    "id": 94,
+    "semana": 19,
+    "dia": "Jueves",
+    "titulo": "Lo que nadie te dice de procesar pollos a mano · Parte 10",
+    "hook_base": "Lo que nadie te dice de procesar pollos a mano",
+    "dream_outcome_id": "libertad",
+    "historia_id": "dolor",
+    "persuasion_id": "menos_esfuerzo",
+    "producto_id": "conos",
+    "formato": "Comparación antes/después",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      84
+    ],
+    "notas": ""
+  },
+  {
+    "id": 95,
+    "semana": 19,
+    "dia": "Viernes",
+    "titulo": "Una noche sin control de temperatura puede costarte el lote · Parte 10",
+    "hook_base": "Una noche sin control de temperatura puede costarte el lote",
+    "dream_outcome_id": "tranquilidad",
+    "historia_id": "iot",
+    "persuasion_id": "probabilidad",
+    "producto_id": "cuna",
+    "formato": "Respuesta a objeción",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      85
+    ],
+    "notas": ""
+  },
+  {
+    "id": 96,
+    "semana": 20,
+    "dia": "Lunes",
+    "titulo": "El error que hace que tu pollo pierda presentación · Parte 10",
+    "hook_base": "El error que hace que tu pollo pierda presentación",
+    "dream_outcome_id": "profesional",
+    "historia_id": "procesamiento",
+    "persuasion_id": "prueba",
+    "producto_id": "escaldador_1",
+    "formato": "Hook educativo",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      86
+    ],
+    "notas": ""
+  },
+  {
+    "id": 97,
+    "semana": 20,
+    "dia": "Martes",
+    "titulo": "Del lote pequeño a la planta organizada · Parte 10",
+    "hook_base": "Del lote pequeño a la planta organizada",
+    "dream_outcome_id": "empresa",
+    "historia_id": "vision",
+    "persuasion_id": "dream",
+    "producto_id": "planta_inicial",
+    "formato": "Historia de Stiven",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      87
+    ],
+    "notas": ""
+  },
+  {
+    "id": 98,
+    "semana": 20,
+    "dia": "Miércoles",
+    "titulo": "Por qué Allpa no vende máquinas, vende crecimiento · Parte 10",
+    "hook_base": "Por qué Allpa no vende máquinas, vende crecimiento",
+    "dream_outcome_id": "sin_deuda",
+    "historia_id": "allpa_crece",
+    "persuasion_id": "mecanismo",
+    "producto_id": "allpa_crece",
+    "formato": "Demostración de máquina",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      88
+    ],
+    "notas": ""
+  },
+  {
+    "id": 99,
+    "semana": 20,
+    "dia": "Jueves",
+    "titulo": "Cómo procesar más pollos sin destruir tu cuerpo · Parte 10",
+    "hook_base": "Cómo procesar más pollos sin destruir tu cuerpo",
+    "dream_outcome_id": "salud",
+    "historia_id": "procesamiento",
+    "persuasion_id": "menos_esfuerzo",
+    "producto_id": "peladora_motor",
+    "formato": "Comparación antes/después",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      89
+    ],
+    "notas": ""
+  },
+  {
+    "id": 100,
+    "semana": 20,
+    "dia": "Viernes",
+    "titulo": "La diferencia entre productor artesanal y empresa avícola · Parte 10",
+    "hook_base": "La diferencia entre productor artesanal y empresa avícola",
+    "dream_outcome_id": "respeto",
+    "historia_id": "vision",
+    "persuasion_id": "autoridad",
+    "producto_id": "planta_inicial",
+    "formato": "Respuesta a objeción",
+    "estado": "Idea",
+    "fecha_planeada": "",
+    "responsable": "Stiven Morales",
+    "guion": {
+      "hook": "",
+      "dolor": "",
+      "historia_demo": "",
+      "mecanismo_allpa": "",
+      "resultado_sonado": "",
+      "cta": ""
+    },
+    "relacionados": [
+      90
+    ],
+    "notas": ""
+  }
+]

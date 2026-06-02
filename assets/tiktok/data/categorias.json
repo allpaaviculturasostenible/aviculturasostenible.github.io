@@ -1,0 +1,201 @@
+{
+  "dream_outcomes": [
+    {
+      "id": "dinero",
+      "nombre": "Ganar más dinero con los mismos pollos"
+    },
+    {
+      "id": "familia",
+      "nombre": "Tener más tiempo para la familia"
+    },
+    {
+      "id": "salud",
+      "nombre": "Dejar de matarse trabajando"
+    },
+    {
+      "id": "empresa",
+      "nombre": "Pasar de emprendedor a empresa"
+    },
+    {
+      "id": "legado",
+      "nombre": "Construir legado para los hijos"
+    },
+    {
+      "id": "profesional",
+      "nombre": "Tener una planta profesional"
+    },
+    {
+      "id": "tranquilidad",
+      "nombre": "Dormir tranquilo"
+    },
+    {
+      "id": "sin_deuda",
+      "nombre": "Crecer sin endeudarse"
+    },
+    {
+      "id": "respeto",
+      "nombre": "Convertirse en productor respetado"
+    },
+    {
+      "id": "libertad",
+      "nombre": "Más dinero, más tiempo y menos esfuerzo"
+    }
+  ],
+  "historia_allpa": [
+    {
+      "id": "origen",
+      "nombre": "Origen: Stiven empezó en la avicultura"
+    },
+    {
+      "id": "dolor",
+      "nombre": "Dolor real del pequeño productor"
+    },
+    {
+      "id": "incubacion",
+      "nombre": "Incubación y crianza"
+    },
+    {
+      "id": "iot",
+      "nombre": "Calentamiento, memoria térmica e IoT"
+    },
+    {
+      "id": "procesamiento",
+      "nombre": "Procesamiento: sacrificio, escaldado y pelado"
+    },
+    {
+      "id": "planta_emprendedor",
+      "nombre": "Planta Emprendedor"
+    },
+    {
+      "id": "planta_inicial",
+      "nombre": "Planta Inicial"
+    },
+    {
+      "id": "allpa_crece",
+      "nombre": "Programa Allpa Crece"
+    },
+    {
+      "id": "prueba_social",
+      "nombre": "Prueba social y casos reales"
+    },
+    {
+      "id": "vision",
+      "nombre": "Visión: de emprendedor a empresa"
+    }
+  ],
+  "persuasion": [
+    {
+      "id": "autoridad",
+      "nombre": "Autoridad"
+    },
+    {
+      "id": "prueba",
+      "nombre": "Prueba"
+    },
+    {
+      "id": "empatia",
+      "nombre": "Empatía"
+    },
+    {
+      "id": "dream",
+      "nombre": "Dream Outcome"
+    },
+    {
+      "id": "menos_esfuerzo",
+      "nombre": "Reducir esfuerzo"
+    },
+    {
+      "id": "menos_tiempo",
+      "nombre": "Reducir tiempo"
+    },
+    {
+      "id": "probabilidad",
+      "nombre": "Aumentar probabilidad de éxito"
+    },
+    {
+      "id": "oferta",
+      "nombre": "Oferta irresistible"
+    },
+    {
+      "id": "mecanismo",
+      "nombre": "Mecanismo único"
+    },
+    {
+      "id": "cta",
+      "nombre": "Llamado a la acción"
+    }
+  ],
+  "productos_allpa": [
+    {
+      "id": "incubadora",
+      "nombre": "Incubadora"
+    },
+    {
+      "id": "criadora",
+      "nombre": "Criadora"
+    },
+    {
+      "id": "cuna",
+      "nombre": "Cuna Allpa"
+    },
+    {
+      "id": "memoria_termica",
+      "nombre": "Memoria térmica"
+    },
+    {
+      "id": "sensores_iot",
+      "nombre": "Sensores e IoT"
+    },
+    {
+      "id": "conos",
+      "nombre": "Centro de conos"
+    },
+    {
+      "id": "aturdidor",
+      "nombre": "Aturdidor"
+    },
+    {
+      "id": "escaldador_1",
+      "nombre": "Escaldador 1 pollo con control y ahorro"
+    },
+    {
+      "id": "peladora_taladro",
+      "nombre": "Peladora tambor 40 cm con taladro"
+    },
+    {
+      "id": "escaldador_3",
+      "nombre": "Escaldador 3 pollos"
+    },
+    {
+      "id": "peladora_motor",
+      "nombre": "Peladora de tambor motorizada"
+    },
+    {
+      "id": "planta_emprendedor",
+      "nombre": "Planta Emprendedor"
+    },
+    {
+      "id": "planta_inicial",
+      "nombre": "Planta Inicial"
+    },
+    {
+      "id": "allpa_crece",
+      "nombre": "Programa Allpa Crece"
+    }
+  ],
+  "estados": [
+    "Idea",
+    "Guion",
+    "Grabado",
+    "Editado",
+    "Publicado",
+    "Analizado"
+  ],
+  "formatos": [
+    "Hook educativo",
+    "Historia de Stiven",
+    "Demostración de máquina",
+    "Comparación antes/después",
+    "Respuesta a objeción"
+  ]
+}
