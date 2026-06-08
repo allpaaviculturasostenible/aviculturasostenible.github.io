@@ -10,6 +10,39 @@ const stageExperience = document.querySelector("[data-stage-tabs]");
 const retakeSimulator = document.querySelector("[data-retake-simulator]");
 let activeFinderStep = 0;
 
+function addSwipeNavigation(element, onPrevious, onNext) {
+  if (!element || typeof onPrevious !== "function" || typeof onNext !== "function") return;
+
+  let startX = 0;
+  let startY = 0;
+  let isTracking = false;
+  const swipeThreshold = 48;
+
+  element.addEventListener("pointerdown", (event) => {
+    if (event.target.closest("a, button, input, label, select, summary, textarea")) return;
+    startX = event.clientX;
+    startY = event.clientY;
+    isTracking = true;
+    if (element.setPointerCapture) {
+      element.setPointerCapture(event.pointerId);
+    }
+  });
+
+  element.addEventListener("pointerup", (event) => {
+    if (!isTracking) return;
+    isTracking = false;
+    const deltaX = event.clientX - startX;
+    const deltaY = event.clientY - startY;
+    if (Math.abs(deltaX) < swipeThreshold || Math.abs(deltaX) < Math.abs(deltaY) * 1.25) return;
+    if (deltaX < 0) onNext();
+    else onPrevious();
+  });
+
+  element.addEventListener("pointercancel", () => {
+    isTracking = false;
+  });
+}
+
 const finderStepMessages = {
   volume: "Primero ubicamos tu volumen. Con eso sabemos si conviene iniciar básico, emprender con equipos actualizables o pensar en Planta Inicial.",
   product: "Si ya tienes un equipo en mente, puedes cotizarlo ahora. Si no, te guío para escoger el primer paso.",
@@ -32,7 +65,6 @@ const productLinks = {
   aturdidorUnPollo: "productos/aturdidor.html",
   kitAturdidor: "productos/aturdidor.html",
   aturdidorIndustrial: "productos/aturdidor.html",
-  sensorTemperatura: "productos/sensores.html",
   escaldadorUno: "productos/escaldador.html",
   escaldadorTres: "productos/escaldador.html",
   retoma: "productos/retoma.html",
@@ -98,11 +130,6 @@ const productCatalog = {
     name: "Aturdidor industrial rotatorio",
     status: "Disponible · aplica retoma",
     note: "Tres conos rotatorios para acelerar el proceso.",
-  },
-  sensorTemperatura: {
-    name: "Sensor de temperatura con sonido",
-    status: "Disponible",
-    note: "Indica cuando llegas a la temperatura objetivo para escaldar.",
   },
   escaldadorUno: {
     name: "Escaldador de un pollo",
@@ -195,11 +222,10 @@ function buildImplementationOrder({ volume, pain, budget, buyStyle }) {
   }
 
   if (pain === "escaldado") {
-    order.push(createStep("sensorTemperatura", "Cotizas el sensor para saber cuándo llegas a la temperatura objetivo."));
-    if (volume <= 300 && buyStyle === "actualizable") {
-      order.push(createStep("escaldadorUno", "Luego puedes pasar a un escaldador compacto de un pollo."));
+    if (volume <= 300 || budget < 2500000 || buyStyle === "actualizable") {
+      order.push(createStep("escaldadorUno", "Inicias con un escaldador compacto para controlar mejor temperatura antes del pelado."));
     }
-    order.push(createStep("escaldadorTres", "Cuando sube el volumen, pasas al escaldador grande de 3 pollos."));
+    order.push(createStep("escaldadorTres", "Cuando sube el volumen, pasas al escaldador de 3 pollos con mayor capacidad."));
   }
 
   if (pain === "capacidad") {
@@ -720,6 +746,18 @@ function initGrowthCarousel() {
     pauseTemporarily();
   });
 
+  addSwipeNavigation(
+    carousel,
+    () => {
+      setActive(activeIndex - 1);
+      pauseTemporarily();
+    },
+    () => {
+      setActive(activeIndex + 1);
+      pauseTemporarily();
+    },
+  );
+
   carousel.addEventListener("mouseenter", () => setPaused(true));
   carousel.addEventListener("mouseleave", () => {
     if (!reduceMotion) setPaused(false);
@@ -806,6 +844,7 @@ function initProductGallery() {
     nextButton.addEventListener("click", () => moveGallery(1));
 
     gallery.append(prevButton, nextButton);
+    addSwipeNavigation(gallery, () => moveGallery(-1), () => moveGallery(1));
 
     const initialThumb = thumbs.find((thumb) => thumb.src === mainImage.src) || thumbs[0];
     setActiveThumb(initialThumb);
@@ -866,6 +905,17 @@ function initSalesCarousels() {
     });
 
     carousel.append(prevButton, nextButton, dots);
+    addSwipeNavigation(
+      carousel,
+      () => {
+        setActive(activeIndex - 1);
+        pauseTemporarily();
+      },
+      () => {
+        setActive(activeIndex + 1);
+        pauseTemporarily();
+      },
+    );
 
     function stopAutoplay() {
       window.clearInterval(autoplayTimer);
@@ -1145,6 +1195,1037 @@ function initConesOrder() {
   render();
 }
 
+const aturdidorPageConfig = {
+  versions: [
+    {
+      id: "basico",
+      name: "Aturdidor basico",
+      stage: "Inicio Allpa",
+      price: 400000,
+      promoPrice: null,
+      shipping: 0,
+      includes: "Caja electronica y electrodos",
+      note: "Envio gratis sujeto a cobertura y confirmacion por WhatsApp.",
+      bestFor: "Para iniciar con anestesia electrica sin comprar todavia la base completa.",
+      specs: {
+        Alimentacion: "110V · 60Hz",
+        Activacion: "Carga al pulsar el boton",
+        Autonomia: "No aplica",
+        Materiales: "Caja electronica, electrodos y componentes de trabajo",
+        Garantia: "1 año por defectos en caja electronica, estructura y electrodos",
+        Retoma: "Aplica despues de evaluacion tecnica",
+      },
+    },
+    {
+      id: "unPollo",
+      name: "Aturdidor de un pollo",
+      stage: "Etapa Emprendedor",
+      price: 1000000,
+      promoPrice: 800000,
+      shipping: 120000,
+      includes: "Caja electronica, base, cono y soporte",
+      note: "Promocion activa. Envio e impuestos estimados: $120 mil.",
+      bestFor: "Para trabajar un pollo por ciclo con una estacion mas estable y ordenada.",
+      specs: {
+        Alimentacion: "110V · 60Hz",
+        Activacion: "Carga al pulsar el boton",
+        Autonomia: "No aplica",
+        Materiales: "Cono, base y estructura en acero inoxidable",
+        Garantia: "1 año por defectos en caja electronica, estructura y electrodos",
+        Retoma: "Aplica para actualizar a mayor capacidad",
+      },
+    },
+    {
+      id: "industrial",
+      name: "Aturdidor industrial rotatorio",
+      stage: "Planta Inicial",
+      price: 2000000,
+      promoPrice: null,
+      shipping: 0,
+      includes: "Sistema rotatorio industrial de 3 conos",
+      note: "Ideal para aumentar ritmo. El asesor confirma envio segun ciudad.",
+      bestFor: "Para procesos con mayor volumen que necesitan reducir esperas entre pollos.",
+      specs: {
+        Alimentacion: "110V · 60Hz",
+        Activacion: "Carga al pulsar el boton",
+        Autonomia: "No aplica",
+        Materiales: "Conos, base y estructura en acero inoxidable",
+        Garantia: "1 año por defectos en caja electronica, estructura y electrodos",
+        Retoma: "Aplica despues de evaluacion tecnica",
+      },
+    },
+  ],
+  faqs: [
+    {
+      question: "¿Que version me conviene?",
+      answer: "Si estas iniciando, la version basica te permite entrar con menor inversion. Si quieres una estacion completa, elige el aturdidor de un pollo. Si ya tienes mayor volumen, revisa el industrial rotatorio.",
+    },
+    {
+      question: "¿La retoma aplica para todos?",
+      answer: "Si. Todas las versiones pueden aplicar a retoma despues de evaluacion tecnica del funcionamiento y estado de la estructura.",
+    },
+    {
+      question: "¿Tiene bateria o cargador?",
+      answer: "No. El equipo trabaja con alimentacion 110V 60Hz, por eso no incluye bateria ni cargador.",
+    },
+    {
+      question: "¿Que cubre la garantia?",
+      answer: "La garantia es de 1 año y cubre caja electronica, estructura y electrodos por defectos de fabricacion.",
+    },
+    {
+      question: "¿Puedo comprar mas de uno?",
+      answer: "Si. Puedes seleccionar cantidad en la pagina. Si tu volumen es alto, tambien puedes pedir asesoria para comparar varios equipos frente a la version industrial.",
+    },
+  ],
+};
+
+function initAturdidorPage() {
+  const order = document.querySelector('[data-product-order="aturdidor"]');
+  if (!order) return;
+
+  const options = order.querySelector("[data-aturdidor-options]");
+  const tabs = document.querySelector("[data-aturdidor-tabs]");
+  const specPanel = document.querySelector("[data-aturdidor-spec]");
+  const faqList = document.querySelector("[data-aturdidor-faq-list]");
+  const qtyInput = order.querySelector("[data-order-qty]");
+  const minusButton = order.querySelector("[data-qty-minus]");
+  const plusButton = order.querySelector("[data-qty-plus]");
+  const title = order.querySelector("[data-order-title]");
+  const includes = order.querySelector("[data-order-includes]");
+  const quantity = order.querySelector("[data-order-quantity]");
+  const total = order.querySelector("[data-order-total]");
+  const note = order.querySelector("[data-order-note]");
+  const whatsapp = order.querySelector("[data-order-whatsapp]");
+  const floatingSelection = document.querySelector("[data-floating-selection]");
+  const floatingTotal = document.querySelector("[data-floating-total]");
+  const floatingWhatsapp = document.querySelector("[data-floating-whatsapp]");
+  const floatingQty = document.querySelector("[data-floating-qty]");
+  const floatingMinus = document.querySelector("[data-floating-qty-minus]");
+  const floatingPlus = document.querySelector("[data-floating-qty-plus]");
+  const orderPanels = Array.from(order.querySelectorAll(".order-panel"));
+  const orderNextButtons = Array.from(order.querySelectorAll("[data-order-next]"));
+  let activeVersionId = "unPollo";
+
+  function escapeHtml(value) {
+    return String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function getVersion() {
+    return aturdidorPageConfig.versions.find((version) => version.id === activeVersionId) || aturdidorPageConfig.versions[0];
+  }
+
+  function getDisplayPrice(version) {
+    return version.promoPrice || version.price;
+  }
+
+  function getQuantity() {
+    const qty = Math.max(1, Math.min(20, Number(qtyInput.value) || 1));
+    qtyInput.value = qty;
+    return qty;
+  }
+
+  function setQuantity(nextQty) {
+    qtyInput.value = Math.max(1, Math.min(20, Number(nextQty) || 1));
+    render();
+  }
+
+  function openPanel(index) {
+    orderPanels.forEach((panel, panelIndex) => {
+      panel.open = panelIndex === index;
+    });
+  }
+
+  function renderOptions() {
+    if (!options) return;
+    options.innerHTML = aturdidorPageConfig.versions
+      .map((version) => {
+        const price = getDisplayPrice(version);
+        const promo = version.promoPrice ? `<span>Promocion: ${formatMoney(version.promoPrice)} · Antes ${formatMoney(version.price)}</span>` : `<span>${formatMoney(version.price)}</span>`;
+        return `
+          <label>
+            <input type="radio" name="aturdidorVersion" value="${escapeHtml(version.id)}"${version.id === activeVersionId ? " checked" : ""} />
+            <strong>${escapeHtml(version.name)}</strong>
+            ${promo}
+            <span>${escapeHtml(version.stage)} · ${version.shipping === 0 ? "envio gratis o por confirmar" : `envio estimado ${formatMoney(version.shipping)}`}</span>
+          </label>
+        `;
+      })
+      .join("");
+  }
+
+  function renderTabs() {
+    if (!tabs) return;
+    tabs.innerHTML = aturdidorPageConfig.versions
+      .map(
+        (version) => `
+          <button type="button" class="${version.id === activeVersionId ? "is-active" : ""}" data-aturdidor-tab="${escapeHtml(version.id)}">
+            <span>${escapeHtml(version.stage)}</span>
+            <strong>${escapeHtml(version.name)}</strong>
+          </button>
+        `,
+      )
+      .join("");
+
+    tabs.querySelectorAll("[data-aturdidor-tab]").forEach((button) => {
+      button.addEventListener("click", () => {
+        activeVersionId = button.dataset.aturdidorTab;
+        render();
+      });
+    });
+  }
+
+  function renderSpec() {
+    if (!specPanel) return;
+    const version = getVersion();
+    const specs = Object.entries(version.specs)
+      .map(([label, value]) => `<li><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></li>`)
+      .join("");
+    specPanel.innerHTML = `
+      <div>
+        <p class="eyebrow">${escapeHtml(version.stage)}</p>
+        <h3>${escapeHtml(version.name)}</h3>
+        <p>${escapeHtml(version.bestFor)}</p>
+      </div>
+      <ul class="spec-list">${specs}</ul>
+    `;
+  }
+
+  function renderFaqs() {
+    if (!faqList) return;
+    faqList.innerHTML = aturdidorPageConfig.faqs
+      .map(
+        (faq, index) => `
+          <details${index === 0 ? " open" : ""}>
+            <summary>${escapeHtml(faq.question)}</summary>
+            <p>${escapeHtml(faq.answer)}</p>
+          </details>
+        `,
+      )
+      .join("");
+  }
+
+  function render() {
+    const version = getVersion();
+    const qty = getQuantity();
+    const unitPrice = getDisplayPrice(version);
+    const subtotal = (unitPrice + version.shipping) * qty;
+    const quantityText = `${qty} ${qty === 1 ? "equipo" : "equipos"}`;
+    const message = `Hola Allpa Tech, quiero pedir ${quantityText} de ${version.name}. Total estimado ${formatMoney(subtotal)}. Quiero confirmar disponibilidad, garantia, retoma y envio.`;
+    const href = `https://wa.me/573152112644?text=${encodeURIComponent(message)}`;
+
+    renderOptions();
+    renderTabs();
+    renderSpec();
+
+    title.textContent = version.name;
+    includes.textContent = version.includes;
+    quantity.textContent = quantityText;
+    total.textContent = formatMoney(subtotal);
+    note.textContent = version.note;
+    whatsapp.href = href;
+
+    if (floatingSelection && floatingTotal && floatingWhatsapp) {
+      floatingSelection.textContent = version.name;
+      floatingTotal.textContent = formatMoney(subtotal);
+      floatingWhatsapp.href = href;
+    }
+
+    if (floatingQty) floatingQty.textContent = qty;
+  }
+
+  orderPanels.forEach((panel) => {
+    panel.addEventListener("toggle", () => {
+      if (!panel.open) return;
+      orderPanels.forEach((otherPanel) => {
+        if (otherPanel !== panel) otherPanel.open = false;
+      });
+    });
+  });
+
+  orderNextButtons.forEach((button) => {
+    button.addEventListener("click", () => openPanel(Number(button.dataset.orderNext)));
+  });
+
+  order.addEventListener("change", (event) => {
+    if (event.target.name === "aturdidorVersion") {
+      activeVersionId = event.target.value;
+    }
+    render();
+  });
+  minusButton.addEventListener("click", () => setQuantity(Number(qtyInput.value) - 1));
+  plusButton.addEventListener("click", () => setQuantity(Number(qtyInput.value) + 1));
+  floatingMinus?.addEventListener("click", () => setQuantity(Number(qtyInput.value) - 1));
+  floatingPlus?.addEventListener("click", () => setQuantity(Number(qtyInput.value) + 1));
+  qtyInput.addEventListener("input", render);
+  renderFaqs();
+  render();
+}
+
+const peladoraPageConfig = {
+  versions: [
+    {
+      id: "tamborTaladro",
+      name: "Tambor para taladro",
+      stage: "Inicio Allpa",
+      price: 200000,
+      promoPrice: null,
+      discountLabel: "",
+      shippingIncluded: true,
+      includes: "Tambor en acero inoxidable con dedos de caucho",
+      note: "Pago contraentrega sujeto a cobertura. El tipo de taladro recomendado se confirma por WhatsApp.",
+      bestFor: "Para reducir pelado manual con baja inversion y empezar a medir tu flujo.",
+      specs: {
+        "Tipo de taladro": "Pendiente por confirmar",
+        Tambor: "Acero inoxidable",
+        Dedos: "Caucho, los mismos de la peladora",
+        Funcion: "Reduce pelado manual",
+        Garantia: "1 año",
+        Retoma: "Aplica para actualizar",
+      },
+    },
+    {
+      id: "baseSoporte",
+      name: "Base soporte para taladro",
+      stage: "Etapa Emprendedor",
+      price: 700000,
+      promoPrice: null,
+      discountLabel: "",
+      shippingIncluded: true,
+      includes: "Estructura que se ajusta a una mesa y sostiene tambor y taladro",
+      note: "Mejora ergonomia y estabilidad. Pago contraentrega sujeto a cobertura.",
+      bestFor: "Para trabajar con mejor postura, menos improvisacion y un montaje mas estable.",
+      specs: {
+        Estructura: "Se ajusta a una mesa",
+        Soporte: "Sostiene mejor el tambor y el taladro",
+        Ergonomia: "Mejor posicion de trabajo",
+        Materiales: "Estructura metalica y componentes de soporte",
+        Garantia: "1 año",
+        Retoma: "Aplica para actualizar",
+      },
+    },
+    {
+      id: "kitActualizacion",
+      name: "Kit de actualizacion",
+      stage: "Actualizacion",
+      price: 500000,
+      promoPrice: null,
+      discountLabel: "",
+      shippingIncluded: true,
+      includes: "Kit para pasar del tambor a la base soporte",
+      note: "Pensado para quien ya compro el tambor y quiere mejorar estabilidad.",
+      bestFor: "Para crecer sin comprar una solucion nueva desde cero.",
+      specs: {
+        Funcion: "Actualiza tambor a base soporte",
+        Compatibilidad: "Pensado para tambor Allpa Tech",
+        Ergonomia: "Mayor estabilidad y mejor posicion de trabajo",
+        Garantia: "1 año",
+        Retoma: "Aplica para actualizar",
+      },
+    },
+    {
+      id: "industrial2",
+      name: "Peladora industrial 2 pollos/min",
+      stage: "Planta Inicial",
+      price: 2800000,
+      promoPrice: null,
+      discountLabel: "",
+      shippingIncluded: false,
+      includes: "Peladora industrial personalizada de 2 pollos/min",
+      note: "Los precios no incluyen envio. La personalizacion depende del cliente.",
+      bestFor: "Para subir capacidad cuando ya tienes pedidos constantes y quieres reducir horas de pelado.",
+      specs: {
+        Alimentacion: "110V · 60Hz",
+        Motor: "1 HP",
+        Materiales: "Acero inoxidable",
+        Dedos: "Caucho, consumibles",
+        Agua: "Requiere agua durante el proceso",
+        Capacidad: "Depende del tamaño superior personalizado",
+        Garantia: "1 año en motor, estructura y tambor",
+      },
+    },
+    {
+      id: "industrial3",
+      name: "Peladora industrial 3 pollos/min",
+      stage: "Planta Inicial",
+      price: 3000000,
+      promoPrice: null,
+      discountLabel: "Mas vendida",
+      shippingIncluded: false,
+      includes: "Peladora industrial personalizada de 3 pollos/min",
+      note: "Mas vendida. Los precios no incluyen envio.",
+      bestFor: "Para equilibrar inversion y capacidad cuando tu produccion ya tiene buen ritmo.",
+      specs: {
+        Alimentacion: "110V · 60Hz",
+        Motor: "1 HP",
+        Materiales: "Acero inoxidable",
+        Dedos: "Caucho, consumibles",
+        Agua: "Requiere agua durante el proceso",
+        Capacidad: "Depende del tamaño superior personalizado",
+        Garantia: "1 año en motor, estructura y tambor",
+      },
+    },
+    {
+      id: "industrial4",
+      name: "Peladora industrial 4 pollos/min",
+      stage: "Planta Inicial",
+      price: 3800000,
+      promoPrice: null,
+      discountLabel: "",
+      shippingIncluded: false,
+      includes: "Peladora industrial personalizada de 4 pollos/min",
+      note: "Los precios no incluyen envio. Se fabrica segun necesidad del cliente.",
+      bestFor: "Para mayor volumen y menos espera entre tandas de pelado.",
+      specs: {
+        Alimentacion: "110V · 60Hz",
+        Motor: "1 HP",
+        Materiales: "Acero inoxidable",
+        Dedos: "Caucho, consumibles",
+        Agua: "Requiere agua durante el proceso",
+        Capacidad: "Depende del tamaño superior personalizado",
+        Garantia: "1 año en motor, estructura y tambor",
+      },
+    },
+    {
+      id: "industrial5",
+      name: "Peladora industrial 5 pollos/min",
+      stage: "Planta Inicial",
+      price: 4700000,
+      promoPrice: null,
+      discountLabel: "",
+      shippingIncluded: false,
+      includes: "Peladora industrial personalizada de 5 pollos/min",
+      note: "Los precios no incluyen envio. Fabricamos pocas unidades por mes para cuidar calidad.",
+      bestFor: "Para clientes que ya necesitan alta capacidad y quieren disminuir horas de trabajo.",
+      specs: {
+        Alimentacion: "110V · 60Hz",
+        Motor: "1 HP",
+        Materiales: "Acero inoxidable",
+        Dedos: "Caucho, consumibles",
+        Agua: "Requiere agua durante el proceso",
+        Capacidad: "Depende del tamaño superior personalizado",
+        Garantia: "1 año en motor, estructura y tambor",
+      },
+    },
+  ],
+  faqs: [
+    {
+      question: "¿Cual peladora me conviene?",
+      answer: "Si quieres iniciar con menor inversion, empieza con tambor para taladro. Si necesitas mejor ergonomia, revisa la base soporte. Si ya tienes volumen constante, compara las industriales por pollos por minuto.",
+    },
+    {
+      question: "¿Los precios incluyen envio?",
+      answer: "Las versiones industriales no incluyen envio. Las opciones de taladro se confirman por WhatsApp y pueden aplicar a pago contraentrega segun cobertura.",
+    },
+    {
+      question: "¿La industrial requiere agua?",
+      answer: "Si. La peladora industrial requiere agua durante el proceso para ayudar al flujo de pelado.",
+    },
+    {
+      question: "¿Que cubre la garantia?",
+      answer: "La garantia es de 1 año. Cubre motor, estructura y tambor por defectos. Los dedos de caucho son consumibles.",
+    },
+    {
+      question: "¿Aplica retoma?",
+      answer: "Si. La retoma aplica para actualizar, despues de evaluar estado y funcionamiento del equipo.",
+    },
+  ],
+};
+
+function initPeladoraPage() {
+  const order = document.querySelector('[data-product-order="peladora"]');
+  if (!order) return;
+
+  const options = order.querySelector("[data-peladora-options]");
+  const specPanel = document.querySelector("[data-peladora-spec]");
+  const legacyTabs = document.querySelector("[data-peladora-tabs]");
+  const faqList = document.querySelector("[data-peladora-faq-list]");
+  const qtyInput = order.querySelector("[data-order-qty]");
+  const minusButton = order.querySelector("[data-qty-minus]");
+  const plusButton = order.querySelector("[data-qty-plus]");
+  const title = order.querySelector("[data-order-title]");
+  const includes = order.querySelector("[data-order-includes]");
+  const quantity = order.querySelector("[data-order-quantity]");
+  const total = order.querySelector("[data-order-total]");
+  const note = order.querySelector("[data-order-note]");
+  const whatsapp = order.querySelector("[data-order-whatsapp]");
+  const floatingSelection = document.querySelector("[data-floating-selection]");
+  const floatingTotal = document.querySelector("[data-floating-total]");
+  const floatingWhatsapp = document.querySelector("[data-floating-whatsapp]");
+  const floatingQty = document.querySelector("[data-floating-qty]");
+  const floatingMinus = document.querySelector("[data-floating-qty-minus]");
+  const floatingPlus = document.querySelector("[data-floating-qty-plus]");
+  const orderPanels = Array.from(order.querySelectorAll(".order-panel"));
+  const orderNextButtons = Array.from(order.querySelectorAll("[data-order-next]"));
+  let activeVersionId = "industrial3";
+  let compareVersionId = "industrial4";
+
+  if (legacyTabs) {
+    legacyTabs.remove();
+  }
+  const groupedChoices = [
+    {
+      id: "taladro",
+      title: "Tambor o kit de actualizacion",
+      text: "Empieza con tambor o actualiza el montaje cuando quieras mejorar estabilidad.",
+      versionIds: ["tamborTaladro", "kitActualizacion"],
+    },
+    {
+      id: "base",
+      title: "Base soporte para taladro",
+      text: "Una opcion directa para trabajar con mejor ergonomia sobre una mesa.",
+      versionIds: ["baseSoporte"],
+    },
+    {
+      id: "industrial",
+      title: "Peladora industrial",
+      text: "Cambia la capacidad segun el volumen que quieres sostener.",
+      versionIds: ["industrial2", "industrial3", "industrial4", "industrial5"],
+    },
+  ];
+  const groupDisplayState = {
+    taladro: "tamborTaladro",
+    base: "baseSoporte",
+    industrial: "industrial3",
+  };
+  const comparisonMap = {
+    tamborTaladro: "kitActualizacion",
+    kitActualizacion: "baseSoporte",
+    baseSoporte: "industrial2",
+    industrial2: "industrial3",
+    industrial3: "industrial4",
+    industrial4: "industrial5",
+    industrial5: "industrial4",
+  };
+  const versionOrder = ["tamborTaladro", "kitActualizacion", "baseSoporte", "industrial2", "industrial3", "industrial4", "industrial5"];
+
+  function escapeHtml(value) {
+    return String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function getVersion() {
+    return peladoraPageConfig.versions.find((version) => version.id === activeVersionId) || peladoraPageConfig.versions[0];
+  }
+
+  function findVersion(versionId) {
+    return peladoraPageConfig.versions.find((version) => version.id === versionId) || peladoraPageConfig.versions[0];
+  }
+
+  function getDisplayPrice(version) {
+    return version.promoPrice || version.price;
+  }
+
+  function getQuantity() {
+    const qty = Math.max(1, Math.min(20, Number(qtyInput.value) || 1));
+    qtyInput.value = qty;
+    return qty;
+  }
+
+  function setQuantity(nextQty) {
+    qtyInput.value = Math.max(1, Math.min(20, Number(nextQty) || 1));
+    render();
+  }
+
+  function openPanel(index) {
+    orderPanels.forEach((panel, panelIndex) => {
+      panel.open = panelIndex === index;
+    });
+  }
+
+  function getGroup(versionId) {
+    return groupedChoices.find((group) => group.versionIds.includes(versionId)) || groupedChoices[0];
+  }
+
+  function syncGroupDisplay() {
+    const activeGroup = getGroup(activeVersionId);
+    groupDisplayState[activeGroup.id] = activeVersionId;
+  }
+
+  function shiftGroupVersion(groupId, direction) {
+    const group = groupedChoices.find((choice) => choice.id === groupId);
+    if (!group || group.versionIds.length < 2) return;
+    const currentId = groupDisplayState[group.id] || group.versionIds[0];
+    const currentIndex = Math.max(0, group.versionIds.indexOf(currentId));
+    const nextIndex = (currentIndex + direction + group.versionIds.length) % group.versionIds.length;
+    const nextVersionId = group.versionIds[nextIndex];
+    groupDisplayState[group.id] = nextVersionId;
+    activeVersionId = nextVersionId;
+    render();
+  }
+
+  function getCompareVersion() {
+    if (compareVersionId === activeVersionId) {
+      compareVersionId = comparisonMap[activeVersionId] || versionOrder.find((id) => id !== activeVersionId);
+    }
+    return findVersion(compareVersionId);
+  }
+
+  function shiftCompareVersion(direction) {
+    const availableIds = versionOrder.filter((versionId) => versionId !== activeVersionId);
+    const currentIndex = Math.max(0, availableIds.indexOf(compareVersionId));
+    const nextIndex = (currentIndex + direction + availableIds.length) % availableIds.length;
+    compareVersionId = availableIds[nextIndex];
+    renderSpec();
+  }
+
+  function getCapacityLabel(version) {
+    const capacityMatch = version.name.match(/(\d+\s*pollos\/min)/i);
+    if (capacityMatch) return capacityMatch[1];
+    if (version.id === "tamborTaladro") return "Entrada con taladro";
+    if (version.id === "kitActualizacion") return "Actualizacion a base";
+    if (version.id === "baseSoporte") return "Mejor ergonomia";
+    return version.stage;
+  }
+
+  function renderChoiceCards(container) {
+    if (!container) return;
+    syncGroupDisplay();
+    container.innerHTML = groupedChoices
+      .map((group) => {
+        const version = findVersion(groupDisplayState[group.id] || group.versionIds[0]);
+        const isActive = version.id === activeVersionId;
+        const badge = version.discountLabel ? `<em>${escapeHtml(version.discountLabel)}</em>` : "";
+        const arrows =
+          group.versionIds.length > 1
+            ? `
+              <div class="variant-stepper" aria-label="Cambiar opcion de ${escapeHtml(group.title)}">
+                <button type="button" data-peladora-shift="${escapeHtml(group.id)}" data-direction="-1" aria-label="Ver opcion anterior">‹</button>
+                <span>${escapeHtml(getCapacityLabel(version))}</span>
+                <button type="button" data-peladora-shift="${escapeHtml(group.id)}" data-direction="1" aria-label="Ver opcion siguiente">›</button>
+              </div>
+            `
+            : `<div class="variant-stepper is-static"><span>${escapeHtml(getCapacityLabel(version))}</span></div>`;
+        return `
+          <article class="version-choice-card ${isActive ? "is-active" : ""}">
+            <button type="button" class="version-choice-main" data-peladora-select="${escapeHtml(version.id)}">
+              <span>${escapeHtml(group.title)}</span>
+              <strong>${escapeHtml(version.name)}</strong>
+              <small>${escapeHtml(group.text)}</small>
+              <b>${formatMoney(getDisplayPrice(version))}${version.shippingIncluded ? " · contraentrega segun cobertura" : " · envio no incluido"}</b>
+              ${badge}
+            </button>
+            ${arrows}
+          </article>
+        `;
+      })
+      .join("");
+
+    container.querySelectorAll("[data-peladora-select]").forEach((button) => {
+      button.addEventListener("click", () => {
+        activeVersionId = button.dataset.peladoraSelect;
+        syncGroupDisplay();
+        render();
+      });
+    });
+
+    container.querySelectorAll("[data-peladora-shift]").forEach((button) => {
+      button.addEventListener("click", () => {
+        shiftGroupVersion(button.dataset.peladoraShift, Number(button.dataset.direction));
+      });
+    });
+  }
+
+  function renderSpec() {
+    if (!specPanel) return;
+    const version = getVersion();
+    const comparison = getCompareVersion();
+    const specs = Object.entries(version.specs)
+      .map(([label, value]) => `<li><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></li>`)
+      .join("");
+    const comparisonRows = [
+      ["Inversion", formatMoney(getDisplayPrice(version)), formatMoney(getDisplayPrice(comparison))],
+      ["Capacidad", getCapacityLabel(version), getCapacityLabel(comparison)],
+      ["Enfoque", version.includes, comparison.includes],
+      ["Envio", version.shippingIncluded ? "Contraentrega segun cobertura" : "No incluido", comparison.shippingIncluded ? "Contraentrega segun cobertura" : "No incluido"],
+    ]
+      .map(
+        ([label, current, target]) => `
+          <li>
+            <span>${escapeHtml(label)}</span>
+            <strong>${escapeHtml(current)}</strong>
+            <strong>${escapeHtml(target)}</strong>
+          </li>
+        `,
+      )
+      .join("");
+    specPanel.innerHTML = `
+      <div>
+        <p class="eyebrow">${escapeHtml(version.stage)}</p>
+        <h3>${escapeHtml(version.name)}</h3>
+        <p>${escapeHtml(version.bestFor)}</p>
+      </div>
+      <ul class="spec-list">${specs}</ul>
+      <div class="comparison-vs">
+        <div>
+          <span>Tu seleccion</span>
+          <strong>${escapeHtml(version.name)}</strong>
+        </div>
+        <div class="comparison-target">
+          <span>Comparala con</span>
+          <div>
+            <button type="button" data-compare-shift="-1" aria-label="Comparar con opcion anterior">‹</button>
+            <strong>${escapeHtml(comparison.name)} <small>${escapeHtml(getCapacityLabel(comparison))}</small></strong>
+            <button type="button" data-compare-shift="1" aria-label="Comparar con opcion siguiente">›</button>
+          </div>
+          <p>Navega todas las otras versiones sin cambiar tu seleccion.</p>
+        </div>
+        <ul>${comparisonRows}</ul>
+      </div>
+    `;
+
+    specPanel.querySelectorAll("[data-compare-shift]").forEach((button) => {
+      button.addEventListener("click", () => shiftCompareVersion(Number(button.dataset.compareShift)));
+    });
+  }
+
+  function renderFaqs() {
+    if (!faqList) return;
+    faqList.innerHTML = peladoraPageConfig.faqs
+      .map(
+        (faq, index) => `
+          <details${index === 0 ? " open" : ""}>
+            <summary>${escapeHtml(faq.question)}</summary>
+            <p>${escapeHtml(faq.answer)}</p>
+          </details>
+        `,
+      )
+      .join("");
+  }
+
+  function render() {
+    const version = getVersion();
+    const qty = getQuantity();
+    const subtotal = getDisplayPrice(version) * qty;
+    const quantityText = `${qty} ${qty === 1 ? "equipo" : "equipos"}`;
+    const shippingText = version.shippingIncluded ? "pago contraentrega si hay cobertura" : "envio no incluido";
+    const message = `Hola Allpa Tech, quiero pedir ${quantityText} de ${version.name}. Total estimado ${formatMoney(subtotal)} (${shippingText}). Quiero confirmar disponibilidad, garantia, retoma y envio.`;
+    const href = `https://wa.me/573152112644?text=${encodeURIComponent(message)}`;
+
+    if (compareVersionId === activeVersionId) {
+      compareVersionId = comparisonMap[activeVersionId] || "industrial3";
+    }
+    renderChoiceCards(options);
+    renderSpec();
+
+    title.textContent = version.name;
+    includes.textContent = version.includes;
+    quantity.textContent = quantityText;
+    total.textContent = formatMoney(subtotal);
+    note.textContent = version.note;
+    whatsapp.href = href;
+
+    if (floatingSelection && floatingTotal && floatingWhatsapp) {
+      floatingSelection.textContent = version.name;
+      floatingTotal.textContent = formatMoney(subtotal);
+      floatingWhatsapp.href = href;
+    }
+
+    if (floatingQty) floatingQty.textContent = qty;
+  }
+
+  orderPanels.forEach((panel) => {
+    panel.addEventListener("toggle", () => {
+      if (!panel.open) return;
+      orderPanels.forEach((otherPanel) => {
+        if (otherPanel !== panel) otherPanel.open = false;
+      });
+    });
+  });
+
+  orderNextButtons.forEach((button) => {
+    button.addEventListener("click", () => openPanel(Number(button.dataset.orderNext)));
+  });
+
+  order.addEventListener("change", (event) => {
+    render();
+  });
+  minusButton.addEventListener("click", () => setQuantity(Number(qtyInput.value) - 1));
+  plusButton.addEventListener("click", () => setQuantity(Number(qtyInput.value) + 1));
+  floatingMinus?.addEventListener("click", () => setQuantity(Number(qtyInput.value) - 1));
+  floatingPlus?.addEventListener("click", () => setQuantity(Number(qtyInput.value) + 1));
+  qtyInput.addEventListener("input", render);
+  renderFaqs();
+  render();
+}
+
+const escaldadorPageConfig = {
+  versions: [
+    {
+      id: "uno",
+      name: "Escaldador de 1 pollo",
+      stage: "Etapa Emprendedor",
+      price: null,
+      promoPrice: null,
+      includes: "Tanque a gas con control adaptativo, electrovalvula y piloto",
+      note: "El asesor confirma precio, envio y disponibilidad segun ciudad.",
+      bestFor: "Para ordenar un proceso pequeño y estabilizar temperatura antes del pelado.",
+      specs: {
+        Combustible: "Gas",
+        Control: "Adaptativo de encendido y apagado",
+        Valvula: "Electrovalvula para abrir y cerrar gas",
+        Encendido: "Piloto automatico segun orden del controlador",
+        "Memoria termica": "Aprovecha el calor acumulado del agua",
+        Aislamiento: "Chaqueta de fibra de vidrio sellada",
+        Ahorro: "Hasta 70% menos consumo de gas al sostener temperatura",
+        Funcion: "Mantener temperatura estable para escaldado",
+      },
+    },
+    {
+      id: "tres",
+      name: "Escaldador de 3 pollos",
+      stage: "Planta Inicial",
+      price: null,
+      promoPrice: null,
+      includes: "Mayor capacidad con control adaptativo de gas",
+      note: "Ideal para mayor flujo. El asesor confirma precio, envio y disponibilidad.",
+      bestFor: "Para operaciones que ya necesitan escaldar mas volumen antes de pasar a peladora.",
+      specs: {
+        Combustible: "Gas",
+        Control: "Adaptativo de encendido y apagado",
+        Valvula: "Electrovalvula para abrir y cerrar gas",
+        Encendido: "Piloto automatico segun orden del controlador",
+        "Memoria termica": "Aprovecha el calor acumulado del agua",
+        Aislamiento: "Chaqueta de fibra de vidrio sellada",
+        Ahorro: "Hasta 70% menos consumo de gas al sostener temperatura",
+        Funcion: "Mantener temperatura estable para escaldado",
+      },
+    },
+  ],
+  faqs: [
+    {
+      question: "¿Por que importa mantener temperatura estable?",
+      answer: "Porque el escaldado prepara la pluma para desprenderse mejor. Si la temperatura cambia demasiado, el pelado puede volverse mas lento o irregular.",
+    },
+    {
+      question: "¿Que es el choque termico?",
+      answer: "Es el cambio controlado de temperatura que ayuda a preparar la piel y la pluma antes de pasar a la peladora. La estabilidad hace que ese paso sea mas repetible.",
+    },
+    {
+      question: "¿Como ahorra gas?",
+      answer: "El controlador ajusta tiempos de encendido y apagado usando la memoria termica del agua. Una vez el agua llega a temperatura, puede reducir hasta 70% el consumo de gas mientras sostiene la misma temperatura.",
+    },
+    {
+      question: "¿Para que sirve la chaqueta de fibra de vidrio?",
+      answer: "La chaqueta sellada ayuda a conservar el calor de la olla y reduce la perdida de temperatura. Asi el sistema no tiene que recuperar calor todo el tiempo.",
+    },
+    {
+      question: "¿Como enciende y apaga el gas?",
+      answer: "Usa una electrovalvula para abrir y cerrar el paso de gas, y un piloto que permite encendido automatico segun lo que ordena el controlador.",
+    },
+    {
+      question: "¿Por que compararlo con empresas grandes?",
+      answer: "Porque en plantas industrializadas el escaldado se controla por temperatura y tiempo. La idea es llevar ese criterio a una escala accesible para tu proyecto.",
+    },
+  ],
+};
+
+function initEscaldadorPage() {
+  const order = document.querySelector('[data-product-order="escaldador"]');
+  if (!order) return;
+
+  const options = order.querySelector("[data-escaldador-options]");
+  const tabs = document.querySelector("[data-escaldador-tabs]");
+  const specPanel = document.querySelector("[data-escaldador-spec]");
+  const faqList = document.querySelector("[data-escaldador-faq-list]");
+  const qtyInput = order.querySelector("[data-order-qty]");
+  const minusButton = order.querySelector("[data-qty-minus]");
+  const plusButton = order.querySelector("[data-qty-plus]");
+  const title = order.querySelector("[data-order-title]");
+  const includes = order.querySelector("[data-order-includes]");
+  const quantity = order.querySelector("[data-order-quantity]");
+  const total = order.querySelector("[data-order-total]");
+  const note = order.querySelector("[data-order-note]");
+  const whatsapp = order.querySelector("[data-order-whatsapp]");
+  const floatingSelection = document.querySelector("[data-floating-selection]");
+  const floatingTotal = document.querySelector("[data-floating-total]");
+  const floatingWhatsapp = document.querySelector("[data-floating-whatsapp]");
+  const floatingQty = document.querySelector("[data-floating-qty]");
+  const floatingMinus = document.querySelector("[data-floating-qty-minus]");
+  const floatingPlus = document.querySelector("[data-floating-qty-plus]");
+  const orderPanels = Array.from(order.querySelectorAll(".order-panel"));
+  const orderNextButtons = Array.from(order.querySelectorAll("[data-order-next]"));
+  let activeVersionId = "tres";
+
+  function escapeHtml(value) {
+    return String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function getVersion() {
+    return escaldadorPageConfig.versions.find((version) => version.id === activeVersionId) || escaldadorPageConfig.versions[0];
+  }
+
+  function getDisplayPrice(version) {
+    return version.promoPrice || version.price;
+  }
+
+  function formatNullablePrice(value) {
+    return value ? formatMoney(value) : "Por confirmar";
+  }
+
+  function getQuantity() {
+    const qty = Math.max(1, Math.min(20, Number(qtyInput.value) || 1));
+    qtyInput.value = qty;
+    return qty;
+  }
+
+  function setQuantity(nextQty) {
+    qtyInput.value = Math.max(1, Math.min(20, Number(nextQty) || 1));
+    render();
+  }
+
+  function openPanel(index) {
+    orderPanels.forEach((panel, panelIndex) => {
+      panel.open = panelIndex === index;
+    });
+  }
+
+  function renderOptions() {
+    if (!options) return;
+    options.innerHTML = escaldadorPageConfig.versions
+      .map((version) => `
+        <label>
+          <input type="radio" name="escaldadorVersion" value="${escapeHtml(version.id)}"${version.id === activeVersionId ? " checked" : ""} />
+          <strong>${escapeHtml(version.name)}</strong>
+          <span>${escapeHtml(version.stage)} · ${formatNullablePrice(getDisplayPrice(version))}</span>
+          <span>Gas con control adaptativo</span>
+        </label>
+      `)
+      .join("");
+  }
+
+  function renderTabs() {
+    if (!tabs) return;
+    tabs.innerHTML = escaldadorPageConfig.versions
+      .map((version) => `
+        <button type="button" class="${version.id === activeVersionId ? "is-active" : ""}" data-escaldador-tab="${escapeHtml(version.id)}">
+          <span>${escapeHtml(version.stage)}</span>
+          <strong>${escapeHtml(version.name)}</strong>
+        </button>
+      `)
+      .join("");
+
+    tabs.querySelectorAll("[data-escaldador-tab]").forEach((button) => {
+      button.addEventListener("click", () => {
+        activeVersionId = button.dataset.escaldadorTab;
+        render();
+      });
+    });
+  }
+
+  function renderSpec() {
+    if (!specPanel) return;
+    const version = getVersion();
+    const specs = Object.entries(version.specs)
+      .map(([label, value]) => `<li><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></li>`)
+      .join("");
+    specPanel.innerHTML = `
+      <div>
+        <p class="eyebrow">${escapeHtml(version.stage)}</p>
+        <h3>${escapeHtml(version.name)}</h3>
+        <p>${escapeHtml(version.bestFor)}</p>
+      </div>
+      <ul class="spec-list">${specs}</ul>
+      <div class="comparison-vs">
+        <div>
+          <span>Como trabaja</span>
+          <strong>Controla temperatura y gas automaticamente</strong>
+        </div>
+        <div>
+          <span>Antes de pelar</span>
+          <strong>Busca un choque termico mas estable</strong>
+        </div>
+        <ul>
+          <li><span>Industrializado</span><strong>Temperatura + tiempo</strong><strong>Proceso repetible</strong></li>
+          <li><span>Allpa Tech</span><strong>Control adaptativo</strong><strong>Escala emprendedor/planta inicial</strong></li>
+        </ul>
+      </div>
+    `;
+  }
+
+  function renderFaqs() {
+    if (!faqList) return;
+    faqList.innerHTML = escaldadorPageConfig.faqs
+      .map((faq, index) => `
+        <details${index === 0 ? " open" : ""}>
+          <summary>${escapeHtml(faq.question)}</summary>
+          <p>${escapeHtml(faq.answer)}</p>
+        </details>
+      `)
+      .join("");
+  }
+
+  function render() {
+    const version = getVersion();
+    const qty = getQuantity();
+    const unitPrice = getDisplayPrice(version);
+    const subtotal = unitPrice ? unitPrice * qty : null;
+    const quantityText = `${qty} ${qty === 1 ? "equipo" : "equipos"}`;
+    const totalText = formatNullablePrice(subtotal);
+    const message = `Hola Allpa Tech, quiero cotizar ${quantityText} de ${version.name}. Quiero confirmar precio, envio, disponibilidad y capacidad recomendada para mi proceso.`;
+    const href = `https://wa.me/573152112644?text=${encodeURIComponent(message)}`;
+
+    renderOptions();
+    renderTabs();
+    renderSpec();
+
+    title.textContent = version.name;
+    includes.textContent = version.includes;
+    quantity.textContent = quantityText;
+    total.textContent = totalText;
+    note.textContent = version.note;
+    whatsapp.href = href;
+
+    if (floatingSelection && floatingTotal && floatingWhatsapp) {
+      floatingSelection.textContent = version.name;
+      floatingTotal.textContent = totalText;
+      floatingWhatsapp.href = href;
+    }
+
+    if (floatingQty) floatingQty.textContent = qty;
+  }
+
+  orderPanels.forEach((panel) => {
+    panel.addEventListener("toggle", () => {
+      if (!panel.open) return;
+      orderPanels.forEach((otherPanel) => {
+        if (otherPanel !== panel) otherPanel.open = false;
+      });
+    });
+  });
+
+  orderNextButtons.forEach((button) => {
+    button.addEventListener("click", () => openPanel(Number(button.dataset.orderNext)));
+  });
+
+  order.addEventListener("change", (event) => {
+    if (event.target.name === "escaldadorVersion") {
+      activeVersionId = event.target.value;
+    }
+    render();
+  });
+  minusButton.addEventListener("click", () => setQuantity(Number(qtyInput.value) - 1));
+  plusButton.addEventListener("click", () => setQuantity(Number(qtyInput.value) + 1));
+  floatingMinus?.addEventListener("click", () => setQuantity(Number(qtyInput.value) - 1));
+  floatingPlus?.addEventListener("click", () => setQuantity(Number(qtyInput.value) + 1));
+  qtyInput.addEventListener("input", render);
+  renderFaqs();
+  render();
+}
+
 initRetakeSimulator();
 initStageTabs();
 initGrowthCarousel();
@@ -1152,3 +2233,6 @@ initProductCards();
 initProductGallery();
 initSalesCarousels();
 initConesOrder();
+initAturdidorPage();
+initPeladoraPage();
+initEscaldadorPage();
