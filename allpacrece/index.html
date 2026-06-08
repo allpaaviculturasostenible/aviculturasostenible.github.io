@@ -17,7 +17,7 @@
         <span>Allpa Tech Crece</span>
       </a>
       <nav class="nav-links" aria-label="Secciones">
-        <a href="#finder">Diagnóstico</a>
+        <a href="#finder">Encuentra tu equipo</a>
         <a href="#ruta">Ruta</a>
         <a href="#retoma">Retoma</a>
       </nav>
@@ -39,7 +39,7 @@
             hacia un proceso avícola más ordenado, medible y rentable.
           </p>
           <div class="hero-actions">
-            <a class="button primary" href="#finder">Encontrar mi etapa</a>
+            <a class="button primary" href="#finder">Encontrar mi equipo</a>
             <a class="button ghost" href="#ruta">Ver la ruta</a>
           </div>
         </div>
@@ -87,18 +87,18 @@
 
             <article class="growth-card" data-carousel-card>
               <span class="step-number">03</span>
-              <p class="eyebrow">En producción</p>
+              <p class="eyebrow">Actualizable</p>
               <div class="step-visual visual-taladro" aria-hidden="true">
                 <span></span>
                 <span></span>
                 <span></span>
               </div>
               <h3>Reduce trabajo manual</h3>
-              <p>La peladora de taladro está en producción para ayudarte a crecer sin saltar directo a una planta.</p>
+              <p>La peladora de tambor para taladro te ayuda a crecer sin saltar directo a una planta.</p>
               <ul class="step-points">
-                <li>Pensada para la etapa Emprendedor.</li>
-                <li>Complementa conos y aturdidor.</li>
-                <li>Próximo paso para aumentar flujo con menor inversión.</li>
+                <li>Tambor que se acopla al taladro.</li>
+                <li>Versión con base para estabilizarlo.</li>
+                <li>Kit para actualizar del tambor a la base.</li>
               </ul>
             </article>
 
@@ -147,7 +147,7 @@
               <h3>Lo que viene en camino</h3>
               <p>Allpa Crece seguirá sumando soluciones para acompañar más partes de tu proyecto avícola.</p>
               <ul class="step-points">
-                <li>Sensores para producción controlada.</li>
+                <li>Sensor de temperatura con sonido.</li>
                 <li>Crianza con tecnología.</li>
                 <li>Equipos reacondicionados según inventario futuro.</li>
               </ul>
@@ -165,39 +165,139 @@
 
       <section id="finder" class="finder-section">
         <div class="section-copy">
-          <p class="eyebrow">Diagnóstico interactivo</p>
-          <h2>Ubica tu punto de partida</h2>
+          <p class="eyebrow">Asesor Allpa</p>
+          <h2>Encuentra el equipo que te conviene cotizar</h2>
           <p>
-            Cuéntanos cuántos pollos procesas y qué quieres mejorar primero.
-            Con esa información verás una ruta clara para comprar, esperar un
-            lanzamiento o solicitar evaluación de retoma.
+            Empecemos por lo más simple. Si ya sabes qué equipo necesitas, puedes
+            cotizarlo de una vez. Si no, te guiamos paso a paso.
           </p>
         </div>
 
         <div class="finder-shell" aria-live="polite">
           <div class="chat-window" id="chatWindow">
-            <div class="bubble bot">Hola. Para ayudarte a elegir bien, empecemos por tu volumen: ¿cuántos pollos procesas al mes?</div>
+            <div class="bubble bot">Hola. Empecemos fácil: ¿cuántos pollos procesas al mes?</div>
           </div>
 
           <form class="finder-controls" id="finderForm">
-            <label for="volume">Pollos al mes</label>
-            <div class="range-row">
-              <input id="volume" name="volume" type="range" min="50" max="1500" step="50" value="250" />
-              <output id="volumeOutput" for="volume">250</output>
+            <div class="finder-progress" aria-hidden="true">
+              <span class="is-active"></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
             </div>
 
-            <fieldset>
-              <legend>¿Qué quieres mejorar primero?</legend>
+            <fieldset class="question-card is-active" data-finder-step="volume">
+              <legend>¿Cuántos pollos procesas al mes?</legend>
+              <p>Con tu volumen podemos saber si estás en Inicio Allpa, Emprendedor o Planta Inicial.</p>
+              <div class="range-row">
+                <input id="volume" name="volume" type="range" min="20" max="1500" step="10" value="120" />
+                <output id="volumeOutput" for="volume">120</output>
+              </div>
+              <button class="button primary full" type="button" data-next-step>Continuar</button>
+            </fieldset>
+
+            <fieldset class="question-card" data-finder-step="product">
+              <legend>¿Ya sabes qué equipo quieres cotizar?</legend>
+              <p>Si ya tienes claro el equipo, te llevamos directo a WhatsApp. Si no, te ayudamos a elegir.</p>
               <div class="choice-grid">
-                <label><input type="radio" name="priority" value="beneficio" checked /> Beneficio</label>
-                <label><input type="radio" name="priority" value="control" /> Control próximamente</label>
-                <label><input type="radio" name="priority" value="crianza" /> Crianza próximamente</label>
-                <label><input type="radio" name="priority" value="actualizacion" /> Actualización</label>
-                <label><input type="radio" name="priority" value="reacondicionados" /> Reacondicionados próximamente</label>
+                <label><input type="radio" name="specificProduct" value="unsure" checked /> No estoy seguro, quiero que me guíen</label>
+                <details class="product-menu">
+                  <summary>Conos</summary>
+                  <div>
+                    <label><input type="radio" name="specificProduct" value="conosIndividual" /> Cono individual</label>
+                    <label><input type="radio" name="specificProduct" value="conosBaseTres" /> Base de 3 conos</label>
+                    <label><input type="radio" name="specificProduct" value="conosBaseCinco" /> Base de 5 conos</label>
+                  </div>
+                </details>
+                <details class="product-menu">
+                  <summary>Peladora</summary>
+                  <div>
+                    <label><input type="radio" name="specificProduct" value="peladoraTambor" /> Tambor para taladro</label>
+                    <label><input type="radio" name="specificProduct" value="peladoraBase" /> Base para taladro</label>
+                    <label><input type="radio" name="specificProduct" value="peladoraIndustrial" /> Peladora automática industrial</label>
+                  </div>
+                </details>
+                <details class="product-menu">
+                  <summary>Aturdidor</summary>
+                  <div>
+                    <label><input type="radio" name="specificProduct" value="aturdidorBasico" /> Básico</label>
+                    <label><input type="radio" name="specificProduct" value="aturdidorUnPollo" /> De un pollo</label>
+                    <label><input type="radio" name="specificProduct" value="aturdidorIndustrial" /> Industrial rotatorio</label>
+                  </div>
+                </details>
+                <details class="product-menu">
+                  <summary>Escaldador</summary>
+                  <div>
+                    <label><input type="radio" name="specificProduct" value="sensorTemperatura" /> Sensor con sonido</label>
+                    <label><input type="radio" name="specificProduct" value="escaldadorUno" /> Escaldador de un pollo</label>
+                    <label><input type="radio" name="specificProduct" value="escaldadorTres" /> Escaldador de 3 pollos</label>
+                  </div>
+                </details>
+              </div>
+              <div class="step-actions">
+                <button class="button subtle" type="button" data-prev-step>Volver</button>
+                <button class="button primary" type="button" data-next-step>Continuar</button>
               </div>
             </fieldset>
 
-            <button class="button primary full" type="submit">Recomendar ruta</button>
+            <fieldset class="question-card" data-finder-step="budget">
+              <legend>¿Con qué presupuesto quieres iniciar?</legend>
+              <p>Esto nos ayuda a recomendarte una compra posible hoy y una actualización para después.</p>
+              <div class="range-row budget-row">
+                <input id="budget" name="budget" type="range" min="100000" max="5000000" step="100000" value="800000" />
+                <output id="budgetOutput" for="budget">$800 mil</output>
+              </div>
+              <div class="step-actions">
+                <button class="button subtle" type="button" data-prev-step>Volver</button>
+                <button class="button primary" type="button" data-next-step>Continuar</button>
+              </div>
+            </fieldset>
+
+            <fieldset class="question-card" data-finder-step="pain">
+              <legend>¿Qué quieres mejorar primero?</legend>
+              <p>Elige el punto que más te está frenando hoy. Desde ahí armamos tu ruta.</p>
+              <div class="choice-grid">
+                <label><input type="radio" name="pain" value="orden" checked /> Conos de faenado: sujetar mejor el pollo y trabajar más cómodo</label>
+                <label><input type="radio" name="pain" value="pelado" /> Reducir trabajo al pelar</label>
+                <label><input type="radio" name="pain" value="aturdido" /> Anestesia eléctrica: mejorar el manejo antes del beneficio</label>
+                <label><input type="radio" name="pain" value="escaldado" /> Controlar mejor el escaldado</label>
+                <label><input type="radio" name="pain" value="capacidad" /> Procesar más rápido</label>
+              </div>
+              <div class="step-actions">
+                <button class="button subtle" type="button" data-prev-step>Volver</button>
+                <button class="button primary" type="button" data-next-step>Continuar</button>
+              </div>
+            </fieldset>
+
+            <fieldset class="question-card" data-finder-step="buy">
+              <legend>¿Cómo quieres empezar?</legend>
+              <p>Allpa Crece está pensado para que puedas comprar un primer equipo y mejorar después.</p>
+              <div class="choice-grid">
+                <label><input type="radio" name="buyStyle" value="actualizable" checked /> Quiero iniciar con una opción básica y actualizar después</label>
+                <label><input type="radio" name="buyStyle" value="completo" /> Prefiero comprar una solución más completa desde el inicio</label>
+              </div>
+              <div class="step-actions">
+                <button class="button subtle" type="button" data-prev-step>Volver</button>
+                <button class="button primary" type="button" data-next-step>Continuar</button>
+              </div>
+            </fieldset>
+
+            <fieldset class="question-card" data-finder-step="payment">
+              <legend>Cuando tengas claro el equipo, ¿cómo quieres avanzar?</legend>
+              <p>Puedes cotizar de contado o preguntar por alternativas para separar o financiar.</p>
+              <div class="choice-grid">
+                <label><input type="radio" name="payment" value="contado" checked /> Quiero cotizar de contado</label>
+                <label><input type="radio" name="payment" value="separe" /> Quiero separar mi equipo y pagarlo por partes</label>
+                <label><input type="radio" name="payment" value="sistecredito" /> Quiero revisar si aplica a Sistecrédito</label>
+                <label><input type="radio" name="payment" value="orientacion" /> Quiero hablar con un asesor antes de decidir</label>
+              </div>
+              <div class="step-actions">
+                <button class="button subtle" type="button" data-prev-step>Volver</button>
+                <button class="button primary" type="submit">Ver mi ruta sugerida</button>
+              </div>
+            </fieldset>
           </form>
 
           <div class="result-panel" id="resultPanel" hidden></div>
@@ -215,29 +315,77 @@
           </p>
         </div>
 
-        <div class="route-grid">
-          <article class="route-card" data-stage="emprendedor">
-            <span>100 a 300 pollos/mes</span>
-            <h3>Emprendedor</h3>
-            <p>Si estás empezando, puedes iniciar solo con conos. Después sumas aturdidor y, cuando esté lista, la peladora de taladro.</p>
-            <a href="productos/conos.html">Iniciar con conos</a>
-          </article>
-          <article class="route-card" data-stage="planta">
-            <span>300 a 1000 pollos/mes</span>
-            <h3>Planta Inicial</h3>
-            <p>Si tu volumen ya creció, organiza el flujo con conos, varios aturdidores, escaldadora de 3 pollos y peladora automática.</p>
-            <a href="productos/pelador.html">Ver peladora automática</a>
-          </article>
-          <article class="route-card" data-stage="control">
+        <div class="stage-experience" data-stage-tabs>
+          <div class="stage-tabs" role="tablist" aria-label="Etapas de crecimiento Allpa Crece">
+            <button id="stageTabInicio" class="stage-tab is-active" type="button" role="tab" aria-selected="true" aria-controls="stagePanelInicio" data-stage-tab="inicio">Inicio Allpa</button>
+            <button id="stageTabEmprendedor" class="stage-tab" type="button" role="tab" aria-selected="false" aria-controls="stagePanelEmprendedor" data-stage-tab="emprendedor">Emprendedor</button>
+            <button id="stageTabPlanta" class="stage-tab" type="button" role="tab" aria-selected="false" aria-controls="stagePanelPlanta" data-stage-tab="planta">Planta Inicial</button>
+          </div>
+
+          <p class="sr-only" aria-live="polite" data-stage-live>Inicio Allpa</p>
+
+          <div class="stage-panels">
+            <article id="stagePanelInicio" class="stage-panel is-active" role="tabpanel" aria-labelledby="stageTabInicio" data-stage-panel="inicio">
+              <picture class="stage-visual">
+                <source srcset="assets/stage-inicio.webp" type="image/webp" />
+                <img src="assets/stage-inicio.png" alt="Avicultor iniciando su proceso con equipos básicos Allpa Tech y pocos pollitos" loading="lazy" />
+              </picture>
+              <div class="stage-copy">
+                <span class="stage-badge">Primeros equipos</span>
+                <h3>Inicio Allpa</h3>
+                <p>Puedes empezar con una inversión pequeña y resolver el dolor que más te frena hoy, sin comprar una planta completa.</p>
+                <ul class="equipment-list">
+                  <li>Conos de faenado: individual, base de 3 o base de 5.</li>
+                  <li>Sensor de temperatura con sonido para escaldar con más control.</li>
+                  <li>Aturdidor básico o peladora de tambor para taladro si ese es tu siguiente dolor.</li>
+                </ul>
+                <a class="button primary" href="#finder">Encontrar mi primer equipo</a>
+              </div>
+            </article>
+
+            <article id="stagePanelEmprendedor" class="stage-panel" role="tabpanel" aria-labelledby="stageTabEmprendedor" data-stage-panel="emprendedor" hidden>
+              <picture class="stage-visual">
+                <source srcset="assets/stage-emprendedor.webp" type="image/webp" />
+                <img src="assets/stage-emprendedor.png" alt="Avicultor en etapa emprendedor con más pollitos y equipos Allpa Tech actualizables" loading="lazy" />
+              </picture>
+              <div class="stage-copy">
+                <span class="stage-badge">Más ritmo</span>
+                <h3>Etapa Emprendedor</h3>
+                <p>Cuando vendes más, tu proceso necesita menos improvisación y equipos que puedan actualizarse contigo.</p>
+                <ul class="equipment-list">
+                  <li>Conos o bases de conos para sostener mejor el faenado.</li>
+                  <li>Aturdidor de un pollo para anestesia eléctrica con más estabilidad.</li>
+                  <li>Peladora con base para taladro o escaldador de un pollo según tu cuello de botella.</li>
+                </ul>
+                <a class="button primary" href="#finder">Armar mi siguiente compra</a>
+              </div>
+            </article>
+
+            <article id="stagePanelPlanta" class="stage-panel" role="tabpanel" aria-labelledby="stageTabPlanta" data-stage-panel="planta" hidden>
+              <picture class="stage-visual">
+                <source srcset="assets/stage-planta.webp" type="image/webp" />
+                <img src="assets/stage-planta.png" alt="Avicultor con planta inicial Allpa Tech, más capacidad y equipos organizados" loading="lazy" />
+              </picture>
+              <div class="stage-copy">
+                <span class="stage-badge">Capacidad estable</span>
+                <h3>Planta Inicial</h3>
+                <p>Si ya procesas más volumen, te conviene pensar en flujo completo: manejo, escaldado y pelado trabajando juntos.</p>
+                <ul class="equipment-list">
+                  <li>Conos y varios aturdidores, o aturdidor industrial rotatorio.</li>
+                  <li>Escaldador de 3 pollos para sostener temperatura y ritmo.</li>
+                  <li>Peladora automática industrial de 2 pollos para reducir carga manual.</li>
+                </ul>
+                <a class="button primary" href="#finder">Cotizar mi planta inicial</a>
+              </div>
+            </article>
+          </div>
+
+          <article class="coming-stage">
             <span>Próximamente</span>
-            <h3>Producción Controlada</h3>
-            <p>Cuando esta línea esté habilitada, podrás controlar temperatura, pH del agua y calidad de aire para decidir con datos.</p>
-            <a href="productos/sensores.html">Ver línea futura</a>
-          </article>
-          <article class="route-card" data-stage="crianza">
-            <span>Próximamente</span>
-            <h3>Crianza con Tecnología</h3>
-            <p>Esta línea futura te ayudará a fortalecer el inicio del ciclo con incubadoras, cunas y automatizaciones.</p>
+            <div>
+              <h3>Crianza con tecnología</h3>
+              <p>Allpa Crece también sumará soluciones para acompañar el inicio del ciclo productivo.</p>
+            </div>
             <a href="productos/crianza.html">Ver línea futura</a>
           </article>
         </div>
@@ -264,16 +412,16 @@
 
       <section class="products-section">
         <div class="section-copy center">
-          <p class="eyebrow">Catálogo y próximos lanzamientos</p>
-          <h2>Elige con claridad qué comprar hoy y qué esperar</h2>
+          <p class="eyebrow">Catálogo disponible</p>
+          <h2>Elige con claridad qué comprar hoy y cómo actualizar después</h2>
         </div>
         <div class="product-grid">
           <a class="product-card" href="productos/conos.html"><span>Disponible</span><strong>Conos</strong><small>Individual, base de 3 y base de 5</small></a>
           <a class="product-card" href="productos/aturdidor.html"><span>Disponible · retoma</span><strong>Aturdidor</strong><small>Un pollo</small></a>
           <a class="product-card" href="productos/escaldador.html"><span>Disponible · retoma</span><strong>Escaldador</strong><small>1 pollo y 3 pollos</small></a>
           <a class="product-card" href="productos/pelador.html"><span>Disponible · retoma</span><strong>Peladora automática</strong><small>2 pollos</small></a>
-          <a class="product-card locked" href="productos/peladora-taladro.html"><span>En producción</span><strong>Peladora de taladro</strong><small>Ruta Emprendedor</small></a>
-          <a class="product-card locked" href="productos/sensores.html"><span>Próximamente</span><strong>Sensores</strong><small>Producción Controlada</small></a>
+          <a class="product-card" href="productos/peladora-taladro.html"><span>Disponible</span><strong>Peladora de taladro</strong><small>Tambor, base y kit</small></a>
+          <a class="product-card" href="productos/sensores.html"><span>Disponible</span><strong>Sensor temperatura</strong><small>Aviso sonoro para escaldado</small></a>
           <a class="product-card locked" href="productos/crianza.html"><span>Próximamente</span><strong>Crianza</strong><small>Tecnología para el inicio</small></a>
           <a class="product-card" href="productos/retoma.html"><span>Actualizar</span><strong>Retoma</strong></a>
           <a class="product-card locked" href="productos/reacondicionados.html"><span>Próximamente</span><strong>Reacondicionados</strong><small>Según inventario futuro</small></a>
