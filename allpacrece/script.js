@@ -7,6 +7,7 @@ const carousel = document.querySelector("[data-carousel]");
 const finderSteps = Array.from(document.querySelectorAll("[data-finder-step]"));
 const finderProgress = Array.from(document.querySelectorAll(".finder-progress span"));
 const stageExperience = document.querySelector("[data-stage-tabs]");
+const retakeSimulator = document.querySelector("[data-retake-simulator]");
 let activeFinderStep = 0;
 
 const finderStepMessages = {
@@ -129,7 +130,8 @@ function formatMoney(value) {
   if (amount >= 5000000) return "Más de $5 millones";
   if (amount >= 1000000) {
     const millions = amount / 1000000;
-    return `$${millions.toFixed(millions % 1 ? 1 : 0)} millones`;
+    const label = millions === 1 ? "millón" : "millones";
+    return `$${millions.toFixed(millions % 1 ? 1 : 0)} ${label}`;
   }
   return `$${Math.round(amount / 1000)} mil`;
 }
@@ -437,6 +439,136 @@ if (finderForm) {
   setFinderStep(0, false);
 }
 
+const retakeProducts = {
+  aturdidor: {
+    label: "Aturdidor de un pollo",
+    regularPrice: 1000000,
+    promoPrice: 800000,
+    logistics: 120000,
+    tradeBonus: 600000,
+    programDiscount: 200000,
+    upgrades: [
+      {
+        id: "industrial",
+        label: "Aturdidor industrial giratorio de 3 pollos",
+        shortLabel: "Industrial giratorio de 3 pollos",
+        price: 2000000,
+        copy: "Subes a 3 conos rotatorios para aumentar velocidad y manejar mejor los picos de producción.",
+      },
+    ],
+  },
+};
+
+function initRetakeSimulator() {
+  if (!retakeSimulator) return;
+
+  const productSelect = retakeSimulator.querySelector("[data-retake-product]");
+  const upgradeSelect = retakeSimulator.querySelector("[data-retake-upgrade]");
+  const promoInput = retakeSimulator.querySelector("[data-retake-promo]");
+  const conditionInput = retakeSimulator.querySelector("[data-retake-condition]");
+  const upgradeCopy = retakeSimulator.querySelector("[data-upgrade-copy]");
+  const initialTotal = retakeSimulator.querySelector("[data-initial-total]");
+  const initialDetail = retakeSimulator.querySelector("[data-initial-detail]");
+  const totalSaving = retakeSimulator.querySelector("[data-total-saving]");
+  const upgradePay = retakeSimulator.querySelector("[data-upgrade-pay]");
+  const upgradeDetail = retakeSimulator.querySelector("[data-upgrade-detail]");
+  const nextName = retakeSimulator.querySelector("[data-next-name]");
+  const nextPrice = retakeSimulator.querySelector("[data-next-price]");
+  const programDiscount = retakeSimulator.querySelector("[data-program-discount]");
+  const tradeBonus = retakeSimulator.querySelector("[data-trade-bonus]");
+  const finalPay = retakeSimulator.querySelector("[data-final-pay]");
+  const summaryTitle = retakeSimulator.querySelector("[data-summary-title]");
+  const summaryCurrent = retakeSimulator.querySelector("[data-summary-current]");
+  const summaryUpgrade = retakeSimulator.querySelector("[data-summary-upgrade]");
+  const summarySaving = retakeSimulator.querySelector("[data-summary-saving]");
+  const summaryPay = retakeSimulator.querySelector("[data-summary-pay]");
+  const summaryNote = retakeSimulator.querySelector("[data-summary-note]");
+  const panels = Array.from(retakeSimulator.querySelectorAll(".retake-panel"));
+  const nextButtons = Array.from(retakeSimulator.querySelectorAll("[data-retake-next]"));
+
+  function openPanel(index) {
+    panels.forEach((panel, panelIndex) => {
+      panel.open = panelIndex === index;
+    });
+  }
+
+  function populateUpgrades() {
+    const product = retakeProducts[productSelect.value] || retakeProducts.aturdidor;
+    upgradeSelect.innerHTML = product.upgrades
+      .map((upgrade) => `<option value="${upgrade.id}">${upgrade.label}</option>`)
+      .join("");
+  }
+
+  function getSelectedUpgrade(product) {
+    return product.upgrades.find((upgrade) => upgrade.id === upgradeSelect.value) || product.upgrades[0];
+  }
+
+  function render() {
+    const product = retakeProducts[productSelect.value] || retakeProducts.aturdidor;
+    const upgrade = getSelectedUpgrade(product);
+    const boughtInPromo = promoInput.checked;
+    const eligible = conditionInput.checked;
+    const firstPrice = boughtInPromo ? product.promoPrice : product.regularPrice;
+    const initialValue = firstPrice + product.logistics;
+    const activeTradeBonus = eligible ? product.tradeBonus : 0;
+    const activeProgramDiscount = eligible ? product.programDiscount : 0;
+    const saving = activeTradeBonus + activeProgramDiscount;
+    const payToUpgrade = upgrade.price - saving;
+
+    initialTotal.textContent = formatMoney(initialValue);
+    initialDetail.textContent = `${product.label} ${boughtInPromo ? "en promoción" : "a precio regular"} + envío e impuestos.`;
+    totalSaving.textContent = eligible ? formatMoney(saving) : "Por evaluar";
+    upgradePay.textContent = formatMoney(payToUpgrade);
+    upgradeDetail.textContent = eligible
+      ? `Valor del ${upgrade.shortLabel} menos bono y descuento.`
+      : "Primero debemos revisar si el equipo aplica a retoma.";
+    upgradeCopy.textContent = upgrade.copy;
+    nextName.textContent = upgrade.label;
+    nextPrice.textContent = formatMoney(upgrade.price);
+    programDiscount.textContent = eligible ? `-${formatMoney(product.programDiscount)}` : "Por evaluar";
+    tradeBonus.textContent = eligible ? `-${formatMoney(product.tradeBonus)}` : "Por evaluar";
+    finalPay.textContent = formatMoney(payToUpgrade);
+    summaryTitle.textContent = `${product.label} → ${upgrade.shortLabel}`;
+    summaryCurrent.textContent = product.label;
+    summaryUpgrade.textContent = upgrade.shortLabel;
+    summarySaving.textContent = eligible ? formatMoney(saving) : "Por evaluar";
+    summaryPay.textContent = formatMoney(payToUpgrade);
+    summaryNote.textContent = eligible
+      ? `Tu ahorro combina ${formatMoney(product.tradeBonus)} de bono por equipo y ${formatMoney(product.programDiscount)} de descuento Allpa Tech.`
+      : "Si el equipo no funciona o la estructura está rota, el bono debe evaluarse antes de confirmar la retoma.";
+  }
+
+  productSelect.addEventListener("change", () => {
+    populateUpgrades();
+    render();
+    openPanel(1);
+  });
+
+  [upgradeSelect, promoInput, conditionInput].forEach((control) => {
+    control.addEventListener("change", render);
+  });
+
+  nextButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const currentPanel = button.closest(".retake-panel");
+      const currentIndex = panels.indexOf(currentPanel);
+      openPanel(Math.min(currentIndex + 1, panels.length - 1));
+    });
+  });
+
+  panels.forEach((panel, panelIndex) => {
+    panel.addEventListener("toggle", () => {
+      if (!panel.open) return;
+      panels.forEach((otherPanel, otherIndex) => {
+        if (otherIndex !== panelIndex) otherPanel.open = false;
+      });
+    });
+  });
+
+  populateUpgrades();
+  render();
+}
+
 function initStageTabs() {
   if (!stageExperience) return;
 
@@ -600,5 +732,19 @@ function initGrowthCarousel() {
   setPaused(isPaused);
 }
 
+function initProductCards() {
+  const cards = Array.from(document.querySelectorAll(".product-card"));
+  cards.forEach((card) => {
+    card.addEventListener("toggle", () => {
+      if (!card.open) return;
+      cards.forEach((otherCard) => {
+        if (otherCard !== card) otherCard.open = false;
+      });
+    });
+  });
+}
+
+initRetakeSimulator();
 initStageTabs();
 initGrowthCarousel();
+initProductCards();
