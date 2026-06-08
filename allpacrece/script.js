@@ -744,7 +744,411 @@ function initProductCards() {
   });
 }
 
+function initProductGallery() {
+  const galleries = Array.from(document.querySelectorAll(".sales-gallery"));
+
+  galleries.forEach((gallery) => {
+    const mainImage = gallery.querySelector(".main-product-image img");
+    const mainSource = gallery.querySelector(".main-product-image source");
+    const thumbs = Array.from(gallery.querySelectorAll("[data-gallery-thumb]"));
+    if (!mainImage || !thumbs.length) return;
+    const uniqueThumbs = thumbs.filter(
+      (thumb, index, list) => list.findIndex((item) => item.src === thumb.src) === index,
+    );
+    let activeIndex = 0;
+
+    function setActiveThumb(selectedThumb) {
+      const nextSrc = selectedThumb.currentSrc || selectedThumb.src;
+      const nextAlt = selectedThumb.dataset.galleryAlt || selectedThumb.alt || mainImage.alt;
+      mainImage.src = nextSrc;
+      mainImage.alt = nextAlt;
+      if (mainSource) {
+        mainSource.srcset = nextSrc;
+      }
+
+      thumbs.forEach((thumb) => {
+        const isActive = thumb.src === selectedThumb.src;
+        thumb.classList.toggle("is-active", isActive);
+        thumb.setAttribute("aria-pressed", isActive ? "true" : "false");
+      });
+      activeIndex = Math.max(0, uniqueThumbs.findIndex((thumb) => thumb.src === selectedThumb.src));
+    }
+
+    function moveGallery(delta) {
+      const nextIndex = (activeIndex + delta + uniqueThumbs.length) % uniqueThumbs.length;
+      setActiveThumb(uniqueThumbs[nextIndex]);
+    }
+
+    thumbs.forEach((thumb) => {
+      thumb.setAttribute("role", "button");
+      thumb.setAttribute("tabindex", "0");
+      thumb.setAttribute("aria-pressed", "false");
+      thumb.addEventListener("click", () => setActiveThumb(thumb));
+      thumb.addEventListener("keydown", (event) => {
+        if (event.key !== "Enter" && event.key !== " ") return;
+        event.preventDefault();
+        setActiveThumb(thumb);
+      });
+    });
+
+    const prevButton = document.createElement("button");
+    prevButton.type = "button";
+    prevButton.className = "carousel-arrow is-prev";
+    prevButton.setAttribute("aria-label", "Ver imagen anterior del producto");
+    prevButton.textContent = "‹";
+    prevButton.addEventListener("click", () => moveGallery(-1));
+
+    const nextButton = document.createElement("button");
+    nextButton.type = "button";
+    nextButton.className = "carousel-arrow is-next";
+    nextButton.setAttribute("aria-label", "Ver siguiente imagen del producto");
+    nextButton.textContent = "›";
+    nextButton.addEventListener("click", () => moveGallery(1));
+
+    gallery.append(prevButton, nextButton);
+
+    const initialThumb = thumbs.find((thumb) => thumb.src === mainImage.src) || thumbs[0];
+    setActiveThumb(initialThumb);
+  });
+}
+
+function initSalesCarousels() {
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const carousels = Array.from(document.querySelectorAll("[data-sales-carousel]"));
+
+  carousels.forEach((carousel) => {
+    const track = carousel.querySelector("[data-carousel-track]");
+    if (!track) return;
+
+    const slides = Array.from(track.children).filter((slide) => slide.getAttribute("aria-hidden") !== "true");
+    if (slides.length < 2) return;
+
+    let activeIndex = 0;
+    let autoplayTimer = 0;
+    let resumeTimer = 0;
+    const delay = Number(carousel.dataset.carouselDelay) || 8200;
+    const resumeDelay = carousel.dataset.carouselContinuous === "true" ? delay : delay * 2;
+    const dots = document.createElement("div");
+    dots.className = "sales-carousel-dots";
+    dots.setAttribute("aria-label", "Navegación del carrusel");
+    const prevButton = document.createElement("button");
+    prevButton.type = "button";
+    prevButton.className = "carousel-arrow is-prev";
+    prevButton.setAttribute("aria-label", "Ver elemento anterior");
+    prevButton.textContent = "‹";
+    const nextButton = document.createElement("button");
+    nextButton.type = "button";
+    nextButton.className = "carousel-arrow is-next";
+    nextButton.setAttribute("aria-label", "Ver siguiente elemento");
+    nextButton.textContent = "›";
+
+    const dotButtons = slides.map((_, index) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "sales-carousel-dot";
+      button.setAttribute("aria-label", `Ver elemento ${index + 1} de ${slides.length}`);
+      button.addEventListener("click", () => {
+        setActive(index);
+        pauseTemporarily();
+      });
+      dots.appendChild(button);
+      return button;
+    });
+
+    prevButton.addEventListener("click", () => {
+      setActive(activeIndex - 1);
+      pauseTemporarily();
+    });
+
+    nextButton.addEventListener("click", () => {
+      setActive(activeIndex + 1);
+      pauseTemporarily();
+    });
+
+    carousel.append(prevButton, nextButton, dots);
+
+    function stopAutoplay() {
+      window.clearInterval(autoplayTimer);
+      autoplayTimer = 0;
+    }
+
+    function startAutoplay() {
+      if (reduceMotion.matches || autoplayTimer) return;
+      autoplayTimer = window.setInterval(() => setActive(activeIndex + 1), delay);
+    }
+
+    function setActive(index) {
+      activeIndex = (index + slides.length) % slides.length;
+      const firstOffset = slides[0].offsetLeft;
+      const targetOffset = slides[activeIndex].offsetLeft - firstOffset;
+      const maxOffset = Math.max(0, track.scrollWidth - carousel.clientWidth);
+      track.style.transform = `translateX(-${Math.min(targetOffset, maxOffset)}px)`;
+
+      dotButtons.forEach((button, buttonIndex) => {
+        const isActive = buttonIndex === activeIndex;
+        button.classList.toggle("is-active", isActive);
+        button.setAttribute("aria-current", isActive ? "true" : "false");
+      });
+    }
+
+    function pauseTemporarily() {
+      stopAutoplay();
+      window.clearTimeout(resumeTimer);
+      if (!reduceMotion.matches) {
+        resumeTimer = window.setTimeout(startAutoplay, resumeDelay);
+      }
+    }
+
+    carousel.addEventListener("mouseenter", stopAutoplay);
+    carousel.addEventListener("mouseleave", startAutoplay);
+    carousel.addEventListener("focusin", stopAutoplay);
+    carousel.addEventListener("focusout", startAutoplay);
+    window.addEventListener("resize", () => setActive(activeIndex));
+
+    setActive(0);
+    startAutoplay();
+  });
+}
+
+const conesPageConfig = {
+  socialProof: {
+    stats: [
+      {
+        value: "+150",
+        label: "conos vendidos",
+        detail: "Equipos que ya ayudan a avicultores a ordenar el faenado.",
+      },
+      {
+        value: "+80",
+        label: "bases vendidas",
+        detail: "Bases instaladas para trabajar con más estabilidad y comodidad.",
+      },
+    ],
+  },
+  youtube: {
+    enabled: false,
+    url: "",
+    title: "Video corto sobre conos de faenado Allpa Tech",
+  },
+  faqs: [
+    {
+      question: "¿Puedo pagar contraentrega?",
+      answer:
+        "Sí. En zonas con cobertura puedes pagar cuando recibes. Al hacer el pedido por WhatsApp confirmamos ciudad, transportadora y condiciones antes de despachar.",
+    },
+    {
+      question: "¿Qué tamaño de cono necesito?",
+      answer:
+        "Depende del peso del pollo que trabajas. Estándar cubre 1.5 a 2.5 kg, Mediano 1.5 a 3 kg, Grande hasta 4 kg y Súper Jumbo hasta 6.5 kg.",
+    },
+    {
+      question: "¿Puedo combinar tamaños en el kit?",
+      answer:
+        "Sí. El Kit Emprendedor incluye 5 conos con base y puedes elegir los tamaños que más se ajusten a tu producción.",
+    },
+    {
+      question: "¿Cómo me ayuda a ganar dinero?",
+      answer:
+        "Te ayuda a trabajar con más orden, reducir improvisación y atender más pollos con una estación de faenado estable. Ese control se nota cuando quieres vender con constancia.",
+    },
+    {
+      question: "¿Tiene garantía?",
+      answer:
+        "Sí. Te confirmamos la garantía aplicable y el cuidado recomendado antes de cerrar el pedido, según el producto y el uso esperado.",
+    },
+    {
+      question: "¿Este producto entra en Allpa Crece?",
+      answer:
+        "Sí. Los conos son un primer paso para iniciar con orden. Desde ahí puedes avanzar hacia aturdidor, pelado y otros equipos cuando tu producción lo pida.",
+    },
+  ],
+};
+
+function initConesOrder() {
+  const order = document.querySelector('[data-product-order="conos"]');
+  if (!order) return;
+
+  const prices = {
+    estandar: { label: "Estándar", range: "1.5 - 2.5 kg", price: 25000 },
+    mediano: { label: "Mediano", range: "1.5 - 3.0 kg", price: 30000 },
+    grande: { label: "Grande", range: "4.0 kg", price: 35000 },
+    superJumbo: { label: "Súper Jumbo", range: "6.5 kg", price: 38000 },
+  };
+
+  const kitPrice = 300000;
+  const qtyInput = order.querySelector("[data-order-qty]");
+  const minusButton = order.querySelector("[data-qty-minus]");
+  const plusButton = order.querySelector("[data-qty-plus]");
+  const sizeOptions = order.querySelector("[data-size-options]");
+  const kitNote = order.querySelector("[data-kit-note]");
+  const quantityLabel = order.querySelector("[data-quantity-label]");
+  const title = order.querySelector("[data-order-title]");
+  const includes = order.querySelector("[data-order-includes]");
+  const quantity = order.querySelector("[data-order-quantity]");
+  const total = order.querySelector("[data-order-total]");
+  const note = order.querySelector("[data-order-note]");
+  const whatsapp = order.querySelector("[data-order-whatsapp]");
+  const floatingSelection = document.querySelector("[data-floating-selection]");
+  const floatingTotal = document.querySelector("[data-floating-total]");
+  const floatingWhatsapp = document.querySelector("[data-floating-whatsapp]");
+  const floatingQty = document.querySelector("[data-floating-qty]");
+  const floatingMinus = document.querySelector("[data-floating-qty-minus]");
+  const floatingPlus = document.querySelector("[data-floating-qty-plus]");
+  const orderPanels = Array.from(order.querySelectorAll(".order-panel"));
+  const orderNextButtons = Array.from(order.querySelectorAll("[data-order-next]"));
+  const faqList = document.querySelector("[data-faq-list]");
+  const youtubeSlot = document.querySelector("[data-youtube-slot]");
+  const socialStats = document.querySelector("[data-social-stats]");
+
+  function escapeHtml(value) {
+    return String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function getYoutubeEmbedUrl(url) {
+    if (!url) return "";
+    const watchMatch = url.match(/[?&]v=([^&]+)/);
+    const shortMatch = url.match(/youtu\.be\/([^?&]+)/);
+    const embedMatch = url.match(/youtube\.com\/embed\/([^?&]+)/);
+    const videoId = watchMatch?.[1] || shortMatch?.[1] || embedMatch?.[1] || "";
+    return videoId ? `https://www.youtube.com/embed/${videoId}` : "";
+  }
+
+  function renderFaqs() {
+    if (!faqList) return;
+    faqList.innerHTML = conesPageConfig.faqs
+      .map(
+        (faq, index) => `
+          <details${index === 0 ? " open" : ""}>
+            <summary>${escapeHtml(faq.question)}</summary>
+            <p>${escapeHtml(faq.answer)}</p>
+          </details>
+        `,
+      )
+      .join("");
+  }
+
+  function renderVideoSlot() {
+    if (!youtubeSlot) return;
+    const embedUrl = getYoutubeEmbedUrl(conesPageConfig.youtube.url);
+    const shouldShow = conesPageConfig.youtube.enabled && embedUrl;
+    youtubeSlot.hidden = !shouldShow;
+    youtubeSlot.innerHTML = shouldShow
+      ? `<iframe src="${embedUrl}" title="${escapeHtml(conesPageConfig.youtube.title)}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`
+      : "";
+  }
+
+  function renderSocialStats() {
+    if (!socialStats) return;
+    socialStats.innerHTML = conesPageConfig.socialProof.stats
+      .map(
+        (stat) => `
+          <article class="social-stat-widget">
+            <strong>${escapeHtml(stat.value)}</strong>
+            <span>${escapeHtml(stat.label)}</span>
+            <p>${escapeHtml(stat.detail)}</p>
+          </article>
+        `,
+      )
+      .join("");
+  }
+
+  function openPanel(index) {
+    orderPanels.forEach((panel, panelIndex) => {
+      panel.open = panelIndex === index;
+    });
+  }
+
+  function setQuantity(nextQty) {
+    qtyInput.value = Math.max(1, Math.min(50, Number(nextQty) || 1));
+    render();
+  }
+
+  function getSelection() {
+    const purchaseType = order.querySelector('input[name="purchaseType"]:checked').value;
+    const sizeKey = order.querySelector('input[name="coneSize"]:checked').value;
+    const qty = Math.max(1, Math.min(50, Number(qtyInput.value) || 1));
+    qtyInput.value = qty;
+    return { purchaseType, sizeKey, qty };
+  }
+
+  function render() {
+    const { purchaseType, sizeKey, qty } = getSelection();
+    const size = prices[sizeKey];
+    const isKit = purchaseType === "kit";
+    const subtotal = isKit ? kitPrice * qty : size.price * qty;
+    const selectionTitle = isKit ? "Kit Emprendedor" : `Cono ${size.label}`;
+    const includesText = isKit ? "5 conos + base" : `${size.range} por unidad`;
+    const quantityText = isKit ? `${qty} ${qty === 1 ? "kit" : "kits"}` : `${qty} ${qty === 1 ? "cono" : "conos"}`;
+    const noteText = isKit
+      ? "Puedes elegir los tamaños del kit cuando confirmes el pedido con el asesor."
+      : "El asesor confirma ciudad, disponibilidad y cobertura de pago contraentrega.";
+    const message = isKit
+      ? `Hola Allpa Tech, quiero pedir ${quantityText} del Kit Emprendedor de conos. Entiendo que incluye 5 conos + base por ${formatMoney(kitPrice)} cada kit. Quiero confirmar tamaños, pago contraentrega y envío.`
+      : `Hola Allpa Tech, quiero pedir ${quantityText} tamaño ${size.label} (${size.range}) de conos de faenado. Total estimado ${formatMoney(subtotal)}. Quiero confirmar pago contraentrega y envío.`;
+    const href = `https://wa.me/573152112644?text=${encodeURIComponent(message)}`;
+
+    sizeOptions.classList.toggle("is-kit", isKit);
+    kitNote.hidden = !isKit;
+    quantityLabel.textContent = isKit ? "1 kit equivale a 5 conos con base." : "La cantidad multiplica el precio por unidad.";
+    title.textContent = selectionTitle;
+    includes.textContent = includesText;
+    quantity.textContent = quantityText;
+    total.textContent = formatMoney(subtotal);
+    note.textContent = noteText;
+    whatsapp.href = href;
+
+    if (floatingSelection && floatingTotal && floatingWhatsapp) {
+      floatingSelection.textContent = selectionTitle;
+      floatingTotal.textContent = formatMoney(subtotal);
+      floatingWhatsapp.href = href;
+    }
+
+    if (floatingQty) {
+      floatingQty.textContent = qty;
+    }
+  }
+
+  orderPanels.forEach((panel) => {
+    panel.addEventListener("toggle", () => {
+      if (!panel.open) return;
+      orderPanels.forEach((otherPanel) => {
+        if (otherPanel !== panel) otherPanel.open = false;
+      });
+    });
+  });
+
+  orderNextButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const nextIndex = Number(button.dataset.orderNext);
+      openPanel(nextIndex);
+    });
+  });
+
+  order.addEventListener("change", render);
+  minusButton.addEventListener("click", () => {
+    setQuantity(Number(qtyInput.value) - 1);
+  });
+  plusButton.addEventListener("click", () => {
+    setQuantity(Number(qtyInput.value) + 1);
+  });
+  floatingMinus?.addEventListener("click", () => setQuantity(Number(qtyInput.value) - 1));
+  floatingPlus?.addEventListener("click", () => setQuantity(Number(qtyInput.value) + 1));
+  qtyInput.addEventListener("input", render);
+  renderSocialStats();
+  renderFaqs();
+  renderVideoSlot();
+  render();
+}
+
 initRetakeSimulator();
 initStageTabs();
 initGrowthCarousel();
 initProductCards();
+initProductGallery();
+initSalesCarousels();
+initConesOrder();
