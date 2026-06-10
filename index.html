@@ -1,1474 +1,598 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <title>Avicultura Sostenible – Hub de herramientas</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Calculadoras y guías prácticas para avicultores: agua, alimento, peso, comederos, manejo de pollitos y modelo de economía circular. Proyecto Allpa – El Pollo Ingeniero." />
-
-  <!-- Estilos incrustados para evitar problemas de rutas -->
-  <style>
-    :root {
-      --color-bg: #05070a;
-      --color-surface: #0f151e;
-      --color-surface-soft: #151d29;
-      --color-primary: #ffd054;    /* amarillo pollito */
-      --color-primary-soft: #ffe7a5;
-      --color-accent: #4ade80;     /* verde sostenible */
-      --color-text: #f9fafb;
-      --color-text-muted: #9ca3af;
-      --color-border: #1f2933;
-      --shadow-soft: 0 12px 30px rgba(0, 0, 0, 0.35);
-      --radius-lg: 18px;
-      --radius-xl: 24px;
-      --transition-fast: 0.18s ease-out;
-      --max-width: 1120px;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top, #111827 0, #020617 50%, #000 100%);
-      color: var(--color-text);
-      line-height: 1.5;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    img, video {
-      max-width: 100%;
-      display: block;
-    }
-
-    .page {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .container {
-      width: 100%;
-      max-width: var(--max-width);
-      margin: 0 auto;
-      padding: 1.25rem 1rem 2.5rem;
-    }
-
-    /* HEADER ------------------------------------------------------------ */
-
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 40;
-      backdrop-filter: blur(20px);
-      background: linear-gradient(to bottom, rgba(3, 7, 18, 0.95), rgba(3, 7, 18, 0.8));
-      border-bottom: 1px solid rgba(148, 163, 184, 0.1);
-    }
-
-    .header-inner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      padding-block: 0.5rem;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-    }
-
-    .brand-logo {
-      width: 36px;
-      height: 36px;
-      border-radius: 999px;
-      background: radial-gradient(circle at 30% 20%, #fef9c3, #facc15);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.25rem;
-      box-shadow: 0 10px 25px rgba(250, 204, 21, 0.35);
-    }
-
-    .brand-text {
-      display: flex;
-      flex-direction: column;
-      gap: 0.1rem;
-    }
-
-    .brand-title {
-      font-weight: 650;
-      font-size: 0.98rem;
-      letter-spacing: 0.02em;
-    }
-
-    .brand-subtitle {
-      font-size: 0.75rem;
-      color: var(--color-text-muted);
-    }
-
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .btn {
-      border-radius: 999px;
-      padding: 0.5rem 0.9rem;
-      border: 1px solid transparent;
-      cursor: pointer;
-      font-size: 0.85rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
-      white-space: nowrap;
-      transition: transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast), border-color var(--transition-fast);
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, #facc15, #f97316);
-      color: #111827;
-      box-shadow: 0 10px 30px rgba(245, 158, 11, 0.45);
-      font-weight: 600;
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 16px 40px rgba(245, 158, 11, 0.55);
-    }
-
-    .btn-outline {
-      background: transparent;
-      color: var(--color-primary-soft);
-      border-color: rgba(148, 163, 184, 0.25);
-    }
-
-    .btn-outline:hover {
-      background: rgba(15, 23, 42, 0.8);
-      border-color: rgba(250, 204, 21, 0.6);
-    }
-
-    .nav-links {
-      display: none;
-      gap: 0.85rem;
-      font-size: 0.85rem;
-    }
-
-    .nav-link {
-      color: var(--color-text-muted);
-      padding: 0.2rem 0.4rem;
-      border-radius: 999px;
-      transition: background var(--transition-fast), color var(--transition-fast);
-    }
-
-    .nav-link:hover {
-      background: rgba(148, 163, 184, 0.12);
-      color: var(--color-text);
-    }
-
-    @media (min-width: 768px) {
-      .nav-links {
-        display: flex;
-      }
-    }
-
-    /* HERO -------------------------------------------------------------- */
-
-    .hero {
-      padding-top: 1.3rem;
-      padding-bottom: 1.8rem;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .hero-inner {
-      display: grid;
-      gap: 1.5rem;
-    }
-
-    @media (min-width: 900px) {
-      .hero-inner {
-        grid-template-columns: 1.1fr 0.9fr;
-        align-items: center;
-        gap: 2rem;
-      }
-    }
-
-    .hero-chip-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-bottom: 0.8rem;
-    }
-
-    .chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      padding: 0.25rem 0.7rem;
-      border-radius: 999px;
-      font-size: 0.72rem;
-      text-transform: uppercase;
-      letter-spacing: 0.09em;
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid rgba(148, 163, 184, 0.4);
-      color: var(--color-primary-soft);
-    }
-
-    .chip-pill {
-      background: rgba(22, 163, 74, 0.15);
-      border-color: rgba(34, 197, 94, 0.7);
-      color: #bbf7d0;
-    }
-
-    .hero-title {
-      font-size: 1.85rem;
-      line-height: 1.15;
-      margin-bottom: 0.6rem;
-      letter-spacing: -0.02em;
-    }
-
-    @media (min-width: 768px) {
-      .hero-title {
-        font-size: 2.25rem;
-      }
-    }
-
-    .hero-highlight {
-      background: linear-gradient(135deg, #facc15, #f97316);
-      -webkit-background-clip: text;
-      color: transparent;
-      font-weight: 800;
-    }
-
-    .hero-subtitle {
-      font-size: 0.96rem;
-      color: var(--color-text-muted);
-      max-width: 32rem;
-      margin-bottom: 1rem;
-    }
-
-    .hero-cta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      margin-bottom: 1.1rem;
-    }
-
-    .hero-meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.8rem;
-      font-size: 0.8rem;
-      color: var(--color-text-muted);
-    }
-
-    .hero-meta-item {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
-    }
-
-    .hero-visual {
-      position: relative;
-      min-height: 200px;
-    }
-
-    .hero-card {
-      position: relative;
-      background: radial-gradient(circle at top left, rgba(251, 191, 36, 0.12), rgba(15, 23, 42, 0.97));
-      border-radius: var(--radius-xl);
-      border: 1px solid rgba(148, 163, 184, 0.35);
-      padding: 1.1rem 1rem;
-      box-shadow: var(--shadow-soft);
-      overflow: hidden;
-    }
-
-    @media (min-width: 900px) {
-      .hero-card {
-        padding: 1.3rem 1.4rem;
-      }
-    }
-
-    .hero-card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 0.7rem;
-    }
-
-    .hero-card-title {
-      font-size: 0.9rem;
-      font-weight: 600;
-    }
-
-    .hero-card-badge {
-      font-size: 0.7rem;
-      padding: 0.25rem 0.6rem;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.85);
-      border: 1px solid rgba(248, 250, 252, 0.12);
-      color: var(--color-primary-soft);
-    }
-
-    .hero-card-body {
-      font-size: 0.8rem;
-      color: var(--color-text-muted);
-      margin-bottom: 0.7rem;
-    }
-
-    .hero-card-list {
-      font-size: 0.78rem;
-      list-style: none;
-      display: grid;
-      row-gap: 0.3rem;
-      margin-bottom: 0.75rem;
-    }
-
-    .hero-card-list li::before {
-      content: "•";
-      margin-right: 0.4rem;
-      color: var(--color-accent);
-    }
-
-    .hero-card-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.78rem;
-      color: var(--color-text-muted);
-    }
-
-    .hero-card-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.25rem;
-      padding: 0.2rem 0.55rem;
-      border-radius: 999px;
-      background: rgba(21, 128, 61, 0.2);
-      color: #bbf7d0;
-      font-size: 0.7rem;
-    }
-
-    .hero-confetti {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      overflow: hidden;
-    }
-
-    .confetti-dot {
-      position: absolute;
-      width: 6px;
-      height: 6px;
-      border-radius: 999px;
-      opacity: 0.7;
-      background: #facc15;
-      animation: floatConfetti 6s linear infinite;
-    }
-
-    .confetti-dot.green { background: #4ade80; }
-    .confetti-dot.orange { background: #fb923c; }
-
-    .confetti-dot:nth-child(1) { top: 5%; left: 8%; animation-duration: 7s; }
-    .confetti-dot:nth-child(2) { top: 10%; right: 10%; animation-duration: 5.5s; }
-    .confetti-dot:nth-child(3) { bottom: 15%; left: 12%; animation-duration: 6.5s; }
-    .confetti-dot:nth-child(4) { bottom: 8%; right: 15%; animation-duration: 7.5s; }
-
-    @keyframes floatConfetti {
-      0% { transform: translateY(0) translateX(0); opacity: 0.4; }
-      50% { opacity: 1; }
-      100% { transform: translateY(40px) translateX(15px); opacity: 0; }
-    }
-
-    /* SECCIÓN CALCULADORAS -------------------------------------------- */
-
-    .section {
-      margin-bottom: 2.3rem;
-    }
-
-    .section-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      gap: 1rem;
-      margin-bottom: 1rem;
-    }
-
-    .section-title {
-      font-size: 1.2rem;
-      font-weight: 600;
-      letter-spacing: -0.01em;
-    }
-
-    .section-subtitle {
-      font-size: 0.85rem;
-      color: var(--color-text-muted);
-      max-width: 24rem;
-    }
-
-    .filters {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.4rem;
-      margin-bottom: 0.85rem;
-    }
-
-    .filter-chip {
-      font-size: 0.75rem;
-      padding: 0.22rem 0.7rem;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.4);
-      background: rgba(15, 23, 42, 0.8);
-      color: var(--color-text-muted);
-      cursor: pointer;
-      transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
-    }
-
-    .filter-chip.active {
-      background: rgba(250, 204, 21, 0.15);
-      color: var(--color-primary-soft);
-      border-color: rgba(250, 204, 21, 0.8);
-      transform: translateY(-1px);
-    }
-
-    .cards-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr);
-      gap: 0.9rem;
-    }
-
-    @media (min-width: 720px) {
-      .cards-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-    }
-
-    @media (min-width: 1080px) {
-      .cards-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-      }
-    }
-
-    .card {
-      position: relative;
-      background: radial-gradient(circle at top, rgba(15, 118, 110, 0.2), rgba(15, 23, 42, 0.96));
-      border-radius: var(--radius-lg);
-      padding: 0.9rem 0.9rem 0.95rem;
-      border: 1px solid rgba(148, 163, 184, 0.35);
-      box-shadow: 0 12px 32px rgba(15, 23, 42, 0.7);
-      display: flex;
-      flex-direction: column;
-      gap: 0.55rem;
-      transform-origin: center;
-      transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast), background var(--transition-fast), opacity 0.2s ease-out;
-    }
-
-    .card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.9);
-      border-color: rgba(250, 204, 21, 0.8);
-      background: radial-gradient(circle at top, rgba(250, 204, 21, 0.18), rgba(15, 23, 42, 0.98));
-    }
-
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 0.4rem;
-    }
-
-    .card-title-group {
-      display: flex;
-      flex-direction: column;
-      gap: 0.2rem;
-    }
-
-    .card-title-row {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.45rem;
-      flex-wrap: wrap;
-    }
-
-    .card-icon {
-      width: 26px;
-      height: 26px;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.9);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.1rem;
-    }
-
-    .card-title {
-      font-size: 0.95rem;
-      font-weight: 600;
-    }
-
-    .card-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.25rem;
-      font-size: 0.7rem;
-    }
-
-    .card-tag {
-      padding: 0.12rem 0.45rem;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid rgba(148, 163, 184, 0.4);
-      color: var(--color-text-muted);
-    }
-
-    .card-level {
-      font-size: 0.7rem;
-      padding: 0.22rem 0.5rem;
-      border-radius: 999px;
-      background: rgba(22, 163, 74, 0.22);
-      color: #bbf7d0;
-      border: 1px solid rgba(34, 197, 94, 0.7);
-    }
-
-    .card-description {
-      font-size: 0.8rem;
-      color: var(--color-text-muted);
-      min-height: 3.1em;
-    }
-
-    .card-media {
-      /* Contenedor para imagen o video: aquí puedes insertar <img> o <iframe> */
-      margin-top: 0.35rem;
-      border-radius: 14px;
-      overflow: hidden;
-      border: 1px dashed rgba(148, 163, 184, 0.35);
-      min-height: 60px;
-      display: none; /* Cambia a block cuando añadas media */
-    }
-
-    .card-footer {
-      margin-top: 0.4rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      gap: 0.5rem;
-      font-size: 0.78rem;
-    }
-
-    .card-links {
-      display: inline-flex;
-      flex-direction: column;
-      gap: 0.25rem;
-    }
-
-    .card-link-main {
-      padding: 0.32rem 0.8rem;
-      border-radius: 999px;
-      border: none;
-      background: linear-gradient(135deg, #facc15, #f97316);
-      color: #111827;
-      font-weight: 600;
-      font-size: 0.78rem;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
-      box-shadow: 0 12px 30px rgba(245, 158, 11, 0.55);
-      transition: transform var(--transition-fast), box-shadow var(--transition-fast);
-    }
-
-    .card-link-main:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 18px 42px rgba(245, 158, 11, 0.8);
-    }
-
-    .card-link-secondary {
-      font-size: 0.75rem;
-      color: var(--color-text-muted);
-      display: inline-flex;
-      align-items: center;
-      gap: 0.3rem;
-      cursor: pointer;
-    }
-
-    .card-link-secondary span {
-      border-bottom: 1px dashed rgba(148, 163, 184, 0.7);
-    }
-
-    .card-meta {
-      text-align: right;
-      color: var(--color-text-muted);
-      font-size: 0.72rem;
-    }
-
-    /* SECCIÓN CÓMO USAR ----------------------------------------------- */
-
-    .steps {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr);
-      gap: 0.8rem;
-      margin-top: 0.7rem;
-    }
-
-    @media (min-width: 720px) {
-      .steps {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-      }
-    }
-
-    .step {
-      background: rgba(15, 23, 42, 0.9);
-      border-radius: var(--radius-lg);
-      padding: 0.8rem 0.9rem;
-      border: 1px solid rgba(148, 163, 184, 0.25);
-      font-size: 0.8rem;
-    }
-
-    .step-label {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--color-text-muted);
-      margin-bottom: 0.2rem;
-    }
-
-    .step-title {
-      font-size: 0.9rem;
-      font-weight: 600;
-      margin-bottom: 0.25rem;
-    }
-
-    .step-body {
-      color: var(--color-text-muted);
-    }
-
-    /* SECCIÓN COMUNIDAD ----------------------------------------------- */
-
-    .community {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr);
-      gap: 1.2rem;
-    }
-
-    @media (min-width: 900px) {
-      .community {
-        grid-template-columns: 1.1fr 1fr;
-      }
-    }
-
-    .community-card {
-      background: rgba(15, 23, 42, 0.95);
-      border-radius: var(--radius-xl);
-      border: 1px solid rgba(148, 163, 184, 0.3);
-      padding: 1rem 1rem 1.1rem;
-      box-shadow: var(--shadow-soft);
-      font-size: 0.85rem;
-    }
-
-    .community-title {
-      font-size: 1rem;
-      font-weight: 600;
-      margin-bottom: 0.3rem;
-    }
-
-    .community-highlight {
-      color: var(--color-primary-soft);
-    }
-
-    .community-list {
-      margin-top: 0.5rem;
-      list-style: none;
-      display: grid;
-      row-gap: 0.3rem;
-      color: var(--color-text-muted);
-    }
-
-    .community-list li::before {
-      content: "✓";
-      margin-right: 0.4rem;
-      color: var(--color-accent);
-    }
-
-    .community-meta {
-      margin-top: 0.7rem;
-      font-size: 0.78rem;
-      color: var(--color-text-muted);
-    }
-
-    .form {
-      display: grid;
-      gap: 0.55rem;
-      margin-top: 0.6rem;
-    }
-
-    .form-field {
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-      font-size: 0.8rem;
-    }
-
-    .form-label {
-      color: var(--color-text-muted);
-    }
-
-    .form-input, .form-select, .form-textarea {
-      background: rgba(15, 23, 42, 0.9);
-      border-radius: 11px;
-      border: 1px solid rgba(148, 163, 184, 0.5);
-      padding: 0.48rem 0.65rem;
-      color: var(--color-text);
-      font-size: 0.83rem;
-      outline: none;
-      transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
-    }
-
-    .form-input:focus,
-    .form-select:focus,
-    .form-textarea:focus {
-      border-color: rgba(250, 204, 21, 0.9);
-      box-shadow: 0 0 0 1px rgba(250, 204, 21, 0.65);
-      background: rgba(15, 23, 42, 0.95);
-    }
-
-    .form-textarea {
-      min-height: 70px;
-      resize: vertical;
-    }
-
-    .form-footnote {
-      font-size: 0.72rem;
-      color: var(--color-text-muted);
-      margin-top: 0.25rem;
-    }
-
-    /* SHARE FLOATING BUTTON ------------------------------------------- */
-
-    .share-floating {
-      position: fixed;
-      bottom: 1.1rem;
-      right: 1rem;
-      z-index: 50;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 0.35rem;
-    }
-
-    .share-main-btn {
-      border-radius: 999px;
-      padding: 0.55rem 0.8rem;
-      border: none;
-      background: radial-gradient(circle at top, #22c55e, #15803d);
-      color: #e5f8ed;
-      font-size: 0.8rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
-      cursor: pointer;
-      box-shadow: 0 15px 40px rgba(16, 185, 129, 0.65);
-      transition: transform var(--transition-fast), box-shadow var(--transition-fast);
-    }
-
-    .share-main-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 22px 55px rgba(16, 185, 129, 0.8);
-    }
-
-    .share-hint {
-      font-size: 0.7rem;
-      background: rgba(15, 23, 42, 0.94);
-      border-radius: 999px;
-      padding: 0.25rem 0.6rem;
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      color: var(--color-text-muted);
-    }
-
-    @media (min-width: 900px) {
-      .share-floating {
-        right: 2.2rem;
-        bottom: 1.4rem;
-      }
-    }
-
-    /* FOOTER ----------------------------------------------------------- */
-
-    footer {
-      border-top: 1px solid rgba(148, 163, 184, 0.25);
-      padding: 1rem 1rem 1.4rem;
-      font-size: 0.8rem;
-      color: var(--color-text-muted);
-      background: rgba(3, 7, 18, 0.98);
-    }
-
-    .footer-inner {
-      max-width: var(--max-width);
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      gap: 0.7rem;
-    }
-
-    @media (min-width: 720px) {
-      .footer-inner {
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-      }
-    }
-
-    .footer-links {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.6rem;
-    }
-
-    .footer-link {
-      border-bottom: 1px dotted rgba(148, 163, 184, 0.7);
-      cursor: pointer;
-    }
-
-    /* ANIMACIONES EN SCROLL ------------------------------------------- */
-
-    .fade-in {
-      opacity: 0;
-      transform: translateY(10px);
-      transition: opacity 0.4s ease-out, transform 0.4s ease-out;
-    }
-
-    .fade-in.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  </style>
-</head>
-<body>
-<div class="page">
-
-  <!-- HEADER -------------------------------------------------------- -->
-  <header>
-    <div class="container header-inner">
-      <div class="brand">
-        <div class="brand-logo" aria-hidden="true">🐣</div>
-        <div class="brand-text">
-          <div class="brand-title">Avicultura Sostenible</div>
-          <div class="brand-subtitle">Proyecto Allpa · El Pollo Ingeniero</div>
-        </div>
-      </div>
-
-      <nav class="nav-links">
-        <a href="#calculadoras" class="nav-link">Calculadoras</a>
-        <a href="es/modelo-circular.html" class="nav-link">Modelo circular</a>
-        <a href="es/productos.html" class="nav-link">Productos</a>
-        <a href="es/contacto.html" class="nav-link">Contacto</a>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Con Allpa Tech Crece puedes ordenar tu beneficio avícola, empezar con equipos básicos y avanzar paso a paso hacia una planta más organizada."
+    />
+    <title>Allpa Tech Crece | Ruta de crecimiento avícola</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header" aria-label="Navegación principal">
+      <a class="brand" href="#inicio" aria-label="Allpa Tech Crece">
+        <span class="brand-mark">A</span>
+        <span>Allpa Tech Crece</span>
+      </a>
+      <nav class="nav-links" aria-label="Secciones">
+        <a href="#finder">Encuentra tu equipo</a>
+        <a href="#ruta">Ruta</a>
+        <a href="#retoma">Retoma</a>
       </nav>
+      <a class="nav-cta" href="https://wa.me/573152112644?text=Hola%20Allpa%20Tech%2C%20quiero%20conocer%20mi%20ruta%20Allpa%20Crece" target="_blank" rel="noreferrer">WhatsApp</a>
+    </header>
 
-      <div class="header-actions">
-        <button class="btn btn-outline" onclick="window.location.href='https://www.tiktok.com/@stiven9708';">
-          <span>📲 TikTok</span>
-        </button>
-        <button class="btn btn-primary" onclick="document.getElementById('community').scrollIntoView({behavior:'smooth'});">
-          <span>Unirme a la comunidad</span>
-        </button>
-      </div>
-    </div>
-  </header>
-
-  <main>
-    <div class="container">
-
-      <!-- HERO ------------------------------------------------------ -->
-      <section class="hero fade-in">
-        <div class="hero-inner">
-          <div>
-            <div class="hero-chip-row">
-              <div class="chip">🎉 Hito alcanzado</div>
-              <div class="chip chip-pill">+1000 avicultores en TikTok</div>
-            </div>
-            <h1 class="hero-title">
-              Calculadoras gratuitas para llevar tu galpón al nivel de <span class="hero-highlight">ingeniería avícola</span>.
-            </h1>
-            <p class="hero-subtitle">
-              Esta página reúne todas las herramientas que usamos en los videos de <strong>El Pollo Ingeniero (@stiven9708)</strong> para que puedas aplicarlas directamente en tu granja: agua, alimento, peso, comederos, energía y manejo de pollitos.
-            </p>
-
-            <div class="hero-cta">
-              <button class="btn btn-primary" onclick="document.getElementById('calculadoras').scrollIntoView({behavior:'smooth'});">
-                <span>Ver calculadoras</span> <span>⬇️</span>
-              </button>
-              <button class="btn btn-outline" onclick="window.location.href='https://www.tiktok.com/@stiven9708';">
-                <span>Ver videos en TikTok</span>
-              </button>
-            </div>
-
-            <div class="hero-meta">
-              <div class="hero-meta-item">
-                <span>✅</span><span>Diseñado para pequeños y medianos productores</span>
-              </div>
-              <div class="hero-meta-item">
-                <span>📱</span><span>Optimizado para celular</span>
-              </div>
-              <div class="hero-meta-item">
-                <span>♻️</span><span>Basado en el modelo circular de Allpa</span>
-              </div>
-            </div>
+    <main id="inicio">
+      <section class="hero">
+        <picture>
+          <source srcset="assets/allpa-hero.webp" type="image/webp" />
+          <img src="assets/allpa-hero.png" alt="Avicultor revisando equipos de proceso avícola en una planta organizada" />
+        </picture>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+          <p class="eyebrow">Programa para avicultores colombianos</p>
+          <h1>Allpa Tech Crece</h1>
+          <p>
+            Empieza con el equipo que tu producción necesita hoy y avanza por etapas
+            hacia un proceso avícola más ordenado, medible y rentable.
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="#finder">Encontrar mi equipo</a>
+            <a class="button ghost" href="#ruta">Ver la ruta</a>
           </div>
+        </div>
+      </section>
 
-          <div class="hero-visual">
-            <div class="hero-card">
-              <div class="hero-card-header">
-                <div>
-<iframe
-      src="https://www.youtube.com/embed/fSH0KZxe89g?autoplay=1&mute=1&loop=1&playlist=fSH0KZxe89g&modestbranding=1&rel=0&playsinline=1"
-      title="Másterclass Allpa — Los primeros 8 días"
-      loading="lazy"
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-      allowfullscreen
-      referrerpolicy="strict-origin-when-cross-origin"
-      style="position:absolute; inset:0; width:100%; height:100%; border:0;">
-    </iframe>
+      <section class="growth-carousel-section" aria-labelledby="growthTitle">
+        <h2 id="growthTitle" class="sr-only">Ruta Allpa Crece paso a paso</h2>
+        <div class="growth-carousel" data-carousel aria-roledescription="carrusel" aria-label="Ruta de crecimiento Allpa Tech">
+          <p class="sr-only" aria-live="polite" data-carousel-live>Empieza con orden</p>
+
+          <div class="growth-track" data-carousel-track>
+            <article class="growth-card is-active" data-carousel-card>
+              <span class="step-number">01</span>
+              <p class="eyebrow">Primer paso</p>
+              <div class="step-visual visual-conos" aria-hidden="true">
+                <span></span>
+                <span></span>
+                <span></span>
               </div>
-              <p class="hero-card-body">
-                Usa las calculadoras para responder preguntas como:
-              </p>
-              <ul class="hero-card-list">
-                <li>“¿Cuánta agua y cloro necesito hoy?”</li>
-                <li>“¿Cuántos comederos debo colocar para 200 pollos?”</li>
-                <li>“¿Mi lote va por encima o por debajo de la curva estándar?”</li>
+              <h3>Empieza con orden</h3>
+              <p>No tienes que comprar todo de una vez. Puedes iniciar con conos y organizar mejor tu beneficio.</p>
+              <ul class="step-points">
+                <li>Conos individuales, base de 3 o base de 5.</li>
+                <li>Menos improvisación en el proceso.</li>
+                <li>Primer paso para trabajar con más control.</li>
               </ul>
-              <div class="hero-card-footer">
-                <div class="hero-card-pill">
-                  <span>🔒</span><span>Datos solo para tu uso</span>
+            </article>
+
+            <article class="growth-card" data-carousel-card>
+              <span class="step-number">02</span>
+              <p class="eyebrow">Manejo</p>
+              <div class="step-visual visual-manejo" aria-hidden="true">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+              <h3>Mejora el manejo</h3>
+              <p>Cuando tu proceso gane ritmo, puedes sumar un aturdidor de un pollo.</p>
+              <ul class="step-points">
+                <li>Más orden antes del beneficio.</li>
+                <li>Puedes usar uno o varios según tu volumen.</li>
+                <li>Aplica a retoma Allpa Tech si más adelante actualizas.</li>
+              </ul>
+            </article>
+
+            <article class="growth-card" data-carousel-card>
+              <span class="step-number">03</span>
+              <p class="eyebrow">Actualizable</p>
+              <div class="step-visual visual-taladro" aria-hidden="true">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+              <h3>Reduce trabajo manual</h3>
+              <p>La peladora de tambor para taladro te ayuda a crecer sin saltar directo a una planta.</p>
+              <ul class="step-points">
+                <li>Tambor que se acopla al taladro.</li>
+                <li>Versión con base para estabilizarlo.</li>
+                <li>Kit para actualizar del tambor a la base.</li>
+              </ul>
+            </article>
+
+            <article class="growth-card" data-carousel-card>
+              <span class="step-number">04</span>
+              <p class="eyebrow">Más capacidad</p>
+              <div class="step-visual visual-planta" aria-hidden="true">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+              <h3>Sube a Planta Inicial</h3>
+              <p>Si ya procesas más volumen, tu operación necesita más capacidad y un flujo más estable.</p>
+              <ul class="step-points">
+                <li>Conos y varios aturdidores.</li>
+                <li>Escaldadora de 3 pollos.</li>
+                <li>Peladora automática de 2 pollos.</li>
+              </ul>
+            </article>
+
+            <article class="growth-card" data-carousel-card>
+              <span class="step-number">05</span>
+              <p class="eyebrow">Retoma</p>
+              <div class="step-visual visual-retoma" aria-hidden="true">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+              <h3>Actualiza sin empezar de cero</h3>
+              <p>Si tu producción crece, tus equipos Allpa Tech pueden ayudarte a avanzar.</p>
+              <ul class="step-points">
+                <li>Retoma sujeta a evaluación técnica.</li>
+                <li>Aplica a equipos seleccionados Allpa Tech.</li>
+                <li>Avanzas hacia una solución de mayor capacidad.</li>
+              </ul>
+            </article>
+
+            <article class="growth-card" data-carousel-card>
+              <span class="step-number">06</span>
+              <p class="eyebrow">Próximamente</p>
+              <div class="step-visual visual-futuro" aria-hidden="true">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+              <h3>Lo que viene en camino</h3>
+              <p>Allpa Crece seguirá sumando soluciones para acompañar más partes de tu proyecto avícola.</p>
+              <ul class="step-points">
+                <li>Crianza con tecnología.</li>
+                <li>Equipos reacondicionados según inventario futuro.</li>
+                <li>Nuevas soluciones Allpa Tech según avance la ruta.</li>
+              </ul>
+            </article>
+          </div>
+
+          <div class="carousel-controls" aria-label="Controles del carrusel">
+            <button type="button" class="icon-button" data-carousel-prev aria-label="Ver paso anterior">‹</button>
+            <button type="button" class="icon-button" data-carousel-next aria-label="Ver paso siguiente">›</button>
+          </div>
+
+          <div class="carousel-dots" data-carousel-dots aria-label="Elegir paso de la ruta"></div>
+        </div>
+      </section>
+
+      <section id="finder" class="finder-section">
+        <div class="section-copy">
+          <p class="eyebrow">Asesor Allpa</p>
+          <h2>Encuentra el equipo que te conviene cotizar</h2>
+          <p>
+            Empecemos por lo más simple. Si ya sabes qué equipo necesitas, puedes
+            cotizarlo de una vez. Si no, te guiamos paso a paso.
+          </p>
+        </div>
+
+        <div class="finder-shell" aria-live="polite">
+          <div class="chat-window" id="chatWindow">
+            <div class="bubble bot">Hola. Empecemos fácil: ¿cuántos pollos procesas al mes?</div>
+          </div>
+
+          <form class="finder-controls" id="finderForm">
+            <div class="finder-progress" aria-hidden="true">
+              <span class="is-active"></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+
+            <fieldset class="question-card is-active" data-finder-step="volume">
+              <legend>¿Cuántos pollos procesas al mes?</legend>
+              <p>Con tu volumen podemos saber si estás en Inicio Allpa, Emprendedor o Planta Inicial.</p>
+              <div class="range-row">
+                <input id="volume" name="volume" type="range" min="20" max="1500" step="10" value="120" />
+                <output id="volumeOutput" for="volume">120</output>
+              </div>
+              <button class="button primary full" type="button" data-next-step>Continuar</button>
+            </fieldset>
+
+            <fieldset class="question-card" data-finder-step="product">
+              <legend>¿Ya sabes qué equipo quieres cotizar?</legend>
+              <p>Si ya tienes claro el equipo, te llevamos directo a WhatsApp. Si no, te ayudamos a elegir.</p>
+              <div class="choice-grid">
+                <label><input type="radio" name="specificProduct" value="unsure" checked /> No estoy seguro, quiero que me guíen</label>
+                <details class="product-menu">
+                  <summary>Conos</summary>
+                  <div>
+                    <label><input type="radio" name="specificProduct" value="conosIndividual" /> Cono individual</label>
+                    <label><input type="radio" name="specificProduct" value="conosBaseTres" /> Base de 3 conos</label>
+                    <label><input type="radio" name="specificProduct" value="conosBaseCinco" /> Base de 5 conos</label>
+                  </div>
+                </details>
+                <details class="product-menu">
+                  <summary>Peladora</summary>
+                  <div>
+                    <label><input type="radio" name="specificProduct" value="peladoraTambor" /> Tambor para taladro</label>
+                    <label><input type="radio" name="specificProduct" value="peladoraBase" /> Base para taladro</label>
+                    <label><input type="radio" name="specificProduct" value="peladoraIndustrial" /> Peladora automática industrial</label>
+                  </div>
+                </details>
+                <details class="product-menu">
+                  <summary>Aturdidor</summary>
+                  <div>
+                    <label><input type="radio" name="specificProduct" value="aturdidorBasico" /> Básico</label>
+                    <label><input type="radio" name="specificProduct" value="aturdidorUnPollo" /> De un pollo</label>
+                    <label><input type="radio" name="specificProduct" value="aturdidorIndustrial" /> Industrial rotatorio</label>
+                  </div>
+                </details>
+                <details class="product-menu">
+                  <summary>Escaldador</summary>
+                  <div>
+                    <label><input type="radio" name="specificProduct" value="escaldadorUno" /> Escaldador de un pollo</label>
+                    <label><input type="radio" name="specificProduct" value="escaldadorTres" /> Escaldador de 3 pollos</label>
+                  </div>
+                </details>
+              </div>
+              <div class="step-actions">
+                <button class="button subtle" type="button" data-prev-step>Volver</button>
+                <button class="button primary" type="button" data-next-step>Continuar</button>
+              </div>
+            </fieldset>
+
+            <fieldset class="question-card" data-finder-step="budget">
+              <legend>¿Con qué presupuesto quieres iniciar?</legend>
+              <p>Esto nos ayuda a recomendarte una compra posible hoy y una actualización para después.</p>
+              <div class="range-row budget-row">
+                <input id="budget" name="budget" type="range" min="100000" max="5000000" step="100000" value="800000" />
+                <output id="budgetOutput" for="budget">$800 mil</output>
+              </div>
+              <div class="step-actions">
+                <button class="button subtle" type="button" data-prev-step>Volver</button>
+                <button class="button primary" type="button" data-next-step>Continuar</button>
+              </div>
+            </fieldset>
+
+            <fieldset class="question-card" data-finder-step="pain">
+              <legend>¿Qué quieres mejorar primero?</legend>
+              <p>Elige el punto que más te está frenando hoy. Desde ahí armamos tu ruta.</p>
+              <div class="choice-grid">
+                <label><input type="radio" name="pain" value="orden" checked /> Conos de faenado: sujetar mejor el pollo y trabajar más cómodo</label>
+                <label><input type="radio" name="pain" value="pelado" /> Reducir trabajo al pelar</label>
+                <label><input type="radio" name="pain" value="aturdido" /> Anestesia eléctrica: mejorar el manejo antes del beneficio</label>
+                <label><input type="radio" name="pain" value="escaldado" /> Controlar mejor el escaldado</label>
+                <label><input type="radio" name="pain" value="capacidad" /> Procesar más rápido</label>
+              </div>
+              <div class="step-actions">
+                <button class="button subtle" type="button" data-prev-step>Volver</button>
+                <button class="button primary" type="button" data-next-step>Continuar</button>
+              </div>
+            </fieldset>
+
+            <fieldset class="question-card" data-finder-step="buy">
+              <legend>¿Cómo quieres empezar?</legend>
+              <p>Allpa Crece está pensado para que puedas comprar un primer equipo y mejorar después.</p>
+              <div class="choice-grid">
+                <label><input type="radio" name="buyStyle" value="actualizable" checked /> Quiero iniciar con una opción básica y actualizar después</label>
+                <label><input type="radio" name="buyStyle" value="completo" /> Prefiero comprar una solución más completa desde el inicio</label>
+              </div>
+              <div class="step-actions">
+                <button class="button subtle" type="button" data-prev-step>Volver</button>
+                <button class="button primary" type="button" data-next-step>Continuar</button>
+              </div>
+            </fieldset>
+
+            <fieldset class="question-card" data-finder-step="payment">
+              <legend>Cuando tengas claro el equipo, ¿cómo quieres avanzar?</legend>
+              <p>Puedes cotizar de contado o preguntar por alternativas para separar o financiar.</p>
+              <div class="choice-grid">
+                <label><input type="radio" name="payment" value="contado" checked /> Quiero cotizar de contado</label>
+                <label><input type="radio" name="payment" value="separe" /> Quiero separar mi equipo y pagarlo por partes</label>
+                <label><input type="radio" name="payment" value="sistecredito" /> Quiero revisar si aplica a Sistecrédito</label>
+                <label><input type="radio" name="payment" value="orientacion" /> Quiero hablar con un asesor antes de decidir</label>
+              </div>
+              <div class="step-actions">
+                <button class="button subtle" type="button" data-prev-step>Volver</button>
+                <button class="button primary" type="submit">Ver mi ruta sugerida</button>
+              </div>
+            </fieldset>
+          </form>
+
+          <div class="result-panel" id="resultPanel" hidden></div>
+        </div>
+      </section>
+
+      <section id="ruta" class="route-section">
+        <div class="section-copy center">
+          <p class="eyebrow">Ruta Allpa Crece</p>
+          <h2>Crece sin saltarte etapas</h2>
+          <p>
+            No tienes que comprar una planta completa desde el inicio. Puedes
+            ordenar primero el beneficio, subir capacidad cuando vendas más y
+            sumar tecnología cuando tu operación lo necesite.
+          </p>
+        </div>
+
+        <div class="stage-experience" data-stage-tabs>
+          <div class="stage-tabs" role="tablist" aria-label="Etapas de crecimiento Allpa Crece">
+            <button id="stageTabInicio" class="stage-tab is-active" type="button" role="tab" aria-selected="true" aria-controls="stagePanelInicio" data-stage-tab="inicio">Inicio Allpa</button>
+            <button id="stageTabEmprendedor" class="stage-tab" type="button" role="tab" aria-selected="false" aria-controls="stagePanelEmprendedor" data-stage-tab="emprendedor">Emprendedor</button>
+            <button id="stageTabPlanta" class="stage-tab" type="button" role="tab" aria-selected="false" aria-controls="stagePanelPlanta" data-stage-tab="planta">Planta Inicial</button>
+          </div>
+
+          <p class="sr-only" aria-live="polite" data-stage-live>Inicio Allpa</p>
+
+          <div class="stage-panels">
+            <article id="stagePanelInicio" class="stage-panel is-active" role="tabpanel" aria-labelledby="stageTabInicio" data-stage-panel="inicio">
+              <picture class="stage-visual">
+                <source srcset="assets/stage-inicio.webp" type="image/webp" />
+                <img src="assets/stage-inicio.png" alt="Avicultor iniciando su proceso con equipos básicos Allpa Tech y pocos pollitos" loading="lazy" />
+              </picture>
+              <div class="stage-copy">
+                <span class="stage-badge">Primeros equipos</span>
+                <h3>Inicio Allpa</h3>
+                <p>Puedes empezar con una inversión pequeña y resolver el dolor que más te frena hoy, sin comprar una planta completa.</p>
+                <ul class="equipment-list">
+                  <li>Conos de faenado: individual, base de 3 o base de 5.</li>
+                  <li>Escaldador de un pollo para controlar mejor la temperatura antes del pelado.</li>
+                  <li>Aturdidor básico o peladora de tambor para taladro si ese es tu siguiente dolor.</li>
+                </ul>
+                <a class="button primary" href="#finder">Encontrar mi primer equipo</a>
+              </div>
+            </article>
+
+            <article id="stagePanelEmprendedor" class="stage-panel" role="tabpanel" aria-labelledby="stageTabEmprendedor" data-stage-panel="emprendedor" hidden>
+              <picture class="stage-visual">
+                <source srcset="assets/stage-emprendedor.webp" type="image/webp" />
+                <img src="assets/stage-emprendedor.png" alt="Avicultor en etapa emprendedor con más pollitos y equipos Allpa Tech actualizables" loading="lazy" />
+              </picture>
+              <div class="stage-copy">
+                <span class="stage-badge">Más ritmo</span>
+                <h3>Etapa Emprendedor</h3>
+                <p>Cuando vendes más, tu proceso necesita menos improvisación y equipos que puedan actualizarse contigo.</p>
+                <ul class="equipment-list">
+                  <li>Conos o bases de conos para sostener mejor el faenado.</li>
+                  <li>Aturdidor de un pollo para anestesia eléctrica con más estabilidad.</li>
+                  <li>Peladora con base para taladro o escaldador de un pollo según tu cuello de botella.</li>
+                </ul>
+                <a class="button primary" href="#finder">Armar mi siguiente compra</a>
+              </div>
+            </article>
+
+            <article id="stagePanelPlanta" class="stage-panel" role="tabpanel" aria-labelledby="stageTabPlanta" data-stage-panel="planta" hidden>
+              <picture class="stage-visual">
+                <source srcset="assets/stage-planta.webp" type="image/webp" />
+                <img src="assets/stage-planta.png" alt="Avicultor con planta inicial Allpa Tech, más capacidad y equipos organizados" loading="lazy" />
+              </picture>
+              <div class="stage-copy">
+                <span class="stage-badge">Capacidad estable</span>
+                <h3>Planta Inicial</h3>
+                <p>Si ya procesas más volumen, te conviene pensar en flujo completo: manejo, escaldado y pelado trabajando juntos.</p>
+                <ul class="equipment-list">
+                  <li>Conos y varios aturdidores, o aturdidor industrial rotatorio.</li>
+                  <li>Escaldador de 3 pollos para sostener temperatura y ritmo.</li>
+                  <li>Peladora automática industrial de 2 pollos para reducir carga manual.</li>
+                </ul>
+                <a class="button primary" href="#finder">Cotizar mi planta inicial</a>
+              </div>
+            </article>
+          </div>
+
+          <article class="coming-stage">
+            <span>Próximamente</span>
+            <div>
+              <h3>Crianza con tecnología</h3>
+              <p>Allpa Crece también sumará soluciones para acompañar el inicio del ciclo productivo.</p>
+            </div>
+            <a href="productos/crianza.html">Ver línea futura</a>
+          </article>
+        </div>
+      </section>
+
+      <section id="retoma" class="retake-section">
+        <div class="retake-copy">
+          <p class="eyebrow">Retoma Allpa Tech</p>
+          <h2>Simula cómo tu equipo te ayuda a crecer</h2>
+          <p>
+            Mira un ejemplo claro: compras un aturdidor de un pollo, tu producción
+            crece y lo usas como parte de pago para pasar al aturdidor industrial
+            giratorio de 3 pollos.
+          </p>
+        </div>
+        <div class="retake-simulator" data-retake-simulator>
+          <div class="retake-accordion">
+            <details class="retake-panel" open>
+              <summary><span>1</span> Selecciona el equipo que tienes</summary>
+              <div class="retake-panel-body">
+                <label>
+                  Equipo actual
+                  <select data-retake-product>
+                    <option value="aturdidor">Aturdidor de un pollo</option>
+                    <option disabled>Retoma de peladora automática, próximamente</option>
+                    <option disabled>Retoma de escaldador, próximamente</option>
+                  </select>
+                </label>
+                <p>Empezamos con el aturdidor de un pollo porque es el primer equipo disponible para retoma en esta simulación.</p>
+                <button class="button subtle full" type="button" data-retake-next>Ver actualización disponible</button>
+              </div>
+            </details>
+
+            <details class="retake-panel">
+              <summary><span>2</span> Elige a qué equipo quieres subir</summary>
+              <div class="retake-panel-body">
+                <label>
+                  Actualización disponible
+                  <select data-retake-upgrade></select>
+                </label>
+                <p data-upgrade-copy>Pasas a un equipo de mayor capacidad para trabajar con más ritmo.</p>
+                <button class="button subtle full" type="button" data-retake-next>Calcular ahorro</button>
+              </div>
+            </details>
+
+            <details class="retake-panel">
+              <summary><span>3</span> Revisa beneficios y ahorro</summary>
+              <div class="retake-panel-body">
+                <div class="simulator-switches" aria-label="Condiciones del simulador">
+                  <label><input type="checkbox" data-retake-promo checked /> Compré mi primer equipo en promoción</label>
+                  <label><input type="checkbox" data-retake-condition checked /> Mi equipo funciona y la estructura no está rota</label>
                 </div>
-                <div>Hecho por avicultores para avicultores</div>
+                <div class="retake-numbers" aria-live="polite">
+                  <div class="number-card">
+                    <span>Compra inicial</span>
+                    <strong data-initial-total>$920 mil</strong>
+                    <small data-initial-detail>Aturdidor en promoción + envío e impuestos.</small>
+                  </div>
+                  <div class="number-card highlight">
+                    <span>Ahorro para actualizar</span>
+                    <strong data-total-saving>$800 mil</strong>
+                    <small>Bono de equipo + descuento Retoma.</small>
+                  </div>
+                  <div class="number-card">
+                    <span>Pagas por actualizar</span>
+                    <strong data-upgrade-pay>$1.2 millones</strong>
+                    <small data-upgrade-detail>Valor industrial menos tus beneficios.</small>
+                  </div>
+                </div>
+                <div class="retake-breakdown">
+                  <div>
+                    <span data-next-name>Aturdidor industrial giratorio</span>
+                    <strong data-next-price>$2 millones</strong>
+                  </div>
+                  <div>
+                    <span>Descuento por entrar a retoma</span>
+                    <strong data-program-discount>-$200 mil</strong>
+                  </div>
+                  <div>
+                    <span>Bono por tu equipo anterior</span>
+                    <strong data-trade-bonus>-$600 mil</strong>
+                  </div>
+                  <div class="total-row">
+                    <span>Pagas para actualizar</span>
+                    <strong data-final-pay>$1.2 millones</strong>
+                  </div>
+                </div>
+                <button class="button subtle full" type="button" data-retake-next>Ver envío y entrega</button>
               </div>
-            </div>
+            </details>
 
-            <div class="hero-confetti" aria-hidden="true">
-              <div class="confetti-dot"></div>
-              <div class="confetti-dot green"></div>
-              <div class="confetti-dot orange"></div>
-              <div class="confetti-dot green"></div>
-            </div>
+            <details class="retake-panel">
+              <summary><span>4</span> Envía tu equipo y recibe el nuevo</summary>
+              <div class="retake-panel-body">
+                <div class="handoff-grid">
+                  <article>
+                    <strong>Envío y evaluación</strong>
+                    <p>Nos cuentas el estado, revisamos funcionamiento y confirmamos si aplica el bono.</p>
+                  </article>
+                  <article>
+                    <strong>Actualización</strong>
+                    <p>El bono y el descuento se aplican a tu nuevo equipo de mayor capacidad.</p>
+                  </article>
+                  <article>
+                    <strong>Economía circular</strong>
+                    <p>Tu equipo se reacondiciona para apoyar a otro emprendedor avícola.</p>
+                  </article>
+                </div>
+              </div>
+            </details>
           </div>
-        </div>
-      </section>
 
-      <!-- SECCIÓN CALCULADORAS ------------------------------------- -->
-      <section id="calculadoras" class="section fade-in">
-        <div class="section-header">
-          <div>
-            <h2 class="section-title">Calculadoras y guías prácticas</h2>
-            <p class="section-subtitle">
-              Elige la herramienta según la duda que tengas hoy: agua, alimento, peso, manejo de pollitos, infraestructura o modelo circular.
+          <aside class="retake-summary-card" aria-live="polite">
+            <p class="eyebrow">Resumen de retoma</p>
+            <h3 data-summary-title>Aturdidor de un pollo → Industrial giratorio</h3>
+            <div class="summary-grid">
+              <span>Equipo actual <strong data-summary-current>Aturdidor de un pollo</strong></span>
+              <span>Actualización <strong data-summary-upgrade>Industrial giratorio de 3 pollos</strong></span>
+              <span>Ahorro estimado <strong data-summary-saving>$800 mil</strong></span>
+              <span>Pago estimado <strong data-summary-pay>$1.2 millones</strong></span>
+            </div>
+            <p data-summary-note>Si tu equipo funciona y su estructura no está rota, puede aplicar al bono de retoma.</p>
+          </aside>
+
+          <div class="circular-note">
+            <strong>Tu equipo sigue trabajando</strong>
+            <p>
+              El aturdidor recibido se revisa, reacondiciona y puede apoyar a otro
+              emprendedor avícola. Así tu crecimiento también impulsa economía
+              circular, reduce desperdicio y cuida mejor el planeta.
             </p>
           </div>
-        </div>
 
-        <div class="filters" id="filters">
-          <!-- Los filtros se llenan desde JS -->
-        </div>
-
-        <div class="cards-grid" id="cardsGrid">
-          <!-- Las tarjetas se generan dinámicamente desde JS -->
+          <a class="button primary full" href="https://wa.me/573152112644?text=Hola%20Allpa%20Tech%2C%20quiero%20evaluar%20mi%20aturdidor%20de%20un%20pollo%20para%20retoma%20y%20actualizar%20al%20aturdidor%20industrial%20giratorio" target="_blank" rel="noreferrer">Solicitar evaluación de retoma</a>
         </div>
       </section>
 
-      <!-- SECCIÓN CÓMO USAR --------------------------------------- -->
-      <section class="section fade-in">
-        <div class="section-header">
-          <div>
-            <h2 class="section-title">¿Cómo aprovechar estas herramientas?</h2>
-            <p class="section-subtitle">
-              No necesitas ser ingeniero. Solo sigue estos tres pasos cada vez que entres al hub.
-            </p>
-          </div>
+      <section class="products-section">
+        <div class="section-copy center">
+          <p class="eyebrow">Catálogo disponible</p>
+          <h2>Elige tu equipo hoy</h2>
         </div>
+        <div class="product-grid">
+          <a class="product-card" href="productos/conos.html">
+            <div class="product-card-body">
+              <picture>
+                <source srcset="assets/allpa_conos_productos_webp/cono_individual_allpa_tech_1200.webp" type="image/webp" />
+                <img src="assets/allpa_conos_productos_webp/cono_individual_allpa_tech_1200.webp" alt="Cono individual de faenado Allpa Tech" loading="lazy" />
+              </picture>
+              <span>Disponible</span>
+              <strong>Conos</strong>
+              <small>Sujetan mejor el pollo y te ayudan a trabajar el faenado con más orden.</small>
+              <em class="product-card-cta">Ver producto</em>
+            </div>
+          </a>
 
-        <div class="steps">
-          <div class="step">
-            <div class="step-label">Paso 1</div>
-            <div class="step-title">Elige la herramienta adecuada</div>
-            <div class="step-body">
-              ¿Tu problema es agua, alimento, peso o distribución del galpón? Selecciona la tarjeta que más se parezca a tu duda del día.
+          <a class="product-card" href="productos/aturdidor.html">
+            <div class="product-card-body">
+              <picture>
+                <source srcset="assets/product-aturdidor.webp" type="image/webp" />
+                <img src="assets/product-aturdidor.png" alt="Aturdidor Allpa Tech" loading="lazy" />
+              </picture>
+              <span>Disponible · retoma</span>
+              <strong>Aturdidor</strong>
+              <small>Inicia o mejora la anestesia eléctrica antes del beneficio.</small>
+              <em class="product-card-cta">Ver producto</em>
             </div>
-          </div>
-          <div class="step">
-            <div class="step-label">Paso 2</div>
-            <div class="step-title">Ingresa los datos de tu galpón</div>
-            <div class="step-body">
-              Número de aves, edad, peso promedio, metros del galpón… mientras más preciso seas, mejores serán las recomendaciones.
+          </a>
+
+          <a class="product-card" href="productos/peladora-taladro.html">
+            <div class="product-card-body">
+              <picture>
+                <source srcset="assets/product-peladora.webp" type="image/webp" />
+                <img src="assets/product-peladora.png" alt="Peladora Allpa Tech" loading="lazy" />
+              </picture>
+              <span>Disponible · actualizable</span>
+              <strong>Peladora</strong>
+              <small>Reduce trabajo manual y te permite crecer desde taladro hasta versión automática.</small>
+              <em class="product-card-cta">Ver producto</em>
             </div>
-          </div>
-          <div class="step">
-            <div class="step-label">Paso 3</div>
-            <div class="step-title">Aplica y registra los cambios</div>
-            <div class="step-body">
-              Ajusta lo que indique la calculadora, anota los resultados y cuéntanos en TikTok o WhatsApp qué mejoras lograste.
+          </a>
+
+          <a class="product-card" href="productos/escaldador.html">
+            <div class="product-card-body">
+              <picture>
+                <source srcset="assets/allpa_escaldador_productos/escaldador-3-pollos-placeholder.webp" type="image/webp" />
+                <img src="assets/allpa_escaldador_productos/escaldador-3-pollos-placeholder.webp" alt="Escaldador Allpa Tech" loading="lazy" />
+              </picture>
+              <span>Disponible · gas adaptativo</span>
+              <strong>Escaldador</strong>
+              <small>Estabiliza la temperatura antes del pelado y aprovecha mejor el gas.</small>
+              <em class="product-card-cta">Ver producto</em>
             </div>
-          </div>
+          </a>
+
         </div>
       </section>
+    </main>
 
-      <!-- SECCIÓN COMUNIDAD & CONTACTO ---------------------------- -->
-      <section id="community" class="section fade-in">
-  <div class="section-header">
-    <div>
-      <h2 class="section-title">Únete a la comunidad de avicultores</h2>
-      <p class="section-subtitle">
-        Déjanos un medio de contacto para enviarte plantillas, nuevas calculadoras y avisos de las próximas masterclass de El Pollo Ingeniero.
-      </p>
-    </div>
-  </div>
-
-  <div class="community">
-    <div class="community-card">
-      <div class="community-title">
-        Comunidad <span class="community-highlight">Allpa · El Pollo Ingeniero</span>
-      </div>
-      <p>
-        Diseñamos este proyecto para que los pequeños y medianos productores puedan tomar
-        decisiones con datos y no solo con “corazonadas”.
-      </p>
-      <ul class="community-list">
-        <li>Checklist imprimible para los <strong>primeros 8 días</strong>.</li>
-        <li>Plantilla sencilla en Excel para <strong>peso y mortalidad</strong>.</li>
-        <li>Acceso anticipado a nuevas calculadoras y guías.</li>
-      </ul>
-      <p class="community-meta">
-        No hacemos spam. Puedes darte de baja en cualquier momento.
-      </p>
-      <div style="margin-top:0.7rem;">
-        <!-- AHORA ABRE WHATSAPP -->
-        <button
-          class="btn btn-primary"
-          onclick="window.open('https://wa.me/573152112644?text=' + encodeURIComponent('Hola, quiero recibir las plantillas de Allpa para mi galpón de pollos.'), '_blank');"
-        >
-          Quiero recibir las plantillas
-        </button>
-      </div>
-    </div>
-
-    <div class="community-card">
-      <div class="community-title">Déjanos tus datos</div>
-
-      <!-- FORMULARIO CONECTADO A GOOGLE FORMS -->
-      <form
-        id="communityForm"
-        class="form"
-        action="https://docs.google.com/forms/d/e/1FAIpQLSfcTvlbuG4_w818DX9qywV2BagosTD-ha-fb4LOFeHiWoe2UA/formResponse"
-        method="POST"
-        target="hiddenIframe"
-      >
-        <div class="form-field">
-          <label class="form-label" for="name">Nombre</label>
-          <input
-            id="name"
-            name="entry.1522710900"
-            class="form-input"
-            type="text"
-            placeholder="Cómo te llamas"
-            required
-          />
-        </div>
-
-        <div class="form-field">
-          <label class="form-label" for="contact">Correo o WhatsApp</label>
-          <input
-            id="contact"
-            name="entry.1603528505"
-            class="form-input"
-            type="text"
-            placeholder="ej: 3001234567 / micorreo@email.com"
-            required
-          />
-        </div>
-
-        <div class="form-field">
-          <label class="form-label" for="size">Número aproximado de pollos</label>
-          <select
-            id="size"
-            name="entry.215135421"
-            class="form-select"
-          >
-            <option value="">Selecciona una opción</option>
-            <option>- 50 pollos</option>
-            <option>50 – 200 pollos</option>
-            <option>200 – 1000 pollos</option>
-            <option>Más de 1000 pollos</option>
-          </select>
-        </div>
-
-        <div class="form-field">
-          <label class="form-label" for="goal">¿Qué quieres mejorar en tu galpón?</label>
-          <textarea
-            id="goal"
-            name="entry.1074943000"
-            class="form-textarea"
-            placeholder="Ejemplo: bajar mortalidad en la primera semana, mejorar el peso final, organizar mejor el agua, etc."
-          ></textarea>
-        </div>
-
-        <div class="form-field">
-          <label style="display:flex; align-items:flex-start; gap:0.35rem; font-size:0.78rem;">
-            <input type="checkbox" required style="margin-top:0.1rem;" />
-            <span>Acepto que Allpa me contacte para enviarme material educativo sobre avicultura y el modelo circular.</span>
-          </label>
-        </div>
-
-        <button type="submit" class="btn btn-primary">
-          Enviar y recibir plantillas
-        </button>
-
-        <p class="form-footnote">
-          *Este formulario está conectado a Google Forms. Al enviar, se abrirá una pestaña de confirmación de Google.
-        </p>
-      </form>
-    </div>
-  </div>
-</section>
-
-    </div>
-  </main>
-
-  <!-- BOTÓN FLOTANTE COMPARTIR ------------------------------------- -->
-  <div class="share-floating">
-    <div class="share-hint">Comparte este hub con otro avicultor</div>
-    <button class="share-main-btn" onclick="shareHub();">
-      <span>📤 Compartir</span>
-    </button>
-  </div>
-
-  <!-- FOOTER -------------------------------------------------------- -->
-  <footer>
-    <div class="footer-inner">
+    <footer class="site-footer">
+      <p>Allpa Tech te acompaña desde tu primer equipo hasta tu próxima planta.</p>
       <div>
-        Proyecto Allpa · Agricultura Circular · Avicultura Sostenible.<br />
-        Hecho en Colombia para el campo colombiano.
+        <a href="https://wa.me/573152112644" target="_blank" rel="noreferrer">315 211 2644</a>
+        <a href="mailto:ventas@aviculturasostenible.com">ventas@aviculturasostenible.com</a>
+        <a href="https://aviculturasostenible.com" target="_blank" rel="noreferrer">aviculturasostenible.com</a>
       </div>
-      <div class="footer-links">
-        <a href="modelo-circular.html" class="footer-link">Modelo circular</a>
-        <a href="energia.html" class="footer-link">Energía y biodigestor</a>
-        <a href="contacto.html" class="footer-link">Contacto técnico</a>
-      </div>
-    </div>
-  </footer>
+    </footer>
 
-</div>
-
-<!-- SCRIPT: CONFIGURACIÓN MODULAR DE TARJETAS ------------------------ -->
-<script>
-  /*
-    CONFIGURACIÓN DE TARJETAS
-    --------------------------------------------------------------------
-    - Para activar/desactivar tarjetas: cambiar enabled: true/false.
-    - Para cambiar orden: reordenar los objetos dentro del arreglo.
-    - Para apuntar a otras páginas: ajustar la propiedad "href".
-    - tags: usados por el sistema de filtros.
-  */
-
-  const cardsConfig = [
-    /*{
-      id: "8dias",
-      enabled: true,
-      title: "Manejo primeros 8 días",
-      icon: "🐥",
-      href: "es/8dias.html",
-      level: "Principiante",
-      description: "Guía de temperatura, humedad y manejo para que tus pollitos arranquen fuertes desde el día 0 al 8.",
-      tags: ["inicio", "manejo"],
-      categoryLabel: "Primera semana",
-      secondaryText: "Incluye rangos de temperatura y alertas simples.",
-      secondaryHref: "es/8dias.html#guia"
-    },*/
-    {
-      id: "agua",
-      enabled: true,
-      title: "Agua y potabilización",
-      icon: "💧",
-      href: "es/agua.html",
-      level: "Principiante",
-      description: "Calcula cuánta agua necesitan tus pollos y la dosis de cloro, vinagre o bicarbonato para un pH adecuado.",
-      tags: ["agua", "inicio", "engorde"],
-      categoryLabel: "Agua y calidad",
-      secondaryText: "Pensada para trabajar con jeringas y medidas caseras.",
-      secondaryHref: "es/agua.html#explicacion"
-    },
-    {
-      id: "raciones",
-      enabled: true,
-      title: "Raciones y consumo",
-      icon: "🍽️",
-      href: "es/raciones.html",
-      level: "Intermedio",
-      description: "Define cuántos kilos y bultos de alimento necesitas cada día o semana según la edad y número de aves.",
-      tags: ["alimento", "engorde"],
-      categoryLabel: "Plan de alimentación",
-      secondaryText: "Te ayuda a organizar compras y costos.",
-      secondaryHref: "es/raciones.html#detalle"
-    },
-    {
-      id: "peso",
-      enabled: true,
-      title: "Peso y curva de crecimiento",
-      icon: "⚖️",
-      href: "es/peso.html",
-      level: "Intermedio",
-      description: "Compara el peso real de tu lote contra las tablas Cobb 500 y Ross 308, día a día o por semana.",
-      tags: ["peso", "engorde"],
-      categoryLabel: "Seguimiento técnico",
-      secondaryText: "Ideal para saber si vas arriba o abajo del estándar.",
-      secondaryHref: "peso.html#curvas"
-    },
-    {
-      id: "calculadora-general",
-      enabled: true,
-      title: "Calculadora central de lote",
-      icon: "📊",
-      href: "es/calculadora.html",
-      level: "Intermedio",
-      description: "Una vista general del desempeño del lote con edad, peso, consumo y conversión según la genética.",
-      tags: ["peso", "alimento", "engorde"],
-      categoryLabel: "Visión global",
-      secondaryText: "Basada en tablas Ross 308 y Cobb 500.",
-      secondaryHref: "calculadora.html#resumen"
-    },
-    {
-      id: "comederos",
-      enabled: true,
-      title: "Número de comederos",
-      icon: "🟡",
-      href: "es/comederos.html",
-      level: "Principiante",
-      description: "Calcula cuántos comederos manuales de 25 aves necesitas y cómo distribuirlos en el galpón.",
-      tags: ["infraestructura", "engorde"],
-      categoryLabel: "Equipos del galpón",
-      secondaryText: "Incluye altura y separación recomendada.",
-      secondaryHref: "comederos.html#recomendaciones"
-    },
-    {
-      id: "energia",
-      enabled: true,
-      title: "Energía y climatización",
-      icon: "⚡",
-      href: "es/energia.html",
-      level: "Avanzado",
-      description: "Explora opciones de energía, paneles solares y biodigestor para reducir costos de tu galpón.",
-      tags: ["energia", "infraestructura"],
-      categoryLabel: "Eficiencia energética",
-      secondaryText: "Pensado para integrar el modelo circular.",
-      secondaryHref: "energia.html#modelos"
-    },
-    /*{
-      id: "modelo-circular",
-      enabled: true,
-      title: "Modelo circular Allpa",
-      icon: "♻️",
-      href: "modelo-circular.html",
-      level: "Conceptual",
-      description: "Conoce cómo transformamos residuos de comida en alimento para pollos, larvas y energía limpia.",
-      tags: ["modelo", "concepto"],
-      categoryLabel: "Economía circular",
-      secondaryText: "Base técnica y filosófica del proyecto.",
-      secondaryHref: "modelo-circular.html#ciclo"
-    },*/
-    {
-      id: "productos",
-      enabled: true,
-      title: "Productos y servicios",
-      icon: "📦",
-      href: "es/productos.html",
-      level: "Comercial",
-      description: "Pollitos, concentrado a base de larvas, máquinas de producción y acompañamiento técnico.",
-      tags: ["productos", "servicios"],
-      categoryLabel: "Allpa para tu granja",
-      secondaryText: "Conoce cómo podemos trabajar contigo.",
-      secondaryHref: "es/productos.html"
-    }
-  ];
-
-  /*
-    FILTROS DISPONIBLES
-    ------------------------------------------------------------------*/
-  const filtersConfig = [
-    { id: "all", label: "Todas", default: true },
-    { id: "inicio", label: "Inicio (0–8 días)" },
-    { id: "engorde", label: "Engorde" },
-    { id: "agua", label: "Agua" },
-    { id: "alimento", label: "Alimento" },
-    { id: "peso", label: "Peso y curvas" },
-    { id: "infraestructura", label: "Infraestructura / energía" },
-    { id: "modelo", label: "Modelo circular" }
-  ];
-
-  /* RENDER DE FILTROS Y TARJETAS ------------------------------------ */
-
-  const cardsGrid = document.getElementById("cardsGrid");
-  const filtersContainer = document.getElementById("filters");
-
-  function renderFilters() {
-    filtersConfig.forEach(filter => {
-      const btn = document.createElement("button");
-      btn.className = "filter-chip" + (filter.default ? " active" : "");
-      btn.textContent = filter.label;
-      btn.dataset.filterId = filter.id;
-      btn.addEventListener("click", () => applyFilter(filter.id));
-      filtersContainer.appendChild(btn);
-    });
-  }
-
-  function renderCards() {
-    cardsGrid.innerHTML = "";
-    cardsConfig
-      .filter(card => card.enabled)
-      .forEach(card => {
-        const cardEl = document.createElement("article");
-        cardEl.className = "card";
-        cardEl.dataset.tags = card.tags.join(",");
-
-        cardEl.innerHTML = `
-          <div class="card-header">
-            <div class="card-title-group">
-              <div class="card-title-row">
-                <div class="card-icon" aria-hidden="true">${card.icon || "🐔"}</div>
-                <h3 class="card-title">${card.title}</h3>
-              </div>
-              <div class="card-tags">
-                <span class="card-tag">${card.categoryLabel || "Herramienta"}</span>
-                ${card.tags.map(tag => `<span class="card-tag">#${tag}</span>`).join("")}
-              </div>
-            </div>
-            <div class="card-level">${card.level}</div>
-          </div>
-          <p class="card-description">${card.description}</p>
-          <div class="card-media">
-            <!-- Aquí puedes insertar una imagen o video relacionado con esta herramienta -->
-            <!-- Ejemplo:
-            <img src="img/preview-${card.id}.jpg" alt="Vista previa de ${card.title}">
-            -->
-          </div>
-          <div class="card-footer">
-            <div class="card-links">
-              <button class="card-link-main" onclick="goToTool('${card.href}', '${card.id}');">
-                <span>Abrir herramienta</span> <span>↗</span>
-              </button>
-              ${card.secondaryText ? `
-                <button class="card-link-secondary" onclick="goToTool('${card.secondaryHref}', '${card.id}-sec');">
-                  <span>${card.secondaryText}</span> <span>➜</span>
-                </button>
-              ` : ""}
-            </div>
-            <div class="card-meta">
-              <div>ID: ${card.id}</div>
-              <div>Listo para pruebas A/B</div>
-            </div>
-          </div>
-        `;
-        cardsGrid.appendChild(cardEl);
-      });
-  }
-
-  function applyFilter(filterId) {
-    // Actualizar estado visual de filtros
-    document.querySelectorAll(".filter-chip").forEach(chip => {
-      chip.classList.toggle("active", chip.dataset.filterId === filterId);
-    });
-
-    if (filterId === "all") {
-      cardsGrid.querySelectorAll(".card").forEach(card => {
-        card.style.display = "";
-      });
-      return;
-    }
-
-    cardsGrid.querySelectorAll(".card").forEach(card => {
-      const tags = card.dataset.tags.split(",");
-      card.style.display = tags.includes(filterId) ? "" : "none";
-    });
-  }
-
-  /* NAVEGACIÓN Y TRACKING SIMPLE ------------------------------------ */
-
-  function goToTool(href, id) {
-    // Aquí podrías agregar tracking personalizado (ej: enviar a Google Analytics, etc.)
-    console.log("Tarjeta clickeada:", id, "->", href);
-    window.location.href = href;
-  }
-
-  /* COMPARTIR ------------------------------------------------------- */
-
-  function shareHub() {
-    const shareData = {
-      title: "Hub de herramientas para avicultores – El Pollo Ingeniero",
-      text: "Estoy usando estas calculadoras gratuitas para manejar mejor mis pollos. Te pueden servir para tu galpón:",
-      url: window.location.href
-    };
-
-    if (navigator.share) {
-      navigator.share(shareData).catch(err => console.log("Share cancelado", err));
-    } else {
-      // Fallback: copiar enlace al portapapeles
-      navigator.clipboard?.writeText(window.location.href);
-      alert("Enlace copiado. Pégalo en WhatsApp u otra app para compartirlo.");
-    }
-  }
-
-  /* FORMULARIO ------------------------------------------------------ */
-
-  function handleFormSubmit(event) {
-    event.preventDefault();
-    // Aquí puedes enviar los datos a tu backend o a un servicio externo
-    alert("¡Gracias! Hemos registrado tus datos. Muy pronto recibirás las plantillas y nuevas calculadoras.");
-    event.target.reset();
-  }
-
-  /* ANIMACIONES EN SCROLL ------------------------------------------- */
-
-  function initScrollAnimations() {
-    const observer = new IntersectionObserver(
-      entries => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("visible");
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.15 }
-    );
-
-    document.querySelectorAll(".fade-in").forEach(el => observer.observe(el));
-  }
-
-  /* INICIALIZACIÓN -------------------------------------------------- */
-
-  renderFilters();
-  renderCards();
-  initScrollAnimations();
-
-  // Exponer funciones globales necesarias
-  window.shareHub = shareHub;
-  window.handleFormSubmit = handleFormSubmit;
-  window.goToTool = goToTool;
-
-  document.getElementById("communityForm").addEventListener("submit", function () {
-  alert("¡Gracias! Tus datos fueron enviados correctamente. Muy pronto recibirás las plantillas.");
-});
-
-
-</script>
-<iframe name="hiddenIframe" style="display:none;"></iframe>
-
-</body>
+    <script src="script.js"></script>
+  </body>
 </html>
